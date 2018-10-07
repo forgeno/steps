@@ -4,8 +4,13 @@
   "private": true,
   "dependencies": {
     "react": "^16.5.2",
+    "react-bootstrap": "^0.32.4",
+    "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.5.2",
+    "react-router": "^4.3.1",
     "react-scripts": "2.0.4",
+    "reflux": "^6.4.1",
+    "request-promise": "^4.2.2",
     "yarn": "^1.10.1"
   },
   "scripts": {
@@ -24,5 +29,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "enzyme": "^3.7.0",
+    "enzyme-adapter-react-16": "^1.6.0",
+    "mocha": "^5.2.0"
   }
 }
