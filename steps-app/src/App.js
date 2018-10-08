@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Switch, Route } from 'react-router-dom';
 import './style/App.css';
+import MapDashboard from "./map/MapDashboard";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
@@ -20,6 +20,13 @@ class App extends Component {
             Learn React
           </a>
         </header>
+		<Switch>
+			<Route path="/" component={MapDashboard} />
+			<Route path="/sidewalk/:id" component={MapDashboard} />
+			<Route path="/about" component={MapDashboard} />
+			<Route path="/statistics" component={MapDashboard} />
+			<Route path="/login" component={MapDashboard} />
+		</Switch>
       </div>
     );
   }
