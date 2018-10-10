@@ -4,6 +4,7 @@ import './style/App.css';
 import MapDashboard from "./map/MapDashboard";
 
 class App extends Component {
+	
   render() {
     return (
       <div className="App">
@@ -22,7 +23,7 @@ class App extends Component {
         </header>
 		<Switch>
 			<Route path="/" component={MapDashboard} />
-			<Route path="/sidewalk/:id" component={MapDashboard} />
+			<Route path="/map/:id" component={MapDashboard} />
 			<Route path="/about" component={MapDashboard} />
 			<Route path="/statistics" component={MapDashboard} />
 			<Route path="/login" component={MapDashboard} />
