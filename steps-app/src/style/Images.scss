@@ -1,0 +1,21 @@
+input[type="file"].uploadImageInput {
+	display: none;
+}
+
+.imageComponentButtonText {
+	margin-right: 10px;
+}
+
+.selectedImagePreview {
+	margin-top: 10px;
+}
+
+.uploadImageWaitSpinner {
+	display: flex;
+	justify-content: center;
+	padding-top: 10px;
+}
+
+.uploadSidewalkImageText {
+	padding-left: 10px;
+}
