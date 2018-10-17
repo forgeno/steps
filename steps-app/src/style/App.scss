@@ -1,20 +1,23 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
+@import url('https://fonts.googleapis.com/css?family=Proza+Libre');
+
+@import "Variables.scss";
 @import "Images.scss";
 @import "SummaryMap.scss";
 
-.App {
-  text-align: center;
+/* bootstrap button overrides */
+.btn-primary {
+    background-color: $primary !important;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.btn-primary:hover, .btn-primary:focus {
+  background-color: $primaryHover !important;
+}
+
+/* default font */
+body {
+	font-family: $fontFamily, sans-serif;
+	//background-color: #282c34;
 }
 
 .row {

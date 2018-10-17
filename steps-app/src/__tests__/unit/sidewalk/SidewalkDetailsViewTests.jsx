@@ -43,6 +43,53 @@ describe("<SidewalkDetailsView />", function() {
 		expect(spy.notCalled).to.be.true;
 	});
 	
+	it("Makes sure _viewImages displays the uploaded images for this sidewalk", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.instance()._viewImages();
+		expect(wrapper.state("viewingImages")).to.be.true;
+		expect(wrapper.find("SidewalkImagesView").prop("visible")).to.be.true;
+	});
+	
+	it("Makes sure _closeImages displays the uploaded images for this sidewalk", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.instance()._viewImages();
+		wrapper.instance()._closeImages();
+		expect(wrapper.state("viewingImages")).to.be.false;
+		expect(wrapper.find("SidewalkImagesView").prop("visible")).to.be.false;
+	});
+	
+	it("Makes sure a loading spinner displays while an image is being uploaded", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.setState({
+			uploadingSidewalkImage: true
+		});
+		expect(wrapper.find("LoaderComponent")).to.have.lengthOf(1);
+	});
+	
+	it("Makes sure a loading spinner does not display if no image is being uploaded", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.setState({
+			uploadingSidewalkImage: false
+		});
+		expect(wrapper.find("LoaderComponent")).to.have.lengthOf(0);
+	});
+	
+	it("Makes sure an alert displays if an error happened uploading an image", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.setState({
+			uploadedImageError: true
+		});
+		expect(wrapper.find("Alert")).to.have.lengthOf(1);
+	});
+	
+	it("Makes sure an alert does not if an error did not happen uploading an image", () => {
+		const wrapper = shallow(<SidewalkDetailsView />);
+		wrapper.setState({
+			uploadedImageError: false
+		});
+		expect(wrapper.find("Alert")).to.have.lengthOf(0);
+	});
+	
 	afterEach(() => {
 		sandbox.restore();
 	});

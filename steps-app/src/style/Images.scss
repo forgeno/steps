@@ -10,12 +10,62 @@ input[type="file"].uploadImageInput {
 	margin-top: 10px;
 }
 
-.uploadImageWaitSpinner {
-	display: flex;
-	justify-content: center;
-	padding-top: 10px;
-}
-
 .uploadSidewalkImageText {
 	padding-left: 10px;
+}
+
+.infiniteImageListRow {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 0 10px;
+	background-color: #fff;
+}
+
+.infiniteImageRowSelected {
+	border-radius: 5%;
+    box-shadow: 0 0 0 2px $primary;
+	cursor: pointer;
+	width: 90%;
+	height: 90%;
+}
+
+.infiniteImageRowUnselected {
+	cursor: pointer;
+}
+
+.infiniteImageRowUnselected:hover {
+	border-radius: 5%;
+    box-shadow: 0 0 0 2px $secondary;
+	width: 90%;
+	height: 90%;
+}
+
+.backgroundImage {
+	max-width: 70vw;
+	max-height: 100vh;
+}
+
+.labelledImageContainer {
+	position: relative;
+    text-align: center;
+    color: white;
+}
+
+div.noOutlineDiv:focus {
+	outline: none;
+}
+
+.selectedImageWrapper {
+	display: flex;
+	margin: auto;
+	align-items: center;
+    justify-content: center;
+}
+
+.closeImageListButton {
+	float: right;
+	cursor: pointer;
+	margin-left: auto;
+	margin-right: 0;
 }

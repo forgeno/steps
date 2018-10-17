@@ -116,11 +116,7 @@ export default class ImageUploadModal extends React.Component {
 					)
 				}
 				{
-					this.state.loadingSelectedImage && (
-						<div className="uploadImageWaitSpinner">
-							<LoaderComponent />
-						</div>
-					)
+					this.state.loadingSelectedImage && <LoaderComponent />
 				}
 			</Modal.Body>
 
