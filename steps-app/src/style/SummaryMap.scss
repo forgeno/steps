@@ -1,3 +1,6 @@
-.map {
-	color: red;
+@import url("https://js.arcgis.com/4.9/esri/css/main.css");
+
+#mapContainer {
+	min-height: 100vh;
+	cursor: pointer;
 }

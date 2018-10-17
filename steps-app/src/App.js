@@ -12,7 +12,7 @@ class App extends Component {
       <div className="App">
         <NavbarComponent />
 		<Switch>
-			<Route path="/" component={MapDashboard} />
+			<Route path="/" component={MapDashboard} /> 
 			<Route path="/map/:id" component={MapDashboard} />
 			<Route path="/about" component={MapDashboard} />
 			<Route path="/statistics" component={MapDashboard} />
@@ -24,4 +24,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default App

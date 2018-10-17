@@ -22,5 +22,4 @@ export default class SidewalkStore extends Reflux.Store {
 			upload: base64Image
 		});
 	}
-	
 }
