@@ -1,0 +1,729 @@
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7ff709162d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/ubuntu/steps/django_steps/frontend/views.py", line 7, in index
+    return render(request, 'steps-app/public/index.html', {})
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/shortcuts.py", line 36, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: steps-app/public/index.html
+[18/Oct/2018 03:09:15] "GET / HTTP/1.1" 500 76566
+Performing system checks...
+
+System check identified no issues (0 silenced).
+October 18, 2018 - 03:09:04
+Django version 2.1.1, using settings 'steps.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f0006e20d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7ff3d3ad2d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7fd012cfdd90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7efd5ce33d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7ff220013d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f9dc79a4d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7fbec3ae4d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f3fb7273d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7fe0e9a88d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f019a273d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7ff155903d90>
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+_mysql_exceptions.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 120, in inner_run
+    self.check_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/management/base.py", line 442, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 209, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/db/backends/mysql/base.py", line 227, in get_new_connection
+    return Database.connect(**conn_params)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/__init__.py", line 86, in Connect
+    return Connection(*args, **kwargs)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/MySQLdb/connections.py", line 204, in __init__
+    super(Connection, self).__init__(*args, **kwargs2)
+django.db.utils.OperationalError: (1045, "Access denied for user 'root'@'localhost' (using password: YES)")
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/core/handlers/base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/ubuntu/steps/django_steps/frontend/views.py", line 7, in index
+    return render(request, 'steps-app/public/index.html', {})
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/shortcuts.py", line 36, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/home/ubuntu/.local/lib/python3.5/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: steps-app/public/index.html
+[18/Oct/2018 03:25:49] "GET / HTTP/1.1" 500 76551
+Not Found: /api/Person
+[18/Oct/2018 03:27:17] "GET /api/Person HTTP/1.1" 404 2432
+Not Found: /api/person
+[18/Oct/2018 03:27:18] "GET /api/person HTTP/1.1" 404 2432
+Not Found: /api/person
+[18/Oct/2018 03:28:11] "GET /api/person HTTP/1.1" 404 2432
+[18/Oct/2018 03:28:20] "GET /admin HTTP/1.1" 301 0
+[18/Oct/2018 03:28:20] "GET /admin/ HTTP/1.1" 302 0
+[18/Oct/2018 03:28:20] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 1819
+[18/Oct/2018 03:28:20] "GET /static/admin/css/responsive.css HTTP/1.1" 200 17976
+[18/Oct/2018 03:28:21] "GET /static/admin/css/base.css HTTP/1.1" 200 16225
+[18/Oct/2018 03:28:21] "GET /static/admin/css/login.css HTTP/1.1" 200 1203
+[18/Oct/2018 03:28:21] "GET /static/admin/css/fonts.css HTTP/1.1" 200 423
+[18/Oct/2018 03:28:22] "GET /static/admin/fonts/Roboto-Light-webfont.woff HTTP/1.1" 200 81348
+[18/Oct/2018 03:28:22] "GET /static/admin/fonts/Roboto-Regular-webfont.woff HTTP/1.1" 200 80304
+[18/Oct/2018 03:28:27] "GET /about HTTP/1.1" 301 0
+[18/Oct/2018 03:28:27] "GET /about/ HTTP/1.1" 200 164
+[18/Oct/2018 03:28:32] "GET /statistics HTTP/1.1" 301 0
+[18/Oct/2018 03:28:32] "GET /statistics/ HTTP/1.1" 200 168
+Performing system checks...
+
+System check identified no issues (0 silenced).
+October 18, 2018 - 03:25:47
+Django version 2.1.1, using settings 'steps.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
