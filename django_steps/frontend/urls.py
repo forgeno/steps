@@ -7,7 +7,5 @@ from django.urls import include, path
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', views.index),
-    path('about/', views.about_page),
-    path('statistics/', views.statistics_page),
+    path('', views.index)
 ]
