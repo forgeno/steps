@@ -7,7 +7,7 @@ import {DATABASE_BASE_URL} from "../constants/DatabaseConstants";
  * @return the URL to send an HTTP request to
  */
 const makeRequestURL = (endpoint) => {
-	return `${DATABASE_BASE_URL}/api/${endpoint}`;
+	return `${DATABASE_BASE_URL}/api/${endpoint}/`;
 };
 
 export default class RestUtil {

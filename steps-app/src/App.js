@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import './style/App.scss';
-import MapDashboard from "./map/MapDashboard";
 
+import MapDashboard from "./map/MapDashboard";
+import AboutPageView from "./misc-components/AboutPageView";
 import NavbarComponent from "./misc-components/NavbarComponent";
 
 class App extends Component {
@@ -12,7 +13,7 @@ class App extends Component {
       <div className="App">
         <NavbarComponent />
 		<Switch>
-			<Route path="/about/" component={MapDashboard} />
+			<Route path="/about/" component={AboutPageView} />
 			<Route path="/statistics" component={MapDashboard} />
 			<Route path="/login" component={MapDashboard} />
 			<Route path="/map/:id" component={MapDashboard} />
