@@ -24,7 +24,7 @@ describe("Tests the RestUtil class", function() {
 		RestUtil.sendPostRequest("nowhere", bodyObj);
 		expect(rp.post.callCount).to.be.equal(1);
 		expect(rp.post.getCall(0).args[0]).to.deep.equal({
-			uri: `${DATABASE_BASE_URL}/api/nowhere`,
+			uri: `${DATABASE_BASE_URL}/api/nowhere/`,
 			headers: {
 				"Content-Type": "application/json"
 			},
@@ -80,7 +80,7 @@ describe("Tests the RestUtil class", function() {
 		RestUtil.sendGetRequest("nowhere", bodyObj);
 		expect(rp.get.callCount).to.be.equal(1);
 		expect(rp.get.getCall(0).args[0]).to.deep.equal({
-			uri: `${DATABASE_BASE_URL}/api/nowhere`,
+			uri: `${DATABASE_BASE_URL}/api/nowhere/`,
 			json: true,
 			qs: bodyObj
 		});
