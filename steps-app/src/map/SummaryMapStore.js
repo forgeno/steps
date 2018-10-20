@@ -9,21 +9,5 @@ export default class SummaryMapStore extends Reflux.Store {
 		this.listenables = Actions;
 	}
 
-    onDisplayOSMBaseMap([Map, MapView]) {
-		const map = new Map({
-			basemap: "osm"
-		});
 
-		const view = new MapView({
-			map: map,
-			container: "mapContainer",
-			basemap: 'osm',
-			center: [-113.4990, 53.5405],
-			zoom: 15
-        });
-        
-        this.setState({
-			map,
-			view });
-	}
 }
