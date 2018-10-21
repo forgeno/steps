@@ -6,7 +6,7 @@ class Pedestrian(models.Model):
     recorded_time = models.CharField(max_length=255)
     speed = models.CharField(max_length=255)
     activity_title = models.CharField(max_length=255)
-    activity_confidence = models.IntField()
+    activity_confidence = models.IntegerField()
     crosswalk = models.BooleanField()
     waiting_time = models.CharField(max_length=255)
 
@@ -14,18 +14,18 @@ class Sidewalk(models.Model):
     address = models.CharField(max_length=255)
 
 class SidewalkComment(models.Model):
-    sidewalk_ID = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
+    sidewalk = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
     text = models.CharField(max_length=300)
-    posted_time = models.DateField(default=datetime.date.today)
+    posted_time = models.DateTimeField(auto_now_add=True)
 
 class SidewalkImage(models.Model):
-    sidewalk_ID = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
+    sidewalk = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
     image_url = models.CharField(max_length=255)
-    posted_time = models.DateField(default=datetime.date.today)
+    posted_time = models.DateTimeField(auto_now_add=True)
     is_pending = models.BooleanField()
 
 class SidewalkRating(models.Model):
-    sidewalk_ID = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
+    sidewalk = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
     accessibility_rating = models.FloatField()
     connectivity_rating = models.FloatField()
     comfort_rating = models.FloatField()
