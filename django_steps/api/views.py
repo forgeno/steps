@@ -7,3 +7,4 @@ class SidewalkView(viewsets.ModelViewSet):
     queryset = Sidewalk.objects.all()
     serializer_class = SidewalkSerializer
     allowed_methods = ['GET']
+    http_method_names = ['get']
