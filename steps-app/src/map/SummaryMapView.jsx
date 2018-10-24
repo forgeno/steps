@@ -1,26 +1,23 @@
 import React from "react";
-import {Component} from 'reflux';
-import Store from "./SummaryMapStore";
+import { Component } from 'reflux';
 import esriLoader from "esri-loader";
+
+import Actions from "./MapActions";
+import Store from "./MapStore";
+
 import {esriURL} from "../constants/ArcGISConstants";
-import Actions from "./LoadMapActions";
 import RestUtil from "../util/RestUtil";
 
 export default class SummaryMapView extends Component {
 
 	constructor() {
 		super();
-		this.state = {
-			longitude: null,
-			latitude: null,
-			mapClicked: false
-		}
 		this.store = Store;
-  }
+	}
 
   	componentDidMount() {
 		this.load();
-	  }
+	}
 
 	load() {
 		Promise.all([esriLoader.loadModules(['esri/Map', 'esri/views/MapView'], esriURL), esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate"], esriURL)]).then((data) => {

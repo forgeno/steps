@@ -15,20 +15,23 @@ export default class SidewalkStore extends Reflux.Store {
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
-			uploadedImageError: false,
-			sidewalkDetails: null
+			uploadedImageError: false
 		};
         this.listenables = Actions;
     }
 
 	/**
 	 * Loads the specified sidewalk
-	 * @param {String} id - the id of the sidewalk
+	 * @param {Object} sidewalk - a basic sumamry of the sidewalk to load, including it's id and average ratings
 	 */
-	onLoadSidewalkDetails(id) {
-		// TODO: load actual sidewalk details
-		this.setState({
-			currentSidewalk: id
+	onLoadSidewalkDetails(sidewalk) {
+		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
+			const newSidewalk = Object.assign({}, sidewalk, data);
+			this.setState({
+				currentSidewalk: newSidewalk
+			});
+		}).catch((err) => {
+			console.error(err);
 		});
 	}
 	
@@ -42,7 +45,7 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadedImageError: false
 		});
 		
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image/create`, {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image/create`, {
 			image: base64Image
 		}).then(() => {
 			this.setState({
@@ -65,7 +68,7 @@ export default class SidewalkStore extends Reflux.Store {
 	 * @param {function} updateStateCallback - a callback function that will be invoked when the images are loaded
 	 */
 	onLoadUploadedImages(startIndex, stopIndex, updateStateCallback) {
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image`, {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image`, {
 			startIndex: startIndex,
 			endIndex: stopIndex
 		}).then((res) => {
@@ -80,15 +83,4 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
-
-	// temporary sidewalk details to load for now (mock data)
-	onGetSidewalkDetails() {
-		RestUtil.sendGetRequest("sidewalk/2").then((data) => {
-			this.setState({
-				sidewalkDetails: data
-			})
-		}).catch((err) => {
-			console.error(err);
-		});
-	}
 }

@@ -1,7 +1,9 @@
 import Reflux from "reflux";
 
 const Actions = Reflux.createActions([
-	"display"
+	"loadAllSidewalks",
+	"display",
+	"setDrawerOpened"
 ]);
 
 export default Actions;

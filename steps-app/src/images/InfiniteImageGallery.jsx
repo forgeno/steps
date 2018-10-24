@@ -161,6 +161,7 @@ export default class InfiniteImageGallery extends React.Component {
 	}
 	
 	render() {
+		// TODO: decide which design to use
 		return (
 			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv" >
 				<Drawer open={this.props.visible}

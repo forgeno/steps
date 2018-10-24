@@ -11,30 +11,49 @@ import PreviewSidewalkImagesComponent from "./PreviewSidewalkImagesComponent";
 import SidewalkImagesView from "./SidewalkImagesView";
 import LoaderComponent from "../misc-components/LoaderComponent";
 
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
 import {Button} from "react-bootstrap";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import { withStyles } from '@material-ui/core/styles';
+import {FONT_FAMILY} from "../constants/ThemeConstants";
+
+const styles = theme => ({
+  root: {
+    width: '100%',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(30),
+    fontWeight: theme.typography.fontWeightRegular,
+	fontFamily: FONT_FAMILY
+  },
+});
 
 /**
  * This component handles rendering details about a selected sidewalk
  */
-export default class SidewalkDetailsView extends Component {
+class SidewalkDetailsView extends Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
 			modalOpened: false,
-			viewingImages: false,
-			showSidewalkDrawer: false,
-			sidewalkDetails: null
+			viewingImages: false
 		};
 		this.store = Store;
+		this.selfRef = React.createRef();
 	}
 
-	componentDidMount() {
-		Actions.getSidewalkDetails();
+	componentDidUpdate(prevProps) {
+		if (this.props.visible && !prevProps.visible) {
+			Actions.loadSidewalkDetails(this.props.selectedSidewalkDetails);
+		}
 	}
-
+	
 	/**
 	 * Opens the modal allowing the user to upload images
 	 */
@@ -76,32 +95,62 @@ export default class SidewalkDetailsView extends Component {
 	};
 
 	/**
-	 * handles closing of the drqawe
+	 * handles closing of the drawer
 	 */
-	handleClose = () => {
-		this.props.handleDrawerInteraction(false);
+	_handleClose = () => {
+		this.props.onClose();
 	}
 
-	renderAddressDetails() {
+	/**
+	 * Handles a key being pressed
+	 * @param {Object} event - the event representing the key press
+	 */
+	_handleKeyDown = (event) => {
+		if (event.key === "Escape") {
+			this._handleClose();
+		}
+	};
+	
+	renderExpansionPanel(header, component, expanded = false) {
+		const { classes } = this.props;
 		return (
-			<div className="streetNameSection">
-				Address: {this.state.sidewalkDetails.address}
-			</div>
+			<ExpansionPanel defaultExpanded={expanded}>
+				<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+					<Typography className={classes.heading}>{header}</Typography>
+				</ExpansionPanelSummary>
+				<ExpansionPanelDetails>
+					{component}
+				</ExpansionPanelDetails>
+			</ExpansionPanel>
 		);
 	}
 
 	/**
-	 * handles rendering image details
+	 * Handles rendering summary details about this sidewalk
 	 */
-	renderImageDetails() {
+	renderSummaryDetails() {
+		let imageSection = null;
+		if (this.state.currentSidewalk.lastImage) {
+			imageSection = (
+				<div className="drawerImageSection">
+					<img src={this.state.currentSidewalk.lastImage} />
+				</div>
+			)
+		} else {
+			imageSection = <h4>There are no uploaded images for this sidewalk.</h4>;
+		}
+		
 		return (
 			<div>
-				<div className="drawerImageSection">
-					<h1> Main Image place holder </h1>
-				</div>
-				<div className="streetNameSection">
-					image gallery preview
-				</div>
+				<h3 className="streetNameSection">
+					{this.state.currentSidewalk.address}
+				</h3>
+				<hr />
+				{imageSection}
+				<hr />
+				<h5>
+					The average pedestrian velocity on this sidewalk is {this.state.currentSidewalk.averageVelocity} metres per second. 
+				</h5>
 			</div>
 		);
 	}
@@ -144,25 +193,24 @@ export default class SidewalkDetailsView extends Component {
 		);
 	}
 	
+	_formatRating(value) {
+		return value && value.toFixed(2);
+	}
+	
 	/**
 	 * handles rendering the ratings on the drawer
 	 */
 	renderRatings() {
 		return (
 			<div>
-				<h3> Rating: N/A RATING </h3>
-				<div className="drawerButtonDisplay">
-					<div>
-						<Button bsStyle="info">
-							Rate Street
-						</Button>
-					</div>
-					<div className="confirmButtonPadding">
-					<Button bsStyle="info">
-						Confirm
-					</Button>
-					</div>
-				</div>
+				<h4>{this.state.currentSidewalk.totalRatings} people have rated this sidewalk.</h4>
+				<hr />
+				<h4>Overall: {this._formatRating(this.state.currentSidewalk.overallRating)}</h4>
+				<h4>Accessibility: {this._formatRating(this.state.currentSidewalk.accessibility)}</h4>
+				<h4>Connectivity: {this._formatRating(this.state.currentSidewalk.connectivity)}</h4>
+				<h4>Comfort: {this._formatRating(this.state.currentSidewalk.comfort)}</h4>
+				<h4>Physical Safety: {this._formatRating(this.state.currentSidewalk.physicalSafety)}</h4>
+				<h4>Sense of Security: {this._formatRating(this.state.currentSidewalk.senseOfSecurity)}</h4>
 			</div>
 		);
 	}
@@ -170,7 +218,6 @@ export default class SidewalkDetailsView extends Component {
 	/**
 	 * handles showing the comments on the drawer
 	 */
-
 	renderComments() {
 		return (
 			<div>
@@ -179,32 +226,53 @@ export default class SidewalkDetailsView extends Component {
 		);
 	}
 
-	/**
-	 * handles rendering the components on the drawer
-	 */
-
-	renderDrawerDetails() {
-		if (!this.state.sidewalkDetails) {
-			return null;
+	renderPedestrianData() {
+		if (this.state.currentSidewalk.mobilityTypeDistribution.length === 0) {
+			return <h4>No pedestrian data has been recorded for this sidewalk</h4>;
 		}
 		return (
 			<div>
-				{this.renderImageDetails()}
-				{this.renderAddressDetails()}
-				{this.renderUploadImageComponent()}
-				{this.renderRatings()}
-				{this.renderComments()}
+				{
+					this.state.currentSidewalk.mobilityTypeDistribution.map((mobilityType) => {
+						return (
+							<p>{mobilityType.type}</p>
+						);
+					})
+				}
+			</div>
+		)
+	}
+	
+	/**
+	 * handles rendering the components on the drawer
+	 */
+	renderDrawerDetails() {
+		if (!this.state.currentSidewalk) {
+			return null;
+		}
+		
+		return (
+			<div>
+				{this.renderExpansionPanel("Summary", this.renderSummaryDetails(), true)}
+				{this.renderExpansionPanel("Images", this.renderUploadImageComponent())}
+				{this.renderExpansionPanel("Ratings", this.renderRatings())}
+				{this.renderExpansionPanel("Comments", this.renderComments())}
+				{this.renderExpansionPanel("Pedestrian Data", this.renderPedestrianData())}
 			</div>
 		)
 	}
 
 	render() {
 		return (
-			<Drawer open={this.props.mapClicked} anchor="right" variant="temporary">
-				<CloseIcon onClick={this.handleClose} className="closeImageListButton"/>
-				{this.renderDrawerDetails()}
-			</Drawer>
+			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv">
+				<Drawer open={this.props.visible} anchor="right" variant="temporary">
+					<CloseIcon onClick={this._handleClose} className="closeImageListButton"/>
+					{this.renderDrawerDetails()}
+				</Drawer>
+			</div>
 		);
 	}
 
 }
+
+export default withStyles(styles)(SidewalkDetailsView);

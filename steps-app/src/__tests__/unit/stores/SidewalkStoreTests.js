@@ -1,9 +1,10 @@
 import sinon from "sinon";
 import {expect} from "chai";
+import { promises } from "fs";
 
 import SidewalkStore from "../../../sidewalk/SidewalkStore";
 import RestUtil from "../../../util/RestUtil";
-import { promises } from "fs";
+import PromiseUtilities from "../../../../testUtil/PromiseUtilities";
 
 const SIDEWALK_ID = "testSidewalkId";
 
@@ -12,11 +13,12 @@ describe("Tests the SidewalkStore", function() {
 	const store = new SidewalkStore();
 	let sandbox = null;
 	
-	beforeAll(() => {
-		store.onLoadSidewalkDetails(SIDEWALK_ID);
-	});
-	
 	beforeEach(() => {
+		store.setState({
+			currentSidewalk: {
+				id: SIDEWALK_ID
+			}
+		});
 		sandbox = sinon.createSandbox();
 	});
 	
@@ -35,6 +37,7 @@ describe("Tests the SidewalkStore", function() {
 			}
 		});
 		const base64 = "aWElaopkopeawawKEOAea";
+		
 		store.onUploadSidewalkImage(base64);
 		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
 		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${SIDEWALK_ID}/image/create`);
@@ -96,17 +99,19 @@ describe("Tests the SidewalkStore", function() {
 			id: "2",
 			totalRatings: 13,
 			comments: [{id: 1, text: "test", date: "2018-10-13"}]
+		}, summaryDetails = {
+			ratingOne: 1.5,
+			id: "2"
 		};
 		
 		const sendGetRequestStub = sandbox.stub(RestUtil, "sendGetRequest").resolves(sidewalkDetails),
 			setStateSpy = sandbox.spy(store, "setState");
 
-		store.onGetSidewalkDetails();
-
-		return Promise.resolve().then(() => {
+		store.onLoadSidewalkDetails(summaryDetails);
+		return Promise.resolve(true).then(() => {
 			expect(setStateSpy.called).to.be.true;
 			expect(sendGetRequestStub.called).to.be.true;
-			expect(store.state.sidewalkDetails).to.deep.equal(sidewalkDetails);
+			expect(store.state.currentSidewalk).to.deep.equal(Object.assign(sidewalkDetails, summaryDetails));
 		});
 	})
 	

@@ -1,17 +1,38 @@
 import Reflux from "reflux";
-import Actions from "./LoadMapActions";
-import {layerURL} from "../constants/ArcGISConstants";
 
-export default class SummaryMapStore extends Reflux.Store {
+import Actions from "./MapActions";
+import {layerURL} from "../constants/ArcGISConstants";
+import RestUtil from "../util/RestUtil";
+
+export default class MapStore extends Reflux.Store {
 
     constructor() {
         super();
-        this.state = {};
+        this.state = {
+			sidewalks: [],
+			sidewalkSelected: false
+		};
 		this.listenables = Actions;
 	}
 
+	onLoadAllSidewalks() {
+		RestUtil.sendGetRequest("sidewalk").then((res) => {
+			this.setState({
+				sidewalks: res
+			});
+		}).catch((err) => {
+			console.error(err);
+		});
+	}
+	
+	onSetDrawerOpened(open) {
+		this.setState({
+			sidewalkSelected: open
+		});
+	}
+	
 	/**
-	 * calls esriLoader which helps the react-app to communicate with the ArcGIS API for javascript
+	 * Calls esriLoader which helps the react-app to communicate with the ArcGIS API for javascript
 	 * @param {class} Map class that specifies the type of basemap for the map to laod as
 	 * @param {class} MapView specifies which div element to bind to, the initial map location and functions to pass in
 	 * @param {class} FeatureLayer allows the layering of the maps on the basemap
@@ -35,18 +56,16 @@ export default class SummaryMapStore extends Reflux.Store {
 		});
 
 		map.add(featureLayer);
-
-		/**
-		 * TODO: find a way to get the unique osm basemap id for sidewalks
-		 */
 		view.on("click",(data) => {
 			// featureLayer.popupTemplate = {
 			// 	content: "Unique ID: {osm_id}"
 			// }
+			// TODO: set sidewalk ID from data instead of using mock
 			this.setState({
 				longitude: data.mapPoint.longitude,
 				latitude: data.mapPoint.latitude,
-				mapClicked: true
+				sidewalkSelected: true,
+				selectedSidewalkDetails: this.state.sidewalks.find((sidewalk) => sidewalk.id === 2)
 			});
 		});
 
