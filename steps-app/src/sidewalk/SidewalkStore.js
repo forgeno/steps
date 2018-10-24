@@ -15,7 +15,8 @@ export default class SidewalkStore extends Reflux.Store {
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
-			uploadedImageError: false
+			uploadedImageError: false,
+			sidewalkDetails: null
 		};
         this.listenables = Actions;
     }
@@ -74,6 +75,18 @@ export default class SidewalkStore extends Reflux.Store {
 				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images)
 			});
 			updateStateCallback();
+		}).catch((err) => {
+			console.error(err);
+		});
+	}
+
+
+	// temporary sidewalk details to load for now (mock data)
+	onGetSidewalkDetails() {
+		RestUtil.sendGetRequest("sidewalk/2").then((data) => {
+			this.setState({
+				sidewalkDetails: data
+			})
 		}).catch((err) => {
 			console.error(err);
 		});

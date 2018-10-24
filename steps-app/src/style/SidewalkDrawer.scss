@@ -1,0 +1,49 @@
+.drawerImageSection {
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    width: 500px;
+    height: 250px;
+    text-align: center;
+}
+
+.streetNameSection {
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+    width: 500px;
+    height: 250px;
+    display: block;
+}
+
+.drawerButtonDisplay {
+    padding-left: 300px;
+}
+
+.confirmButtonPadding {
+    padding: 60px 0px 30px 20px;
+}
+// btn-info override
+.btn-info {
+    width: 150px !important;
+}
+
+.drawerTabIcon { // code inpisred from https://css-tricks.com/snippets/css/css-triangle/
+    width: 0; 
+    height: 0; 
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid;
+  }
+
+.drawerTab {
+    height: 100px;
+    width: 30px;
+    background-color: white;
+}
+
+.imageButtonDisplay {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+}

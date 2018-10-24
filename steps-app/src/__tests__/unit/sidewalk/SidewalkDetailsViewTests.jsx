@@ -89,6 +89,45 @@ describe("<SidewalkDetailsView />", function() {
 		});
 		expect(wrapper.find("Alert")).to.have.lengthOf(0);
 	});
+
+	it("Should open the drawer when a map is clicked and call the appropriate functions", () => {
+		const props={mapClicked: true}, 
+			wrapper = shallow(<SidewalkDetailsView {...props}/>),
+			renderDrawerDetailsSpy = sandbox.spy(wrapper.instance(), "renderDrawerDetails"),
+			renderImageDetailsSpy = sandbox.spy(wrapper.instance(), "renderImageDetails"),
+			renderAddressDetailsSpy = sandbox.spy(wrapper.instance(), "renderAddressDetails"),
+			renderUploadImageComponentSpy = sandbox.spy(wrapper.instance(), "renderUploadImageComponent"),
+			renderRatingsSpy = sandbox.spy(wrapper.instance(), "renderRatings"),
+			renderCommentsSpy = sandbox.spy(wrapper.instance(), "renderComments");
+
+		wrapper.setState({
+			sidewalkDetails: {test: "test"}
+		});
+
+		expect(renderDrawerDetailsSpy.called).to.be.true;
+		expect(renderImageDetailsSpy.called).to.be.true;
+		expect(renderAddressDetailsSpy.called).to.be.true;
+		expect(renderUploadImageComponentSpy.called).to.be.true;
+		expect(renderRatingsSpy.called).to.be.true;
+		expect(renderCommentsSpy.called).to.be.true;
+	});
+
+	it("should not render the drawer when a map is clicked but sidewalk details is null", () => {
+		const props={mapClicked: true}, 
+		wrapper = shallow(<SidewalkDetailsView {...props}/>),
+		renderDrawerDetailsSpy = sandbox.spy(wrapper.instance(), "renderDrawerDetails");
+
+		expect(renderDrawerDetailsSpy.called).to.be.false;
+	});
+
+	it("should close the drawer when the icon is clicked", () => {
+		const  
+		wrapper = shallow(<SidewalkDetailsView/>),
+		handleDrawerInteractionSpy = sandbox.spy(wrapper.instance().props, "handleDrawerInteraction");	
+		
+		wrapper.instance().handleClose();
+		expect(handleDrawerInteractionSpy.called).to.be.true;		
+	});
 	
 	afterEach(() => {
 		sandbox.restore();

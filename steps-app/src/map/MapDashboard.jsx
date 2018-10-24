@@ -1,7 +1,8 @@
 import React from "react";
 import { Component } from 'reflux';
 import SummaryMapView from "./SummaryMapView";
-import SidewalkDetails from "../sidewalk/SidewalkDetailsView";
+import SidewalkDetailsView from "../sidewalk/SidewalkDetailsView";
+import Store from "./SummaryMapStore";
 
 export default class MapDashboard extends Component {
 
@@ -11,13 +12,20 @@ export default class MapDashboard extends Component {
 		this.state = {
 			sidewalkOpened: true
 		};
+		this.store = Store;
+	}
+
+	handleDrawerInteraction = (opened) => {
+		this.setState({
+			mapClicked: opened
+		});
 	}
 
 	render() {
 		return (
 			<div>
-				<SummaryMapView />
-				{this.state.sidewalkOpened && <SidewalkDetails />}
+				<SummaryMapView/>
+				{this.state.sidewalkOpened && <SidewalkDetailsView  mapClicked={this.state.mapClicked} handleDrawerInteraction={this.handleDrawerInteraction}/>}
 			</div>
 		);
 	}

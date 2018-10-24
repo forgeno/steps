@@ -92,39 +92,40 @@ export default class ImageUploadModal extends React.Component {
 	
 	render() {
 		return (
-		  <Modal
-				show={this.props.visible}
-				onHide={this._cancel}
-			>
-			<Modal.Header>
-			  <Modal.Title>Upload Image</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-				{
-					this._shouldDisplaySizeWarning() && (
-						<Alert bsStyle="danger">
-							That image is too large. The selected image should be no more than {Math.floor(bytesToMB(MAX_UPLOAD_SIZE))} megabytes.
-						</Alert>
-					)
-				}
-				<ImageSelectorComponent onSelect={this._selectImageToUpload} fileName={this.state.selectedFileName} />
-				{
-					this.state.selectedImage && (
-						<div className="selectedImagePreview">
-							<img className="img-responsive" alt="selected" src={this.state.selectedImage} />
-						</div>
-					)
-				}
-				{
-					this.state.loadingSelectedImage && <LoaderComponent />
-				}
-			</Modal.Body>
+			<div/>
+		//   <Modal
+		// 		show={this.props.visible}
+		// 		onHide={this._cancel}
+		// 	>
+		// 	<Modal.Header>
+		// 	  <Modal.Title>Upload Image</Modal.Title>
+		// 	</Modal.Header>
+		// 	<Modal.Body>
+		// 		{
+		// 			this._shouldDisplaySizeWarning() && (
+		// 				<Alert bsStyle="danger">
+		// 					That image is too large. The selected image should be no more than {Math.floor(bytesToMB(MAX_UPLOAD_SIZE))} megabytes.
+		// 				</Alert>
+		// 			)
+		// 		}
+		// 		<ImageSelectorComponent onSelect={this._selectImageToUpload} fileName={this.state.selectedFileName} />
+		// 		{
+		// 			this.state.selectedImage && (
+		// 				<div className="selectedImagePreview">
+		// 					<img className="img-responsive" alt="selected" src={this.state.selectedImage} />
+		// 				</div>
+		// 			)
+		// 		}
+		// 		{
+		// 			this.state.loadingSelectedImage && <LoaderComponent />
+		// 		}
+		// 	</Modal.Body>
 
-			<Modal.Footer>
-			  <Button onClick={this._cancel}>Cancel</Button>
-			  <Button bsStyle="primary" onClick={this._confirmUpload} disabled={!this._canUpload()}>Upload</Button>
-			</Modal.Footer>
-		  </Modal>
+		// 	<Modal.Footer>
+		// 	  <Button onClick={this._cancel}>Cancel</Button>
+		// 	  <Button bsStyle="primary" onClick={this._confirmUpload} disabled={!this._canUpload()}>Upload</Button>
+		// 	</Modal.Footer>
+		//   </Modal>
 		);
 	}
 

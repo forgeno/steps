@@ -3,6 +3,7 @@ import {expect} from "chai";
 
 import SidewalkStore from "../../../sidewalk/SidewalkStore";
 import RestUtil from "../../../util/RestUtil";
+import { promises } from "fs";
 
 const SIDEWALK_ID = "testSidewalkId";
 
@@ -87,6 +88,27 @@ describe("Tests the SidewalkStore", function() {
 		});
 		expect(spy.calledOnce).to.be.true;
 	});
+
+	it("should get the appropriate data and set sidewalkDetails property of state", () => {
+		const sidewalkDetails = {
+			averageVelocity: 0,
+			totalImages: 0,
+			id: "2",
+			totalRatings: 13,
+			comments: [{id: 1, text: "test", date: "2018-10-13"}]
+		};
+		
+		const sendGetRequestStub = sandbox.stub(RestUtil, "sendGetRequest").resolves(sidewalkDetails),
+			setStateSpy = sandbox.spy(store, "setState");
+
+		store.onGetSidewalkDetails();
+
+		return Promise.resolve().then(() => {
+			expect(setStateSpy.called).to.be.true;
+			expect(sendGetRequestStub.called).to.be.true;
+			expect(store.state.sidewalkDetails).to.deep.equal(sidewalkDetails);
+		});
+	})
 	
 	afterEach(() => {
 		sandbox.restore();
