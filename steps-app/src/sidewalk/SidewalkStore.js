@@ -15,7 +15,9 @@ export default class SidewalkStore extends Reflux.Store {
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
-			uploadedImageError: false
+			uploadedImageError: false,
+			uploadingComment: false,
+			uploadCommentFailed: false
 		};
 		this.listenables = Actions;
 	}
@@ -84,11 +86,24 @@ export default class SidewalkStore extends Reflux.Store {
 	}
 
 	onUploadComment(comment) {
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/comment/create`).then((data) => {
+		this.setState({
+			uploadingComment: true
+		});
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/comment/create`, {
+			text: comment
+		}).then((res) => {
+			const currentSidewalkComments = this.state.currentSidewalk.comments.slice();
+			currentSidewalkComments.unshift(res);
 			this.setState({
-				value: ""
+				uploadingComment: false,
+				uploadCommentFailed: false,
+				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments})
 			});
 		}).catch((err) => {
+			this.setState({
+				uploadingComment: false,
+				uploadCommentFailed: true
+			});
 			console.error(err);
 		});
 	}

@@ -10,10 +10,10 @@ import UploadSidewalkImageComponent from "./UploadSidewalkImageComponent";
 import PreviewSidewalkImagesComponent from "./PreviewSidewalkImagesComponent";
 import SidewalkImagesView from "./SidewalkImagesView";
 import LoaderComponent from "../misc-components/LoaderComponent";
+import CommentsListComponent from "./CommentsListComponent";
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
-import { Button, FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -42,9 +42,7 @@ class SidewalkDetailsView extends Component {
 		super(props);
 		this.state = {
 			modalOpened: false,
-			viewingImages: false,
-			value: '',
-			sidewalkDetails: null,
+			viewingImages: false
 		};
 		this.store = Store;
 		this.selfRef = React.createRef();
@@ -217,70 +215,9 @@ class SidewalkDetailsView extends Component {
 		);
 	}
 
-	getCommentLength() {
-		const length = this.state.value.length;
-		if (length <= 300) return 'success';
-		else if (length > 300) return 'error';
-		return null;
-	}
-
-	handleChange = (e) => {
-		this.setState({ 
-			value: e.target.value 
-		});
-	}
-
-	handleSubmit = (e) => {
-		const commentString = this.state.value;
-		Actions.uploadComment(commentString);
-	}
-
 	renderComments() {
-		const comments = this.state.currentSidewalk.comments;
-
-		return (
-			<div>
-				<div className="commentUploadSection">
-					<div className="commentBox">
-						<form>
-							<FormGroup
-								bsSize="small"
-								controlId="formBasicText"
-								validationState={this.getCommentLength()}
-							>
-								<FormControl
-									type="text"
-									value={this.state.value}
-									placeholder="Enter text"
-									onChange={this.handleChange}
-								/>
-								<FormControl.Feedback />
-							</FormGroup>
-						</form>
-					</div>
-					<Button bsStyle="info" onClick={this.handleSubmit}>
-						Confirm
-				</Button>
-				</div>
-				<br />
-
-				<div className="commentDisplaySection">
-					<h3> User comments </h3>
-					<div >
-						{comments.map((item, index) =>
-							<div className="commentDisplayBox" key={index}>
-								<h5>{item.text}</h5>
-								<h6>{item.date}</h6>
-
-							</div>
-						)}
-					</div>
-				</div>
-			</div >
-
-		);
+		return <CommentsListComponent />;
 	}
-
 
 	renderPedestrianData() {
 		if (this.state.currentSidewalk.mobilityTypeDistribution.length === 0) {

@@ -118,53 +118,6 @@ describe("<SidewalkDetailsView />", function() {
 		expect(spy.calledOnce).to.be.true;		
 	});
 
-	it("should return success if the length of the comment is less than 301 characters", () =>{
-		const wrapper = shallow(<SidewalkDetailsView/>).dive();
-
-		wrapper.setState({
-			value: {length: 299}
-		});
-
-		const output = wrapper.instance().getCommentLength(); 
-		expect(output).to.equal("success");
-	});
-
-	it("should return error if the length of the comment is more than 300", () => {
-		const wrapper = shallow(<SidewalkDetailsView/>).dive();
-
-		wrapper.setState({
-			value: {
-				length: 301
-			}
-		});
-
-		const output = wrapper.instance().getCommentLength();
-		expect(output).to.equal("error");
-	});
-	
-	it("should set the state of the value to the proper string", () => {
-		const wrapper = shallow(<SidewalkDetailsView/>).dive();
-		const testObject = {
-			target: {value: "test string"}
-			};
-
-		wrapper.instance().handleChange(testObject);
-		expect(wrapper.state("value")).to.equal("test string");
-	});
-
-	it("should call the reflux action when the button is clicked for submitting comments", () => {
-		const uploadCommentSpy = sandbox.spy(SidewalkActions, "uploadComment"),
-			 wrapper = shallow(<SidewalkDetailsView/>).dive();
-
-		wrapper.setState({
-			value: "test string",
-		});
-
-		wrapper.instance().handleSubmit();
-
-		expect(uploadCommentSpy.called).to.be.true
-	});
-
 	afterEach(() => {
 		sandbox.restore();
 	});

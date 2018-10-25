@@ -16,7 +16,8 @@ describe("Tests the SidewalkStore", function() {
 	beforeEach(() => {
 		store.setState({
 			currentSidewalk: {
-				id: SIDEWALK_ID
+				id: SIDEWALK_ID,
+				comments: []
 			}
 		});
 		sandbox = sinon.createSandbox();
@@ -124,7 +125,7 @@ describe("Tests the SidewalkStore", function() {
 				callback({
 					value: ""
 				});
-				expect(setStateSpy.calledOnce).to.be.true;
+				expect(setStateSpy.calledTwice).to.be.true;
 				return {
 					catch: (errCallback) => {
 						errCallback("error msg");
@@ -138,9 +139,7 @@ describe("Tests the SidewalkStore", function() {
 		const comment = "test comment";
 		store.onUploadComment(comment);
 		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
-		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${store.state.currentSidewalk}/comment/create`);
-		expect(store.state.value).to.equal("");
-
+		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${store.state.currentSidewalk.id}/comment/create`);
 	});
 	
 	afterEach(() => {
