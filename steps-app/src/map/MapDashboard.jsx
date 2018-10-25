@@ -1,23 +1,34 @@
 import React from "react";
 import { Component } from 'reflux';
 import SummaryMapView from "./SummaryMapView";
-import SidewalkDetails from "../sidewalk/SidewalkDetailsView";
+import SidewalkDetailsView from "../sidewalk/SidewalkDetailsView";
+
+import MapStore from "./MapStore";
+import MapActions from "./MapActions";
 
 export default class MapDashboard extends Component {
 
 	constructor(props) {
 		super(props);
-		// TODO: change to using the store instead
-		this.state = {
-			sidewalkOpened: true
-		};
+		this.state = {};
+		this.store = MapStore;
 	}
 
+	componentDidMount() {
+		if (!this.state.sidewalks || this.state.sidewalks.length === 0) {
+			MapActions.loadAllSidewalks();
+		}
+	}
+	
+	_onClose = () => {
+		MapActions.setDrawerOpened(false);
+	};
+	
 	render() {
 		return (
 			<div>
 				<SummaryMapView />
-				{this.state.sidewalkOpened && <SidewalkDetails />}
+				<SidewalkDetailsView visible={this.state.sidewalkSelected} onClose={this._onClose} selectedSidewalkDetails={this.state.selectedSidewalkDetails} />
 			</div>
 		);
 	}

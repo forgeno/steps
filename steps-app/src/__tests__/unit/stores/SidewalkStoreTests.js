@@ -1,8 +1,10 @@
 import sinon from "sinon";
 import {expect} from "chai";
+import { promises } from "fs";
 
 import SidewalkStore from "../../../sidewalk/SidewalkStore";
 import RestUtil from "../../../util/RestUtil";
+import PromiseUtilities from "../../../../testUtil/PromiseUtilities";
 
 const SIDEWALK_ID = "testSidewalkId";
 
@@ -11,11 +13,13 @@ describe("Tests the SidewalkStore", function() {
 	const store = new SidewalkStore();
 	let sandbox = null;
 	
-	beforeAll(() => {
-		store.onLoadSidewalkDetails(SIDEWALK_ID);
-	});
-	
 	beforeEach(() => {
+		store.setState({
+			currentSidewalk: {
+				id: SIDEWALK_ID,
+				comments: []
+			}
+		});
 		sandbox = sinon.createSandbox();
 	});
 	
@@ -34,6 +38,7 @@ describe("Tests the SidewalkStore", function() {
 			}
 		});
 		const base64 = "aWElaopkopeawawKEOAea";
+		
 		store.onUploadSidewalkImage(base64);
 		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
 		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${SIDEWALK_ID}/image/create`);
@@ -86,6 +91,55 @@ describe("Tests the SidewalkStore", function() {
 			endIndex: 10
 		});
 		expect(spy.calledOnce).to.be.true;
+	});
+
+	it("should get the appropriate data and set sidewalkDetails property of state", () => {
+		const sidewalkDetails = {
+			averageVelocity: 0,
+			totalImages: 0,
+			id: "2",
+			totalRatings: 13,
+			comments: [{id: 1, text: "test", date: "2018-10-13"}]
+		}, summaryDetails = {
+			ratingOne: 1.5,
+			id: "2"
+		};
+		
+		const sendGetRequestStub = sandbox.stub(RestUtil, "sendGetRequest").resolves(sidewalkDetails),
+			setStateSpy = sandbox.spy(store, "setState");
+
+		store.onLoadSidewalkDetails(summaryDetails);
+		return Promise.resolve(true).then(() => {
+			expect(setStateSpy.called).to.be.true;
+			expect(sendGetRequestStub.called).to.be.true;
+			expect(store.state.currentSidewalk).to.deep.equal(Object.assign(sidewalkDetails, summaryDetails));
+		});
+	})
+
+	it("should test the onUploadComment function", () => {
+		const setStateSpy = sandbox.spy(store, "setState");
+		
+		sandbox.stub(console, "error");
+		sandbox.stub(RestUtil, "sendPostRequest").returns({
+			then: (callback) => {
+				callback({
+					value: ""
+				});
+				expect(setStateSpy.calledTwice).to.be.true;
+				return {
+					catch: (errCallback) => {
+						errCallback("error msg");
+						expect(console.error.calledOnce).to.be.true;
+						expect(console.error.getCall(0).args[0]).to.be.equal("error msg");
+					}
+				}
+			}	
+		});
+
+		const comment = "test comment";
+		store.onUploadComment(comment);
+		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
+		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${store.state.currentSidewalk.id}/comment/create`);
 	});
 	
 	afterEach(() => {

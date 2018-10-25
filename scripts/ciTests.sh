@@ -1,4 +1,4 @@
-# TODO: Run front-end and back-end tests for CI process
+# runs front-end and back-end tests for CI process
 cd steps-app
 set -e
 npm install

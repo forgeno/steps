@@ -8,29 +8,35 @@ import RestUtil from "../util/RestUtil";
  */
 export default class SidewalkStore extends Reflux.Store {
 
-    constructor() {
-        super();
-        this.state = {
+	constructor() {
+		super();
+		this.state = {
 			loadedUserImages: [],
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
-			uploadedImageError: false
+			uploadedImageError: false,
+			uploadingComment: false,
+			uploadCommentFailed: false
 		};
-        this.listenables = Actions;
-    }
+		this.listenables = Actions;
+	}
 
 	/**
 	 * Loads the specified sidewalk
-	 * @param {String} id - the id of the sidewalk
+	 * @param {Object} sidewalk - a basic sumamry of the sidewalk to load, including it's id and average ratings
 	 */
-	onLoadSidewalkDetails(id) {
-		// TODO: load actual sidewalk details
-		this.setState({
-			currentSidewalk: id
+	onLoadSidewalkDetails(sidewalk) {
+		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
+			const newSidewalk = Object.assign({}, sidewalk, data);
+			this.setState({
+				currentSidewalk: newSidewalk
+			});
+		}).catch((err) => {
+			console.error(err);
 		});
 	}
-	
+
 	/**
 	 * Handles the user selecting an image to upload to a sidewalk
 	 * @param {String} base64Image - the image as a base64 string
@@ -40,8 +46,8 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingSidewalkImage: true,
 			uploadedImageError: false
 		});
-		
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image/create`, {
+
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image/create`, {
 			image: base64Image
 		}).then(() => {
 			this.setState({
@@ -56,7 +62,7 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
-	
+
 	/**
 	 * Loads user uploaded images from the database
 	 * @param {number} startIndex - the amount of images to skip before starting to return them
@@ -64,7 +70,7 @@ export default class SidewalkStore extends Reflux.Store {
 	 * @param {function} updateStateCallback - a callback function that will be invoked when the images are loaded
 	 */
 	onLoadUploadedImages(startIndex, stopIndex, updateStateCallback) {
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image`, {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image`, {
 			startIndex: startIndex,
 			endIndex: stopIndex
 		}).then((res) => {
@@ -75,6 +81,29 @@ export default class SidewalkStore extends Reflux.Store {
 			});
 			updateStateCallback();
 		}).catch((err) => {
+			console.error(err);
+		});
+	}
+
+	onUploadComment(comment) {
+		this.setState({
+			uploadingComment: true
+		});
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/comment/create`, {
+			text: comment
+		}).then((res) => {
+			const currentSidewalkComments = this.state.currentSidewalk.comments.slice();
+			currentSidewalkComments.unshift(res);
+			this.setState({
+				uploadingComment: false,
+				uploadCommentFailed: false,
+				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments})
+			});
+		}).catch((err) => {
+			this.setState({
+				uploadingComment: false,
+				uploadCommentFailed: true
+			});
 			console.error(err);
 		});
 	}
