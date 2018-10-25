@@ -3,7 +3,8 @@ import Reflux from "reflux";
 const Actions = Reflux.createActions([
 	"uploadSidewalkImage",
 	"loadUploadedImages",
-	"loadSidewalkDetails"
+	"loadSidewalkDetails",
+	"uploadComment"
 ]);
 
 export default Actions;

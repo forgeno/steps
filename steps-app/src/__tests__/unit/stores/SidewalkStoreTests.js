@@ -114,6 +114,34 @@ describe("Tests the SidewalkStore", function() {
 			expect(store.state.currentSidewalk).to.deep.equal(Object.assign(sidewalkDetails, summaryDetails));
 		});
 	})
+
+	it("should test the onUploadComment function", () => {
+		const setStateSpy = sandbox.spy(store, "setState");
+		
+		sandbox.stub(console, "error");
+		sandbox.stub(RestUtil, "sendPostRequest").returns({
+			then: (callback) => {
+				callback({
+					value: ""
+				});
+				expect(setStateSpy.calledOnce).to.be.true;
+				return {
+					catch: (errCallback) => {
+						errCallback("error msg");
+						expect(console.error.calledOnce).to.be.true;
+						expect(console.error.getCall(0).args[0]).to.be.equal("error msg");
+					}
+				}
+			}	
+		});
+
+		const comment = "test comment";
+		store.onUploadComment(comment);
+		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
+		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${store.state.currentSidewalk}/comment/create`);
+		expect(store.state.value).to.equal("");
+
+	});
 	
 	afterEach(() => {
 		sandbox.restore();

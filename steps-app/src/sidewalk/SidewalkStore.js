@@ -8,17 +8,17 @@ import RestUtil from "../util/RestUtil";
  */
 export default class SidewalkStore extends Reflux.Store {
 
-    constructor() {
-        super();
-        this.state = {
+	constructor() {
+		super();
+		this.state = {
 			loadedUserImages: [],
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
 			uploadedImageError: false
 		};
-        this.listenables = Actions;
-    }
+		this.listenables = Actions;
+	}
 
 	/**
 	 * Loads the specified sidewalk
@@ -34,7 +34,7 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
-	
+
 	/**
 	 * Handles the user selecting an image to upload to a sidewalk
 	 * @param {String} base64Image - the image as a base64 string
@@ -44,7 +44,7 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingSidewalkImage: true,
 			uploadedImageError: false
 		});
-		
+
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image/create`, {
 			image: base64Image
 		}).then(() => {
@@ -60,7 +60,7 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
-	
+
 	/**
 	 * Loads user uploaded images from the database
 	 * @param {number} startIndex - the amount of images to skip before starting to return them
@@ -83,4 +83,13 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	onUploadComment(comment) {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/comment/create`).then((data) => {
+			this.setState({
+				value: ""
+			});
+		}).catch((err) => {
+			console.error(err);
+		});
+	}
 }

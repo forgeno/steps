@@ -13,24 +13,24 @@ import LoaderComponent from "../misc-components/LoaderComponent";
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
-import {Button} from "react-bootstrap";
+import { Button, FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { withStyles } from '@material-ui/core/styles';
-import {FONT_FAMILY} from "../constants/ThemeConstants";
+import { FONT_FAMILY } from "../constants/ThemeConstants";
 
 const styles = theme => ({
-  root: {
-    width: '100%',
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(30),
-    fontWeight: theme.typography.fontWeightRegular,
-	fontFamily: FONT_FAMILY
-  },
+	root: {
+		width: '100%',
+	},
+	heading: {
+		fontSize: theme.typography.pxToRem(30),
+		fontWeight: theme.typography.fontWeightRegular,
+		fontFamily: FONT_FAMILY
+	},
 });
 
 /**
@@ -42,7 +42,9 @@ class SidewalkDetailsView extends Component {
 		super(props);
 		this.state = {
 			modalOpened: false,
-			viewingImages: false
+			viewingImages: false,
+			value: '',
+			sidewalkDetails: null,
 		};
 		this.store = Store;
 		this.selfRef = React.createRef();
@@ -53,7 +55,7 @@ class SidewalkDetailsView extends Component {
 			Actions.loadSidewalkDetails(this.props.selectedSidewalkDetails);
 		}
 	}
-	
+
 	/**
 	 * Opens the modal allowing the user to upload images
 	 */
@@ -75,7 +77,7 @@ class SidewalkDetailsView extends Component {
 			Actions.uploadSidewalkImage(uploadedFile);
 		}
 	};
-	
+
 	/**
 	 * Opens up the uploaded images view
 	 */
@@ -84,7 +86,7 @@ class SidewalkDetailsView extends Component {
 			viewingImages: true
 		});
 	};
-	
+
 	/**
 	 * Closes the uploaded images view
 	 */
@@ -110,7 +112,7 @@ class SidewalkDetailsView extends Component {
 			this._handleClose();
 		}
 	};
-	
+
 	renderExpansionPanel(header, component, expanded = false) {
 		const { classes } = this.props;
 		return (
@@ -139,7 +141,7 @@ class SidewalkDetailsView extends Component {
 		} else {
 			imageSection = <h4>There are no uploaded images for this sidewalk.</h4>;
 		}
-		
+
 		return (
 			<div>
 				<h3 className="streetNameSection">
@@ -149,7 +151,7 @@ class SidewalkDetailsView extends Component {
 				{imageSection}
 				<hr />
 				<h5>
-					The average pedestrian velocity on this sidewalk is {this.state.currentSidewalk.averageVelocity} metres per second. 
+					The average pedestrian velocity on this sidewalk is {this.state.currentSidewalk.averageVelocity} metres per second.
 				</h5>
 			</div>
 		);
@@ -161,42 +163,42 @@ class SidewalkDetailsView extends Component {
 	renderUploadImageComponent() {
 		return (
 			<div className="imageButtonDisplay">
-				<UploadSidewalkImageComponent onClick={() => this.fileInput.click()}/>
-					<div>
-						<input
-							type="file"
-							accept="image/*"
-							onChange={this.props.onSelect}
-							className="uploadImageInput"
-							ref={(fileInput) => {this.fileInput = fileInput;}}
-						/>
-					</div>
-					{
-						this.state.uploadedImageError && (
-							<Alert bsStyle="danger">
-								An error occurred while uploading the image.
-							</Alert>
-						)
-					}
-					{
-						this.state.uploadingSidewalkImage && (
-							<div>
-								<span>Uploading</span>
-								<LoaderComponent />
-							</div>
-						)
-					}
-					<PreviewSidewalkImagesComponent previewImage="" onClick={this._viewImages} />
-					<ImageUploadModal visible={this.state.modalOpened} onClose={this._closeImageModal} />
-					<SidewalkImagesView onClose={this._closeImages} visible={this.state.viewingImages} />
+				<UploadSidewalkImageComponent onClick={() => this.fileInput.click()} />
+				<div>
+					<input
+						type="file"
+						accept="image/*"
+						onChange={this.props.onSelect}
+						className="uploadImageInput"
+						ref={(fileInput) => { this.fileInput = fileInput; }}
+					/>
 				</div>
+				{
+					this.state.uploadedImageError && (
+						<Alert bsStyle="danger">
+							An error occurred while uploading the image.
+							</Alert>
+					)
+				}
+				{
+					this.state.uploadingSidewalkImage && (
+						<div>
+							<span>Uploading</span>
+							<LoaderComponent />
+						</div>
+					)
+				}
+				<PreviewSidewalkImagesComponent previewImage="" onClick={this._viewImages} />
+				<ImageUploadModal visible={this.state.modalOpened} onClose={this._closeImageModal} />
+				<SidewalkImagesView onClose={this._closeImages} visible={this.state.viewingImages} />
+			</div>
 		);
 	}
-	
+
 	_formatRating(value) {
 		return value && value.toFixed(2);
 	}
-	
+
 	/**
 	 * handles rendering the ratings on the drawer
 	 */
@@ -215,16 +217,70 @@ class SidewalkDetailsView extends Component {
 		);
 	}
 
-	/**
-	 * handles showing the comments on the drawer
-	 */
+	getCommentLength() {
+		const length = this.state.value.length;
+		if (length <= 300) return 'success';
+		else if (length > 300) return 'error';
+		return null;
+	}
+
+	handleChange = (e) => {
+		this.setState({ 
+			value: e.target.value 
+		});
+	}
+
+	handleSubmit = (e) => {
+		const commentString = this.state.value;
+		Actions.uploadComment(commentString);
+	}
+
 	renderComments() {
+		const comments = this.state.currentSidewalk.comments;
+
 		return (
 			<div>
-				<h1>Comment Section</h1>
-			</div>
+				<div className="commentUploadSection">
+					<div className="commentBox">
+						<form>
+							<FormGroup
+								bsSize="small"
+								controlId="formBasicText"
+								validationState={this.getCommentLength()}
+							>
+								<FormControl
+									type="text"
+									value={this.state.value}
+									placeholder="Enter text"
+									onChange={this.handleChange}
+								/>
+								<FormControl.Feedback />
+							</FormGroup>
+						</form>
+					</div>
+					<Button bsStyle="info" onClick={this.handleSubmit}>
+						Confirm
+				</Button>
+				</div>
+				<br />
+
+				<div className="commentDisplaySection">
+					<h3> User comments </h3>
+					<div >
+						{comments.map((item, index) =>
+							<div className="commentDisplayBox" key={index}>
+								<h5>{item.text}</h5>
+								<h6>{item.date}</h6>
+
+							</div>
+						)}
+					</div>
+				</div>
+			</div >
+
 		);
 	}
+
 
 	renderPedestrianData() {
 		if (this.state.currentSidewalk.mobilityTypeDistribution.length === 0) {
@@ -242,7 +298,7 @@ class SidewalkDetailsView extends Component {
 			</div>
 		)
 	}
-	
+
 	/**
 	 * handles rendering the components on the drawer
 	 */
@@ -250,13 +306,14 @@ class SidewalkDetailsView extends Component {
 		if (!this.state.currentSidewalk) {
 			return null;
 		}
-		
+
 		return (
 			<div>
 				{this.renderExpansionPanel("Summary", this.renderSummaryDetails(), true)}
 				{this.renderExpansionPanel("Images", this.renderUploadImageComponent())}
 				{this.renderExpansionPanel("Ratings", this.renderRatings())}
 				{this.renderExpansionPanel("Comments", this.renderComments())}
+
 				{this.renderExpansionPanel("Pedestrian Data", this.renderPedestrianData())}
 			</div>
 		)
@@ -266,7 +323,7 @@ class SidewalkDetailsView extends Component {
 		return (
 			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv">
 				<Drawer open={this.props.visible} anchor="right" variant="temporary">
-					<CloseIcon onClick={this._handleClose} className="closeImageListButton"/>
+					<CloseIcon onClick={this._handleClose} className="closeImageListButton" />
 					{this.renderDrawerDetails()}
 				</Drawer>
 			</div>
