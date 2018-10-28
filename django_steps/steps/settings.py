@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'frontend',
     'rest_framework',
     'api.apps.ApiConfig',
-    'corsheaders'
+    'corsheaders',
+	'cloudinary'
 ]
 
 MIDDLEWARE = [

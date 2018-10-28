@@ -10,27 +10,39 @@ export default class SidewalkStore extends Reflux.Store {
 
 	constructor() {
 		super();
-		this.state = {
+		this.state = this._getDefaultSidewalkState();
+		this.listenables = Actions;
+	}
+
+	/**
+	 * Gets the default state of the store before a sidewalk is selected
+	 * @return {Object} - the default state of the store before a sidewalk is selected
+	 */
+	_getDefaultSidewalkState() {
+		return {
 			loadedUserImages: [],
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
 			uploadedImageError: false,
 			uploadingComment: false,
-			uploadCommentFailed: false
+			uploadCommentFailed: false,
+			uploadImageSucceeded: false
 		};
-		this.listenables = Actions;
 	}
-
+	
 	/**
 	 * Loads the specified sidewalk
 	 * @param {Object} sidewalk - a basic sumamry of the sidewalk to load, including it's id and average ratings
 	 */
 	onLoadSidewalkDetails(sidewalk) {
+		this.setState(this._getDefaultSidewalkState());
 		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
 			const newSidewalk = Object.assign({}, sidewalk, data);
 			this.setState({
-				currentSidewalk: newSidewalk
+				currentSidewalk: newSidewalk,
+				hasNextImagesPage: newSidewalk.lastImage,
+				loadedUserImages: [newSidewalk.lastImage]
 			});
 		}).catch((err) => {
 			console.error(err);
@@ -44,7 +56,8 @@ export default class SidewalkStore extends Reflux.Store {
 	onUploadSidewalkImage(base64Image) {
 		this.setState({
 			uploadingSidewalkImage: true,
-			uploadedImageError: false
+			uploadedImageError: false,
+			uploadImageSucceeded: false
 		});
 
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image/create`, {
@@ -52,7 +65,7 @@ export default class SidewalkStore extends Reflux.Store {
 		}).then(() => {
 			this.setState({
 				uploadingSidewalkImage: false,
-				uploadedImageError: false
+				uploadImageSucceeded: true
 			});
 		}).catch((err) => {
 			this.setState({
@@ -74,7 +87,6 @@ export default class SidewalkStore extends Reflux.Store {
 			startIndex: startIndex,
 			endIndex: stopIndex
 		}).then((res) => {
-			// TODO: potentially fetch data for each new loaded image and assign to data attribute
 			this.setState({
 				hasNextImagesPage: res.hasMoreImages,
 				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images)
@@ -105,6 +117,24 @@ export default class SidewalkStore extends Reflux.Store {
 				uploadCommentFailed: true
 			});
 			console.error(err);
+		});
+	}
+	
+	/**
+	 * Dismisses the message notifying the user that an error happened when uploading an image
+	 */
+	onDismissImageErrorMessage() {
+		this.setState({
+			uploadedImageError: false
+		});
+	}
+	
+	/**
+	 * Dismisses the message notifying the user that their image was successfully uploaded
+	 */
+	onDismissImageSuccessMessage() {
+		this.setState({
+			uploadImageSucceeded: false
 		});
 	}
 }

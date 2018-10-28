@@ -23,16 +23,13 @@ describe("Tests the SidewalkStore", function() {
 		sandbox = sinon.createSandbox();
 	});
 	
-	it("Tests the onUploadSidewalkImage method", () => {
+	it("Tests the onUploadSidewalkImage method with an invalid image", () => {
 		sandbox.stub(console, "error");
 		sandbox.stub(RestUtil, "sendPostRequest").returns({
 			then: (callback) => {
-				callback();
 				return {
 					catch: (errCallback) => {
 						errCallback("err msg");
-						expect(console.error.calledOnce).to.be.true;
-						expect(console.error.getCall(0).args[0]).to.be.equal("err msg");
 					}
 				}
 			}
@@ -45,6 +42,31 @@ describe("Tests the SidewalkStore", function() {
 		expect(RestUtil.sendPostRequest.getCall(0).args[1]).to.deep.equal({
 			image: base64
 		});
+		expect(store.state.uploadedImageError).to.be.true;
+		expect(console.error.calledOnce).to.be.true;
+		expect(console.error.getCall(0).args[0]).to.be.equal("err msg");
+	});
+	
+	it("Tests the onUploadSidewalkImage method with a valid image", () => {
+		sandbox.stub(console, "error");
+		sandbox.stub(RestUtil, "sendPostRequest").returns({
+			then: (callback) => {
+				callback();
+				return {
+					catch: () => {
+					}
+				}
+			}
+		});
+		const base64 = "aWElaopkopeawawKEOAea";
+		store.onUploadSidewalkImage(base64);
+		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
+		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${SIDEWALK_ID}/image/create`);
+		expect(RestUtil.sendPostRequest.getCall(0).args[1]).to.deep.equal({
+			image: base64
+		});
+		expect(store.state.uploadImageSucceeded).to.be.true;
+		expect(console.error.notCalled).to.be.true;
 	});
 	
 	it("Tests the onLoadUploadedImages method", () => {

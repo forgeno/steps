@@ -14,7 +14,7 @@ export default class ImageDisplayList extends React.PureComponent {
 	}
 	
 	render() {
-		const loadedCount = this.props.hasNextPage ? this.props.loadedItemCount + 1 : this.props.loadedItemCount;
+		const loadedCount = (this.props.hasNextPage && !this.props.isNextPageLoading) ? this.props.loadedItemCount + 1 : this.props.loadedItemCount;
 		return (
 			<InfiniteLoader
 			  isRowLoaded={this.props.isRowLoaded}
@@ -29,6 +29,7 @@ export default class ImageDisplayList extends React.PureComponent {
 					  rowHeight={160}
 					  rowRenderer={this.props.rowRenderer}
 					  width={250}
+					  style={{outline: "none"}}
 					/>
 			  )}
 			</InfiniteLoader>

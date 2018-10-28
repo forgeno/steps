@@ -6,6 +6,9 @@ from django.urls import include, path, reverse
 from api.models import Sidewalk, SidewalkRating, SidewalkComment, SidewalkImage
 from django.utils.dateparse import parse_datetime
 
+from unittest.mock import patch
+import cloudinary
+
 class SidewalkTests(APITestCase):
 
 	def _setupRatings(self):
@@ -122,7 +125,7 @@ class SidewalkTests(APITestCase):
 		self.assertEqual(response.data["comments"][1]["text"], self.c1["text"])
 		self.assertEqual(parse_datetime(response.data["comments"][1]["date"]), self.c1["posted_time"])
 		
-		self.assertEqual(response.data["lastImage"], self.i1["image_url"])
+		self.assertEqual(response.data["lastImage"]["url"], self.i1["image_url"])
 		self.assertEqual(response.data["totalImages"], 1)
 		
 		# TODO
@@ -150,7 +153,7 @@ class SidewalkTests(APITestCase):
 		# make sure the loop was actually iterated through
 		self.assertTrue(currentIndex < 99)
 		
-		self.assertEqual(response.data["lastImage"], self.i2["image_url"])
+		self.assertEqual(response.data["lastImage"]["url"], self.i2["image_url"])
 		self.assertEqual(response.data["totalImages"], 11)
 		
 		# TODO
@@ -244,7 +247,13 @@ class SidewalkTests(APITestCase):
 		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/image/create/", {'image': 25}, format='json')
 		self.assertEqual(response.status_code, 400)
 	
-	def test_post_image(self):
+	def test_post_image_cloudinary_error(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/image/create/", {'image': "aBcDefGhiKl029391212"}, format='json')
+		self.assertEqual(response.status_code, 500)
+
+	@patch("cloudinary.uploader.upload")
+	def test_post_image(self, uploadMock):
+		uploadMock.return_value = {'url': 'abcdefghijkl', 'public_id': 'xaIOJokko'}
 		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/image/create/", {'image': "aBcDefGhiKl029391212"}, format='json')
 		self.assertEqual(response.status_code, 200)
 

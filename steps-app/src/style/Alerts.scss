@@ -1,0 +1,26 @@
+@mixin alertContent($colour) {
+	background-color: $colour !important;
+	margin: 10px 10px 10px 10px;
+}
+
+.alertIcon {
+	font-size: 20;
+}
+
+.errorAlert {
+	@include alertContent($errorColour);
+}
+
+.successAlert {
+	@include alertContent($successColour);
+}
+
+.alertMessage {
+	margin-left: 5px;
+}
+
+.alertBody {
+	display: flex;
+    align-items: center;
+	font-size: 14px;
+}

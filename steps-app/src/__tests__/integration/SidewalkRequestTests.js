@@ -10,6 +10,10 @@ import MapStore from "../../map/MapStore";
 import SidewalkStore from "../../sidewalk/SidewalkStore";
 import SidewalkActions from "../../sidewalk/SidewalkActions";
 
+import FileUtilities from "../../../testUtil/FileUtilities";
+
+const TEST_IMAGE_PATH = `${__dirname}/../testData/smallTestImage.png`;
+
 describe("Tests fetching and posting sidewalk data from the database", function() {
 	
 	let sandbox = null;
@@ -53,8 +57,20 @@ describe("Tests fetching and posting sidewalk data from the database", function(
 		expect(typeof sidewalk.totalRatings).to.be.equal("number");
 		expect(typeof sidewalk.totalComments).to.be.equal("number");
 		expect(typeof sidewalk.totalImages).to.be.equal("number");
-		expect(sidewalk.lastImage === null || typeof sidewalk.lastImage === "string").to.be.true;
+		expect(sidewalk.lastImage === null || typeof sidewalk.lastImage === "object").to.be.true;
 		expect(Array.isArray(sidewalk.comments)).to.be.true;
+	});
+	
+	it("Tests failing to upload an image to the database", async () => {
+		sandbox.stub(console, "error");
+		const sidewalkStore = new SidewalkStore();
+		sidewalkStore.onLoadSidewalkDetails({
+			id: 2
+		});
+		await PromiseUtilities.waitUntil(() => sidewalkStore.state.currentSidewalk);
+		SidewalkActions.uploadSidewalkImage(TEST_IMAGE_PATH);
+		await PromiseUtilities.waitUntil(() => sidewalkStore.state.uploadedImageError);
+		expect(sidewalkStore.state.uploadedImageError).to.be.true;
 	});
 	
 	// TODO

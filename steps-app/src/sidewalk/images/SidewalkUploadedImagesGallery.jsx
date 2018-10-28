@@ -1,14 +1,14 @@
 import React from "react";
 import Reflux from "reflux";
 
-import InfiniteImageGallery from "../images/InfiniteImageGallery";
-import SidewalkStore from "./SidewalkStore";
-import SidewalkActions from "./SidewalkActions";
+import InfiniteImageGallery from "../../images/InfiniteImageGallery";
+import SidewalkStore from "../SidewalkStore";
+import SidewalkActions from "../SidewalkActions";
 
 /**
  * This component handles the view where the user can see all of the images posted to a sidewalk
  */
-export default class SidewalkImagesView extends Reflux.Component {
+export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 	
 	constructor(props) {
 		super(props);
@@ -28,13 +28,18 @@ export default class SidewalkImagesView extends Reflux.Component {
 			isNextPageLoading: true
 		});
 		SidewalkActions.loadUploadedImages(startIndex, stopIndex, () => {
-			this.setState({
-				isNextPageLoading: false
-			});
+			setTimeout(() => {
+				this.setState({
+					isNextPageLoading: false
+				});
+			}, 50);
 		});
 	};
 	
 	render() {
+		if (!this.state.currentSidewalk) {
+			return null;
+		}
 		return <InfiniteImageGallery loadedImages={this.state.loadedUserImages}
 					hasNextPage={this.state.hasNextImagesPage}
 					loadMoreData={this._loadMoreImages}

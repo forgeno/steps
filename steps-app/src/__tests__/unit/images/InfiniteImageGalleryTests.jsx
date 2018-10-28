@@ -103,7 +103,7 @@ describe("<InfiniteImageGallery />", function() {
 	});
 	
 	it("Tests _loadMoreRows to make sure loadMoreData is called with the right indices", () => {
-		wrapper.instance()._loadMoreRows({startIndex: 5, stopIndex: 10});
+		wrapper.instance()._loadMoreRows({startIndex: 5, stopIndex: 6});
 		expect(wrapper.instance().props.loadMoreData.calledOnce).to.be.true;
 		expect(wrapper.instance().props.loadMoreData.getCall(0).args).to.deep.equal([5, 10]);
 	});
@@ -115,7 +115,7 @@ describe("<InfiniteImageGallery />", function() {
 		});
 		wrapper.instance().render();
 		const res = wrapper.instance()._rowRenderer({index: 1, key: 1, style: {}});
-		expect(res.props.children.props.children.props.src).to.be.equal("testUrl");
+		expect(res.props.children.props.children.props.children.props.src).to.be.equal("testUrl");
 	});
 	
 	it("Tests _rowRenderer with an unloaded item", () => {

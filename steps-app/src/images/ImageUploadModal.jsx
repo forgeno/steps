@@ -1,16 +1,32 @@
 import React from "react";
 import {Modal, Button, Alert} from "react-bootstrap";
 
+import MaterialModal from '@material-ui/core/Modal';
+import { withStyles } from '@material-ui/core/styles';
+
 import {getFile, bytesToMB} from "../util/FileUtilities";
 import ImageSelectorComponent from "./ImageSelectorComponent";
 import LoaderComponent from "../misc-components/LoaderComponent";
 import {MAX_UPLOAD_SIZE} from "../constants/DatabaseConstants";
 
+const styles = theme => ({
+  paper: {
+    width: "50%",
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4,
+	margin: "auto",
+	position: "relative",
+	top: "50%",
+	transform: "translateY(-50%)"
+  },
+});
+
 /**
  * This component renders a modal that allows the user to select an image from their local files,
  * and then upload that image to the database. The user's selected image will be previewed in this modal.
  */
-export default class ImageUploadModal extends React.Component {
+class ImageUploadModal extends React.Component {
 
 	constructor(props) {
 		super(props);
@@ -81,7 +97,7 @@ export default class ImageUploadModal extends React.Component {
 	 * Handles the user selecting the upload button
 	 */
 	_confirmUpload = () => {
-		this.props.onClose(this.state.selectedImage.split(";base64,")[1]);
+		this.props.onClose(this.state.selectedImage);
 		this.setState({
 			selectedImage: null,
 			selectedImageSize: null,
@@ -91,41 +107,45 @@ export default class ImageUploadModal extends React.Component {
 	};
 	
 	render() {
+		const { classes } = this.props;
 		return (
-		   <Modal
-		 		show={this.props.visible}
-		 		onHide={this._cancel}
-		 	>
-		 	<Modal.Header>
-		 	  <Modal.Title>Upload Image</Modal.Title>
-		 	</Modal.Header>
-		 	<Modal.Body>
-		 		{
-		 			this._shouldDisplaySizeWarning() && (
-		 				<Alert bsStyle="danger">
-		 					That image is too large. The selected image should be no more than {Math.floor(bytesToMB(MAX_UPLOAD_SIZE))} megabytes.
-		 				</Alert>
-		 			)
-		 		}
-		 		<ImageSelectorComponent onSelect={this._selectImageToUpload} fileName={this.state.selectedFileName} />
-		 		{
-		 			this.state.selectedImage && (
-		 				<div className="selectedImagePreview">
-		 					<img className="img-responsive" alt="selected" src={this.state.selectedImage} />
-		 				</div>
-		 			)
-		 		}
-		 		{
-		 			this.state.loadingSelectedImage && <LoaderComponent />
-		 		}
-		 	</Modal.Body>
-
-		 	<Modal.Footer>
-		 	  <Button onClick={this._cancel}>Cancel</Button>
-		 	  <Button bsStyle="primary" onClick={this._confirmUpload} disabled={!this._canUpload()}>Upload</Button>
-		 	</Modal.Footer>
-		   </Modal>
-		);
+			<MaterialModal
+			  open={this.props.visible}
+			  onClose={this._cancel}
+			>
+				<div className={classes.paper}>
+					<Modal.Header>
+						<Modal.Title>Upload Image</Modal.Title>
+					</Modal.Header>
+					<div className="marginUpDown15">
+						{
+							this._shouldDisplaySizeWarning() && (
+								<Alert bsStyle="danger">
+									That image is too large. The selected image should be no more than {Math.floor(bytesToMB(MAX_UPLOAD_SIZE))} megabytes.
+								</Alert>
+							)
+						}
+						<ImageSelectorComponent onSelect={this._selectImageToUpload} fileName={this.state.selectedFileName} />
+						{
+							this.state.selectedImage && (
+								<div className="selectedImagePreview">
+									<img className="img-responsive" alt="selected" src={this.state.selectedImage} />
+								</div>
+							)
+						}
+						{
+							this.state.loadingSelectedImage && <LoaderComponent />
+						}
+					</div>
+					<Modal.Footer>
+						<Button onClick={this._cancel}>Cancel</Button>
+						<Button bsStyle="primary" onClick={this._confirmUpload} disabled={!this._canUpload()}>Upload</Button>
+					</Modal.Footer>
+				</div>
+			</MaterialModal>
+		)
 	}
 
 }
+
+export default withStyles(styles)(ImageUploadModal)

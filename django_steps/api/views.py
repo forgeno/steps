@@ -5,6 +5,10 @@ from rest_framework.decorators import action
 from .models import Sidewalk, SidewalkRating, Pedestrian, SidewalkComment, SidewalkImage, AdminAccount
 from .serializers import SidewalkSerializer, SidewalkListSerializer, PedestrianSerializer, SidewalkImageSerializer, AdminAccountSerializer, SidewalkCommentSerializer
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 import numbers
 
 class SidewalkView(viewsets.ReadOnlyModelViewSet):
@@ -146,9 +150,12 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 		if not Sidewalk.objects.filter(pk=pk).exists():
 			return Response(status=400)
 		
-		# TODO: upload to Cloudinary or s3 and store url in database
-		SidewalkImage.objects.create(sidewalk_id=pk, image_url="")
-		return Response(status=200)
+		try:
+			result = cloudinary.uploader.upload(image)
+			SidewalkImage.objects.create(sidewalk_id=pk, image_url=result["url"], uploaded_id=result["public_id"])
+			return Response(status=200)
+		except:
+			return Response(status=500)
 
 	## Handles an incoming request to post a rating to a sidewalk
 	## @param {Request} - the incoming HTTP POST request to respond to
@@ -226,7 +233,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 		
 		imageData = self._getImagesNoRequest(pk, 0, 0, True).data
 		if len(imageData['images']) > 0:
-			lastImage = imageData['images'][len(imageData['images']) - 1]["url"]
+			lastImage = imageData['images'][len(imageData['images']) - 1]
 		else:
 			lastImage = None
 		totalImages = imageData['imageCount']

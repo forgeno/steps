@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import sinon from "sinon";
 
-import UploadSidewalkImageComponent from "../../../sidewalk/UploadSidewalkImageComponent";
+import UploadSidewalkImageComponent from "../../../sidewalk/images/UploadSidewalkImageComponent";
 
 describe("<UploadSidewalkImageComponent />", function() {
 	

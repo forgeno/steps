@@ -4,7 +4,9 @@ const Actions = Reflux.createActions([
 	"uploadSidewalkImage",
 	"loadUploadedImages",
 	"loadSidewalkDetails",
-	"uploadComment"
+	"uploadComment",
+	"dismissImageErrorMessage",
+	"dismissImageSuccessMessage"
 ]);
 
 export default Actions;

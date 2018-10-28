@@ -51,7 +51,7 @@ export default class CommentsListComponent extends Reflux.Component {
 					<div className="commentBox">
 						<form>
 							<FormGroup
-								bsSize="medium"
+								bsSize="small"
 								controlId="formBasicText"
 								validationState={this._validateCommentState()}
 							>
