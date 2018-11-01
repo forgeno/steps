@@ -56,7 +56,7 @@ export default class CommentsListComponent extends Reflux.Component {
 								validationState={this._validateCommentState()}
 							>
 								<FormControl
-									type="text"
+									type="textarea"
 									value={this.state.enteredComment}
 									placeholder="Enter a comment"
 									onChange={this._handleChange}
@@ -65,11 +65,9 @@ export default class CommentsListComponent extends Reflux.Component {
 							</FormGroup>
 						</form>
 					</div>
-					<div className="submitCommentButton">
-						<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this._validateCommentState() === "error"} >
-							Submit
-						</Button>
-					</div>
+					<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this._validateCommentState() === "error"} >
+						Submit
+					</Button>
 				</div>
 				<br />
 

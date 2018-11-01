@@ -57,7 +57,7 @@ export default class SidewalkImageDetailsComponent extends Reflux.Component {
 		}
 		return (
 			<div>
-				<PreviewSidewalkImagesComponent imageCount={this.state.currentSidewalk.totalImages} previewImage={this.state.currentSidewalk.lastImage.url} onClick={this._viewImages} />
+				<PreviewSidewalkImagesComponent imageCount={this.state.currentSidewalk.totalImages} previewImage={this.state.currentSidewalk.lastImage} onClick={this._viewImages} />
 				<UploadSidewalkImageComponent onClick={this._openImageModal} />
 				{
 					this.state.uploadingSidewalkImage && (
