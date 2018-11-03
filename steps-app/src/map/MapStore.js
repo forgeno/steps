@@ -1,7 +1,7 @@
 import Reflux from "reflux";
 
 import Actions from "./MapActions";
-import {layerURL} from "../constants/ArcGISConstants";
+import {layerURL, downtownLongitude, downtownLatitude} from "../constants/ArcGISConstants";
 import RestUtil from "../util/RestUtil";
 
 export default class MapStore extends Reflux.Store {
@@ -10,7 +10,9 @@ export default class MapStore extends Reflux.Store {
         super();
         this.state = {
 			sidewalks: [],
-			sidewalkSelected: false
+			sidewalkSelected: false,
+			longitude: downtownLongitude,
+			latitude: downtownLatitude
 		};
 		this.listenables = Actions;
 	}
@@ -47,7 +49,7 @@ export default class MapStore extends Reflux.Store {
 			map: map,
 			container: "mapContainer",
 			basemap: 'osm',
-			center: [-113.4990, 53.5405],
+			center: [this.state.longitude, this.state.latitude],
 			zoom: 15
 		});
 		
@@ -61,11 +63,13 @@ export default class MapStore extends Reflux.Store {
 			// 	content: "Unique ID: {osm_id}"
 			// }
 			// TODO: set sidewalk ID from data instead of using mock
+			view.center = [data.mapPoint.longitude, data.mapPoint.latitude];
 			this.setState({
 				longitude: data.mapPoint.longitude,
 				latitude: data.mapPoint.latitude,
 				sidewalkSelected: true,
 				selectedSidewalkDetails: this.state.sidewalks.find((sidewalk) => sidewalk.id === 2)
+
 			});
 		});
 
