@@ -14,7 +14,7 @@ matrix:
      - python3 manage.py makemigrations
      - python3 manage.py migrate
     script:
-     - python3 manage.py test
+     - python3 manage.py test api.tests
   - language: node_js
     node_js:
     - "node"

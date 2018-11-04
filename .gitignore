@@ -13,6 +13,12 @@
 .env.test.local
 .env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+*.out
+__pycache__/
+*.py[cod]
+*.log
+*.pot
+*.pyc
+local_settings.py
+environment/
+django_steps/api/migrations/
