@@ -1,0 +1,23 @@
+Method Not Allowed: /api/sidewalk/2/comment/
+[02/Nov/2018 01:06:25] "GET /api/sidewalk/2/comment/ HTTP/1.1" 405 9949
+[02/Nov/2018 01:06:27] "GET /favicon.ico HTTP/1.1" 200 2116
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 02, 2018 - 01:06:21
+Django version 2.1.1, using settings 'steps.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+Method Not Allowed: /api/sidewalk/2/comment/
+[02/Nov/2018 01:07:53] "GET /api/sidewalk/2/comment/ HTTP/1.1" 405 9949
+[02/Nov/2018 01:07:57] "GET /favicon.ico HTTP/1.1" 200 2116
+Method Not Allowed: /api/sidewalk/2/comment/
+[02/Nov/2018 01:08:03] "GET /api/sidewalk/2/comment/ HTTP/1.1" 405 9949
+[02/Nov/2018 01:08:04] "GET /favicon.ico HTTP/1.1" 200 2116
+Performing system checks...
+
+System check identified no issues (0 silenced).
+November 02, 2018 - 01:07:43
+Django version 2.1.1, using settings 'steps.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.

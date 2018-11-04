@@ -1,18 +1,47 @@
+import numbers
+
 from django.db import connection
 from rest_framework import viewsets
-from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import Sidewalk, SidewalkRating, Pedestrian, SidewalkComment, SidewalkImage, AdminAccount
-from .serializers import SidewalkSerializer, SidewalkListSerializer, PedestrianSerializer, SidewalkImageSerializer, AdminAccountSerializer, SidewalkCommentSerializer
-
+from rest_framework.response import Response
+import calendar
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
 import numbers
 
+
+from .models import (AdminAccount, Pedestrian, Sidewalk, SidewalkComment,
+                     SidewalkImage, SidewalkRating)
+from .serializers import (AdminAccountSerializer, PedestrianSerializer,
+                          SidewalkCommentSerializer, SidewalkImageSerializer,
+                          SidewalkListSerializer, SidewalkSerializer)
+
+
+class credentials():
+	## Check the credentials entered by user
+	## @param {String} username - username of the admin
+	## @param {String} password - password of the admin
+	## @return {Number} - return 1 if the admin is valid 
+	def checkCredentials(self, username, password):
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT COUNT(*) 
+			FROM api_adminaccount 
+			WHERE username = %s 
+			AND password = %s""", [username, password])
+			row = cursor.fetchone()
+		return row[0]
+
+
 class SidewalkView(viewsets.ReadOnlyModelViewSet):
-	queryset = Sidewalk.objects.raw("select s.id, IFNULL(agg.accessibility, 0) as accessibility, IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, avg(connectivity_rating) as connectivity, avg(physical_safety_rating) as physicalSafety, avg(security_rating) as senseOfSecurity from api_sidewalkrating r group by r.sidewalk_id) agg on agg.sidewalk_id = s.id");
+	queryset = Sidewalk.objects.raw("""select s.id, IFNULL(agg.accessibility, 0) as accessibility,
+	 IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, 
+	 IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity, IFNULL(posted_time, 0) as posted_time 
+	 from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, 
+	 avg(connectivity_rating) as connectivity, avg(physical_safety_rating) as physicalSafety, 
+	 avg(security_rating) as senseOfSecurity, posted_time from api_sidewalkrating r group by r.sidewalk_id) 
+	 agg on agg.sidewalk_id = s.id""")
 	serializer_class = SidewalkListSerializer
 	allowed_methods = ['GET', 'POST']
 	http_method_names = ['get', 'post']
@@ -132,6 +161,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 		
 		comment = SidewalkComment.objects.create(sidewalk_id=pk, text=text).__dict__;
 		return Response(data = {'text': comment['text'], 'id': comment['id'], 'date': comment['posted_time']})
+
 
 	## Handles an incoming request to post an image to a sidewalk
 	## @param {Request} - the incoming HTTP POST request to respond to
@@ -277,15 +307,302 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 			'address': ssd['address']
 		}
 		return Response(response)
+	
+	## TODO: Check Why this is not returning a table
+	def _getCSV(self):
+		with connection.cursor as cursor:
+			cursor.execute("""SELECT s.id, s.address, sc.comment_id, sc.text, sc.posted_time_comment, sc.is_deleted_comment, 
+			sr.rating_id, sr.accessibility_rating, sr.connectivity_rating, sr.comfort_rating, sr.physical_safety_rating, 
+			sr.security_rating, sr.is_deleted_rating, si.image_id, si.image_url, si.posted_time_image, si.is_pending, 
+			si.is_deleted_image
+			FROM (
+				(SELECT id, address FROM api_sidewalk) as s
+				FULL OUTER JOIN
+				(SELECT id as comment_id, text, posted_time as posted_time_comment, is_deleted as is_deleted_comment 
+				FROM api_sidewalkcomment) as sc on sc.sidewalk_id = s.id
+				FULL OUTER JOIN
+				(SELECT id as rating_id, accessibility_rating, connectivity_rating, comfort_rating, physical_safety_rating, 
+				security_rating, is_deleted as is_deleted_rating 
+				FROM api_sidewalkrating) as sr ON 
+				ISNULL(s.id, sc.sidewalk_id) = sr.sidewalk_id
+				FULL OUTER JOIN
+				(SELECT id as image_id, image_url, posted_time as posted_time_image, is_pending, is_deleted as is_deleted_image 
+				FROM api_sidewalkimage) as si ON 
+				ISNULL(s.id, sc.sidewalk_id, sr.sidewalk_id) = si.sidewalk_id)""")
+			rows = fetchall()
+			
+		return rows
+		
+	## Returns the total number of sidewalks, ratings and comments in sidewalk database
+	## @return {list} - list of numbers with the values of total sidewalk/ratings/comments
+	def _totalSidewalkRatingComment(self):
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT 
+			(SELECT COUNT(*) FROM api_sidewalk) as sidewalk_count, 
+			(SELECT COUNT(*) FROM api_sidewalkrating) as rating_count,
+			(SELECT COUNT(*) FROM api_sidewalkcomment) as comment_count,
+			(SELECT COUNT(*) FROM api_sidewalkImage) as image_count""")
+			row = cursor.fetchall()
+		return row
+
+	## Compute the average rating of all the sidewalks and their attributes
+	## @return {list} - iist contains number with the average rating of all the sidewalks
+	def _avgOverallRating(self):
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT ((acc + con + com + ps + sec)/total) as avg
+			FROM (SELECT SUM(accessibility_rating) as acc, 
+			SUM(connectivity_rating) as con, 
+			SUM(comfort_rating) as com, 
+			SUM(physical_safety_rating) as ps, 
+			SUM(security_rating) as sec, 
+			COUNT(*) as total
+			FROM api_sidewalkrating) as sum_indiv_rating""")
+			row = cursor.fetchall()
+
+		return row
+	
+	## Computes the individual rating of each feature of sidewalk for all sidewalks combined
+	## @return {list} - Returns the average values of the feature of sidewalks.
+	def _avgIndivRating(self):
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT AVG(accessibility_rating), 
+			AVG(connectivity_rating), 
+			AVG(comfort_rating), 
+			AVG(physical_safety_rating), 
+			AVG(security_rating)
+			FROM api_sidewalkrating""")
+			row = cursor.fetchall()
+
+		return row
+
+	## Calculate the total number of ratings done in a specific month and year
+	## @return {list} - returns a list of contribution done in a specific month and year 
+	def _contributionsByMonth(self):
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT month, year, COUNT(*)
+			FROM (SELECT YEAR(posted_time) as year, MONTH(posted_time) as month FROM api_sidewalkrating) as dates
+			GROUP BY year, month;""")
+			row = cursor.fetchall()
+
+		return row
+
+	## formats the results computed by __contributionsByMonth function to display in summary
+	## @return {list} - values of the contribution and monath and year in dicitionary format with their respective values 
+	def _contributionsByMonthFormat(self, contMonth):
+		dictionaryList = []
+		for i in range(0, len(contMonth)):
+			monthYearDictionary = {}
+			value = calendar.month_name[contMonth[i][0]] + " " + str(contMonth[i][1])
+			monthYearDictionary['monthYear'] = value
+			monthYearDictionary['contributions'] = contMonth[0][2]
+			dictionaryList.append(monthYearDictionary)
+		
+		return dictionaryList
+
+	## formats the results computed by _offsetUnapprovedImages function to display in summary
+	## @return {list} - list of values computed for the id and url of all the unapproved images.
+	def _unapprovedImagesFormat(self, images):
+		list_unapprovedImages = []
+		for i in range(0, len(images)):
+			dictionary_unapproved = {}
+			dictionary_unapproved['id'] = images[i][0]
+			dictionary_unapproved['url'] = images[i][1]
+			list_unapprovedImages.append(dictionary_unapproved)
+		
+		return list_unapprovedImages
+
+	## Returns the set of all unapproved images from sidewalk database starting from a specific offset to the end of list.
+	## @return {list} - list of the unapproved images in sidewalkImage.
+	def _offsetUnapprovedImages(self, offsetIndex):
+		endIndex = 10000000000
+		with connection.cursor() as cursor:
+			cursor.execute("""SELECT id, image_url 
+			FROM api_sidewalkimage 
+			WHERE is_deleted = 1 
+			ORDER BY posted_time DESC
+			LIMIT %s OFFSET %s""", [endIndex ,offsetIndex])
+			rows = cursor.fetchall()
+
+		return rows
+
+	## Gets comment for a specific sidewalk
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @param {String} pk - the ID of the sidewalk
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=True, url_path='comment')
+	def getComment(self, request, pk):
+		try:
+			startIndex = request.data["startIndex"]
+			endIndex = request.data["endIndex"]
+			if (startIndex > endIndex):
+				return Response(status=400)
+			elif (startIndex < 0 or endIndex < 0):
+				return Response(status=400)
+		except KeyError:
+			return Response(status=400)
+
+		if not Sidewalk.objects.filter(pk=pk).exists():
+			return Response(status=400)
+
+		response = {
+			"comments": self._getCommentsNoRequest(pk, startIndex, endIndex).data["comments"]
+		}
+
+		return Response(response)
+
+	## Gets the unapproved Images from a specific offset towards the end of the list of images in the database ordered by date
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=False, url_path='unapprovedImages')
+	def unapprovedImages(self, request):
+		try:
+			username = request.data["username"]
+			password = request.data["password"]
+			offsetIndex = request.data["offsetIndex"]
+		except:
+			return Response(status=400)
+
+		if offsetIndex < 0:
+			return Response(status=400)
+		elif offsetIndex == 0:
+			offsetIndex = 1
+
+		valid = credentials().checkCredentials(username, password)
+
+		if valid == 1:
+			offsetIndex = offsetIndex - 1
+			images = self._offsetUnapprovedImages(offsetIndex)
+			response = self._unapprovedImagesFormat(images)
+
+			return Response(response)
+		else:
+			return Response(status=400)
+
+	## Approve or rejects an image uploaded by the user
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @param {String} pk - the ID of the sidewalk
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=True, url_path='image/respond')
+	def pendingImage(self, request, pk):
+		try:
+			username = request.data["username"]
+			password = request.data["password"]
+			accepted = request.data["accepted"]
+		except:
+			return Response(status=400)
+
+		valid = credentials().checkCredentials(username, password)
+		if valid == 1:
+			try:
+				approveImage = SidewalkImage.objects.get(sidewalk_id = pk)
+			except SidewalkImage.DoesNotExist:
+				return Response(status=404)
+
+			if accepted == True:
+				approveImage.is_deleted = 0
+				approveImage.save()
+			else:
+				approveImage.is_deleted = 1
+				approveImage.save()
+			
+			return Response(status=200)
+		else:
+			return Response(status=400)
+
+	## Gets the summary for all the sidewalks present in the database
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @return {Response} - the response to the post request
+	@action(methods=['get'], detail=False, url_path='summary')
+	def sidewalkSummary(self, request):
+		count_values = self._totalSidewalkRatingComment()
+		contMonth = self._contributionsByMonth()
+
+		response = {
+			"totalSidewalks": count_values[0][0],
+			"totalRatings": count_values[0][1],
+			"totalComments": count_values[0][2],
+			"totalImagesUploaded": count_values[0][3],
+			"averageOverallRating": self._avgOverallRating()[0][0],
+			"contributionsByMonth": self._contributionsByMonthFormat(contMonth),
+
+			"averageRatings": {
+				"accessibility": self._avgIndivRating()[0][0],
+				"connectivity": self._avgIndivRating()[0][1],
+				"comfort": self._avgIndivRating()[0][2],
+				"physical safety": self._avgIndivRating()[0][3],
+				"security": self._avgIndivRating()[0][4]
+			}
+
+		}
+		return Response(response)
+
+	
+	## Gets the CSV data of the sidewalk database.
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=False, url_path='completeCSV')
+	def completeCSV(self, request):
+		try:
+			username = request.data["username"]
+			password = request.data["password"]
+		except:
+			return Response(status=400)
+
+		## TODO: Check why __getCSV method being called does not return a table	
+		# csvData = self.__getCSV
+
+		# response = { 
+		# 	"summary": str(csvData)
+		# }
+		response = 2
+		return Response(response)
+
+	# TODO: Need to get the longitude and latitude from ArcGIS after Implementation
+	@action(methods=['get'], detail=True, url_path='addressLocation')
+	def latLonImage(self, request, pk):
+		try:
+			address = request.data["address"]
+		except KeyError:
+			return Response(status=400)
+
+		query = Sidewalk.objects.raw("SELECT id FROM sidewalk WHERE address = %s", [address])
+		data_val = SidewalkSerializer(query, many=True).data
+		response = {
+			'latitude': data_val,
+			'longitude': data_val
+		}
+		response = 2
+		return Response(response)
 
 class PedestrianView(viewsets.ModelViewSet):
-	queryset = Pedestrian.objects.all()
+	queryset = Pedestrian.objects.raw("""SELECT * FROM api_pedestrian""")
 	serializer_class = PedestrianSerializer
 	allowed_methods = ['GET']
 	http_method_names = ['get']
 
 class AdminAccountView(viewsets.ModelViewSet):
-	queryset = AdminAccount.objects.all()
+	queryset = AdminAccount.objects.raw('SELECT * FROM api_adminaccount');
 	serializer_class = AdminAccountSerializer
-	allowed_methods = ['GET']
-	http_method_names = ['get']
+	allowed_methods = ['GET', 'POST']
+	http_method_names = ['get', 'post']
+
+	## Check if the credentials entered by the user is valid.
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=False, url_path='login')
+	def validLogin(self, request):
+		try:
+			username = request.data["username"]
+			password = request.data["password"]
+		except:
+			return Response(status=400)
+
+		valid = credentials().checkCredentials(username, password)
+		if valid == 1:
+			response = {
+				"valid": True
+			}
+			
+			return Response(response)
+		else:
+			return Response(status=400)

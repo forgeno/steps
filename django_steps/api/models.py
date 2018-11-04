@@ -34,6 +34,7 @@ class SidewalkRating(models.Model):
 	comfort_rating = models.FloatField()
 	physical_safety_rating = models.FloatField()
 	security_rating = models.FloatField()
+	posted_time = models.DateTimeField(auto_now_add=True)
 
 class AdminAccount(models.Model):
 	username = models.CharField(max_length=255)

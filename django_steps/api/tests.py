@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory, APITestCase
 from rest_framework import status
 from django.urls import include, path, reverse
 
-from api.models import Sidewalk, SidewalkRating, SidewalkComment, SidewalkImage
+from api.models import Sidewalk, SidewalkRating, SidewalkComment, SidewalkImage, AdminAccount
 from django.utils.dateparse import parse_datetime
 
 from unittest.mock import patch
@@ -52,6 +52,10 @@ class SidewalkTests(APITestCase):
 		for i in range(0, 11):
 			SidewalkImage.objects.create(sidewalk_id=self.s3["id"], image_url="http://127.0.0.1/somewhere.jpg").__dict__
 	
+	# def _setupSidewalkUsername(self):
+	# 	AdminAccount.objects.create(username = "joe", password = "kevin")
+
+
 	def setUp(self):
 		self.s1 = Sidewalk.objects.create(address="abcdefg").__dict__
 		self.s2 = Sidewalk.objects.create(address="aweaweaweaweaweaweaweaweawe").__dict__
@@ -62,6 +66,7 @@ class SidewalkTests(APITestCase):
 		self._setupRatings()
 		self._setupComments()
 		self._setupImages()
+		# self._setupSidewalkUsername()
 		
 	def test_post_all_sidewalks(self):
 		response = self.client.post("/api/sidewalk/", format='json')
@@ -372,6 +377,128 @@ class SidewalkTests(APITestCase):
 	def test_delete_image_valid(self):
 		response = self.client.post("/api/sidewalk/" + str(self.s5["id"]) + "/image/delete/", {'username': 'u', 'password': 'p', 'imageId': self.i5['id']}, format='json')
 		self.assertEqual(response.status_code, 200)
+
+
+class SidewalkAgrregateTests(APITestCase):
+	def _setupComments(self):
+		self.c1 = SidewalkComment.objects.create(sidewalk_id=self.s1["id"], text="abcdefghij").__dict__
+		self.c2 = SidewalkComment.objects.create(sidewalk_id=self.s1["id"], text="ab").__dict__
+		self.c3 = SidewalkComment.objects.create(sidewalk_id=self.s2["id"], text="anything").__dict__
+		self.c4 = SidewalkComment.objects.create(sidewalk_id=self.s4["id"], text="2anything").__dict__
+	
+	def _setupImages(self):
+		self.i5 = SidewalkImage.objects.create(sidewalk_id=self.s5["id"], image_url="http://127.0.0.1/somewhere.jpg", is_pending=False).__dict__
+		self.i1 = SidewalkImage.objects.create(sidewalk_id=self.s1["id"], image_url="http://127.0.0.1/somewhere.jpg", is_pending=False).__dict__
+	
+	def _setupRatings(self):
+		SidewalkRating.objects.create(sidewalk_id=self.s1["id"], accessibility_rating=0.5, 
+			comfort_rating=1.5, connectivity_rating=1.5, physical_safety_rating=1.0, security_rating=4.5)
+
+		SidewalkRating.objects.create(sidewalk_id=self.s2["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=4.0, physical_safety_rating=2.5, security_rating= 2.0)
+
+		SidewalkRating.objects.create(sidewalk_id=self.s3["id"], accessibility_rating=1.5, 
+			comfort_rating=2.0, connectivity_rating=4.5, physical_safety_rating=3.0, security_rating=4.5)
+		
+		SidewalkRating.objects.create(sidewalk_id=self.s3["id"], accessibility_rating=1.5, 
+			comfort_rating=2.0, connectivity_rating=2.5, physical_safety_rating=3.0, security_rating=4.5)
+
+		SidewalkRating.objects.create(sidewalk_id=self.s4["id"], accessibility_rating=2.5, 
+			comfort_rating=3.5, connectivity_rating=4.5, physical_safety_rating=5.0, security_rating=4.5)
+
+		SidewalkRating.objects.create(sidewalk_id=self.s5["id"], accessibility_rating=5.0, 
+			comfort_rating=1.5, connectivity_rating=2.5, physical_safety_rating=3.5, security_rating=4.0)
+	
+	def _setupSidewalkUsername(self):
+		AdminAccount.objects.create(username = "joe", password = "kevin")
+
+	def setUp(self):
+		self.s1 = Sidewalk.objects.create(address="abcdefg").__dict__
+		self.s2 = Sidewalk.objects.create(address="aweaweaweaweaweaweaweaweawe").__dict__
+		self.s3 = Sidewalk.objects.create(address="aaa").__dict__
+		self.s4 = Sidewalk.objects.create(address="aaa").__dict__
+		self.s5 = Sidewalk.objects.create(address="aaa").__dict__
+		
+		self._setupRatings()
+		self._setupComments()
+		self._setupImages()
+		self._setupSidewalkUsername()
+
+	#sidewalk/summary
+	def test_get_sidewalks_summary(self):
+		response = self.client.get("/api/sidewalk/summary/", format='json')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.data["totalSidewalks"], 5)
+		self.assertEqual(response.data["totalRatings"], 6)
+		self.assertEqual(response.data["totalComments"], 4)
+		self.assertEqual(response.data["totalImagesUploaded"], 2)
+		self.assertEqual(response.data["averageOverallRating"], 14.25)
+		self.assertEqual(len(response.data["contributionsByMonth"]), 1)
+		self.assertEqual(response.data["averageRatings"]["accessibility"], 2)
+		self.assertEqual(response.data["averageRatings"]["connectivity"], 3.25)
+		self.assertEqual(response.data["averageRatings"]["comfort"], 2)
+		self.assertEqual(response.data["averageRatings"]["physical safety"], 3)
+		self.assertEqual(response.data["averageRatings"]["security"], 4)
+
+	#sidewalk/id/comment Tests
+	def test_get_sidewalk_comment_invalid_endIndex(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/comment/", {'startIndex': 10, 'endIndex': 3}, format='json')
+		self.assertEqual(response.status_code, 400)
+
+	def test_get_sidewalk_comment_valid(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/comment/", {'startIndex': 10, 'endIndex': 30}, format='json')
+		self.assertEqual(response.status_code, 200)
+	
+	#sidewalk/id/image/respond
+	def test_pending_image_valid(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/image/respond/", {'username': 'joe', 'password': 'kevin', 'accepted': True}, format='json')
+		self.assertEqual(response.status_code, 404)
+	
+	def test_pending_image_Invalid_credentials(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s4["id"]) + "/image/respond/", {'username': 'u', 'password': 'p', 'accepted': True}, format='json')
+		self.assertEqual(response.status_code, 400)
+	
+	def test_pending_image_valid_credentials_id(self):
+		response = self.client.post("/api/sidewalk/" + str(self.s5["id"]) + "/image/respond/", {'username': 'joe', 'password': 'kevin', 'accepted': True}, format='json')
+		self.assertEqual(response.status_code, 200)
+	
+	#sidewalk/unapprovedImages
+	def test_unapproved_Images_Invalid_credentials(self):
+		response = self.client.post("/api/sidewalk/unapprovedImages/", {'username': 'u', 'password': 'p', 'offsetIndex': 3}, format='json')
+		self.assertEqual(response.status_code, 400)
+	
+	def test_unapproved_Images_valid_credentials(self):
+		response = self.client.post("/api/sidewalk/unapprovedImages/", {'username': 'joe', 'password': 'kevin', 'offsetIndex': 3}, format='json')
+		self.assertEqual(response.status_code, 200)
+
+	def test_unapproved_Images_valid_credentials_negative_offset(self):
+		response = self.client.post("/api/sidewalk/unapprovedImages/", {'username': 'joe', 'password': 'kevin', 'offsetIndex': -3}, format='json')
+		self.assertEqual(response.status_code, 400)
+	
+
+class AdminTests(APITestCase):	
+	def __setupUsername(self):
+		AdminAccount.objects.create(username = "joe", password = "kevin")
+	
+	def setUp(self):
+		self.__setupUsername()
+	
+	#adminAccount/login
+	def test_valid_login_invalid(self):
+		response = self.client.post("/api/adminAccount/login/", {'username': 'u', 'password': 'p'}, format='json')
+		self.assertEqual(response.status_code, 400)
+	
+	def test_valid_login(self):
+		response = self.client.post("/api/adminAccount/login/", {'username': 'joe', 'password': 'kevin'}, format='json')
+		self.assertEqual(response.status_code, 200)
+
+def tearDown(self):
+	with connection.cursor() as cursor:
+		cursor.execute("DELETE FROM api_sidewalk")
+		cursor.execute("DELETE FROM api_sidewalkcomment")
+		cursor.execute("DELETE FROM api_sidewalkrating")
+		cursor.execute("DELETE FROM api_sidewalkimage")
+		cursor.execute("DELETE FROM api_adminaccount")
 	
 class SidewalkCommentTests(APITestCase):
 	def setUp(self):
