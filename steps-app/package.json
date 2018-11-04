@@ -24,7 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-	"auto": "./node_modules/.bin/testcafe firefox ./testAutomation/tests/mapTests.js"
+	"auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests/sidewalkTests.js"
   },
   "eslintConfig": {
     "extends": "react-app"

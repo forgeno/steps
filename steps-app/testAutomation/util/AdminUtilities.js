@@ -8,10 +8,11 @@ export default class AdminUtilities {
 	 * @param {Object} t - the testcafe runner
 	 */
 	static async silentLogin(t) {
-		// TODO: set username, password to valid values in the state
 		await t.eval(() => {
 			window.DEV_ADMIN_STORE.setState({
-				isLoggedIn: true
+				isLoggedIn: true,
+				username: "stepsAdmin",
+				password: "stepsSix"
 			});
 		});
 	}
