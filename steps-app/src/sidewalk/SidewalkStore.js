@@ -12,6 +12,10 @@ export default class SidewalkStore extends Reflux.Store {
 		super();
 		this.state = this._getDefaultSidewalkState();
 		this.listenables = Actions;
+
+		if (process.env.NODE_ENV === "development"){
+			window.DEV_SIDEWALK_STORE = this;
+		}
 	}
 
 	/**

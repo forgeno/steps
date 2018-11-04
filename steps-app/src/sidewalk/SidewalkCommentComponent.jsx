@@ -1,7 +1,6 @@
 import React from "react";
 import Reflux from "reflux";
 import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 import CloseIcon from "@material-ui/icons/Close";
 
 import DateUtilities from "../util/DateUtilities";

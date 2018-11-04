@@ -19,6 +19,10 @@ export default class AdminStore extends Reflux.Store {
 			password: ""
 		};
         this.listenables = Actions;
+
+		if (process.env.NODE_ENV === "development"){
+			window.DEV_ADMIN_STORE = this;
+		}
     }
 
 	/**

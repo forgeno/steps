@@ -6,7 +6,6 @@ import Actions from "./MapActions";
 import Store from "./MapStore";
 
 import {esriURL} from "../constants/ArcGISConstants";
-import RestUtil from "../util/RestUtil";
 
 export default class SummaryMapView extends Component {
 

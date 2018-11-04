@@ -15,6 +15,10 @@ export default class MapStore extends Reflux.Store {
 			latitude: downtownLatitude
 		};
 		this.listenables = Actions;
+
+		if (process.env.NODE_ENV === "development"){
+			window.DEV_MAP_STORE = this;
+		}
 	}
 
 	onLoadAllSidewalks() {
