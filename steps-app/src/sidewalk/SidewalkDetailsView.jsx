@@ -6,6 +6,7 @@ import Actions from "./SidewalkActions";
 
 import CommentsListComponent from "./CommentsListComponent";
 import SidewalkImageDetailsComponent from "./images/SidewalkImageDetailsComponent";
+import PedestrianDataComponent from "./PedestrianDataComponent";
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
@@ -141,17 +142,10 @@ class SidewalkDetailsView extends Component {
 		if (this.state.currentSidewalk.mobilityTypeDistribution.length === 0) {
 			return <h4>No pedestrian data has been recorded for this sidewalk</h4>;
 		}
+		
 		return (
-			<div>
-				{
-					this.state.currentSidewalk.mobilityTypeDistribution.map((mobilityType) => {
-						return (
-							<p>{mobilityType.type}</p>
-						);
-					})
-				}
-			</div>
-		)
+			<PedestrianDataComponent activities={this.state.currentSidewalk.mobilityTypeDistribution} />
+		);
 	}
 
 	/**

@@ -22,22 +22,11 @@ export default class InfiniteImageGallery extends React.Component {
 		this.selfRef = React.createRef();
 	}
 	
-	/**
-	 * Handles the window being resized
-	 */
-	_onResize = () => {
-		if (this.props.visible) {
-			this.forceUpdate();
-		}
-	};
-	
 	componentDidMount() {
-		window.addEventListener("resize", this._onResize);
 		window.addEventListener("keydown", this._handleKeyDown);
 	}
 	
 	componentWillUnmount() {
-		window.removeEventListener("resize", this._onResize);
 		window.removeEventListener("keydown", this._handleKeyDown);
 	}
 	

@@ -1,7 +1,9 @@
 import Reflux from "reflux";
 
 const Actions = Reflux.createActions([
-	"placeholderAction"
+	"deleteComment",
+	"dismissCommentSuccessMessage",
+	"dismissCommentErrorMessage"
 ]);
 
 export default Actions;

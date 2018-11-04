@@ -164,6 +164,30 @@ describe("Tests the SidewalkStore", function() {
 		expect(RestUtil.sendPostRequest.getCall(0).args[0]).to.be.equal(`sidewalk/${store.state.currentSidewalk.id}/comment/create`);
 	});
 	
+	it("tests the onRemoveLoadedComment method with a non-existent comment", () => {
+		store.setState({
+			currentSidewalk: {
+				comments: []
+			}
+		})
+		const setStateSpy = sandbox.spy(store, "setState");
+		store.onRemoveLoadedComment({});
+		expect(setStateSpy.notCalled).to.be.true;
+	});
+	
+	it("tests the onRemoveLoadedComment method with a found comment", () => {
+		const comment1 = {};
+		store.setState({
+			currentSidewalk: {
+				comments: [comment1],
+				totalComments: 1
+			}
+		});
+		store.onRemoveLoadedComment(comment1);
+		expect(store.state.currentSidewalk.comments.length).to.be.equal(0);
+		expect(store.state.currentSidewalk.totalComments).to.be.equal(0);
+	});
+	
 	afterEach(() => {
 		sandbox.restore();
 	});

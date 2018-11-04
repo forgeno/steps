@@ -210,7 +210,34 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 			return Response(status=404)
 		
 		return Response(status=200)
+	
+	## Handles an incoming request to delete a comment
+	## @param {Request} - the incoming HTTP POST request to respond to
+	## @param {String} pk - the ID of the sidewalk
+	## @return {Response} - the response to the post request
+	@action(methods=['post'], detail=True, url_path='comment/delete')
+	def deleteComment(self, request, pk):
+		try:
+			username = request.data["username"]
+			password = request.data["password"]
+			commentId = request.data["id"]
+		except:
+			return Response(status=400)
 		
+		# TODO: if invalid credentials
+		if False:
+			return Response(status=401)
+		
+		try:
+			# TODO: verify that this actually works
+			image = SidewalkComment.objects.get(pk=commentId,sidewalk_id=pk)
+			image.is_deleted = True
+			image.save()
+		except SidewalkComment.DoesNotExist:
+			return Response(status=404)
+		
+		return Response(status=200)
+	
 	## Gets a very basic summary of all sidewalks
 	## @param {Request} request - the HTTP GET request to service
 	## @return {Response} - a list of all sidewalks and their average ratings

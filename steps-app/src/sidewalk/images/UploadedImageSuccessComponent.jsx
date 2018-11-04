@@ -6,7 +6,7 @@ import Actions from "../SidewalkActions";
 import SuccessAlertComponent from "../../misc-components/SuccessAlertComponent";
 
 /**
- * This component renders the error message that is displayed when an image upload fails
+ * This component renders the error message that is displayed when an image upload succeeds
  */
 export default class UploadedImageSuccessComponent extends Reflux.Component {
 

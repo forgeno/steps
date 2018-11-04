@@ -373,3 +373,39 @@ class SidewalkTests(APITestCase):
 		response = self.client.post("/api/sidewalk/" + str(self.s5["id"]) + "/image/delete/", {'username': 'u', 'password': 'p', 'imageId': self.i5['id']}, format='json')
 		self.assertEqual(response.status_code, 200)
 	
+class SidewalkCommentTests(APITestCase):
+	def setUp(self):
+		self.sidewalkNoComments =  Sidewalk.objects.create(address="abcdefg").__dict__
+		self.sidewalkWithComments = Sidewalk.objects.create(address="abcdefg").__dict__
+		self.comment = SidewalkComment.objects.create(sidewalk_id=self.sidewalkWithComments["id"], text="abcdefghij").__dict__
+	
+	def test_delete_comment_with_get(self):
+		response = self.client.get("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/comment/delete/", format='json')
+		self.assertEqual(response.status_code, 405)
+	
+	def test_delete_comment_null_sidewalk(self):
+		response = self.client.post("/api/sidewalk/9999/comment/delete/", {'username': 'u', 'password': 'p', 'id': self.comment['id']}, format='json')
+		self.assertEqual(response.status_code, 404)
+	
+	def test_delete_comment_missing_data(self):
+		response = self.client.post("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/comment/delete/", {'username': 'u', 'password': 'p'}, format='json')
+		self.assertEqual(response.status_code, 400)
+
+	# TODO: add support for this
+	#def test_delete_comment_invalid_credentials(self):
+	#	response = self.client.post("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/comment/delete/", {'username': 's', 'password': 'p', 'id': self.comment['id']}, format='json')
+	#	self.assertEqual(response.status_code, 401)
+		
+	def test_delete_comment_invalid_comment(self):
+		response = self.client.post("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/comment/delete/", {'username': 'u', 'password': 'p', 'id': -6}, format='json')
+		self.assertEqual(response.status_code, 404)
+	
+	def test_delete_comment_valid_wrong_sidewalk(self):
+		response = self.client.post("/api/sidewalk/" + str(self.sidewalkNoComments["id"]) + "/comment/delete/", {'username': 'u', 'password': 'p', 'id': self.comment['id']}, format='json')
+		self.assertEqual(response.status_code, 404)
+	
+	def test_delete_comment_valid(self):
+		response = self.client.post("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/comment/delete/", {'username': 'u', 'password': 'p', 'id': self.comment['id']}, format='json')
+		self.assertEqual(response.status_code, 200)
+		response2 = self.client.get("/api/sidewalk/" + str(self.sidewalkWithComments["id"]) + "/", format='json')
+		self.assertEqual(response2.data["totalComments"], 0)

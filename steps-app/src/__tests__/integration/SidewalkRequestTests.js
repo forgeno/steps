@@ -71,7 +71,7 @@ describe("Tests fetching and posting sidewalk data from the database", function(
 		SidewalkActions.uploadSidewalkImage(TEST_IMAGE_PATH);
 		await PromiseUtilities.waitUntil(() => sidewalkStore.state.uploadedImageError);
 		expect(sidewalkStore.state.uploadedImageError).to.be.true;
-	});
+	}, 30000);
 	
 	// TODO
 	/*it("Tests successfully posting details about a user created comment to the database", async () => {

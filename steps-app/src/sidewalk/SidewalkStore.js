@@ -137,4 +137,20 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadImageSucceeded: false
 		});
 	}
+	
+	/**
+	 * Removes the specified comment from the currently loaded sidewalk
+	 * @param {Object} comment - the comment to remove
+	 */
+	onRemoveLoadedComment(comment) {
+		const currentSidewalkComments = this.state.currentSidewalk.comments.slice(),
+			index = currentSidewalkComments.indexOf(comment);
+		if (index !== -1) {
+			const newTotalComments = this.state.currentSidewalk.totalComments - 1;
+			currentSidewalkComments.splice(index, 1);
+			this.setState({
+				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments, totalComments: newTotalComments})
+			});
+		}
+	}
 }
