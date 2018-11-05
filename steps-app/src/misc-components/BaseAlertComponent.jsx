@@ -37,12 +37,12 @@ export default class BaseAlertComponent extends React.Component {
 				  className={this.props.alertContentClassName}
 				  aria-describedby="client-snackbar"
 				  message={
-					<span id="client-snackbar" className="alertBody">
+					<div id="client-snackbar" className="alertBody">
 						{this.props.icon}
 					  <span className="alertMessage">
 						  {this.props.message}
 					  </span>
-					</span>
+					</div>
 				  }
 				  action={[
 					<IconButton

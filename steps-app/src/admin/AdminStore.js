@@ -29,6 +29,8 @@ export default class AdminStore extends Reflux.Store {
 	 * Handles attempting to delete a comment
 	 * @param {String} sidewalkId - the ID of the sidewalk the comment is linked to
 	 * @param {String} commentId - the ID of the comment to delete
+	 * @param {function} onFinish - callback function that is called once the request has been resolved. 
+	 *					 The first parameter indicates whether the request was succesful or not
 	 */
 	onDeleteComment(sidewalkId, commentId, onFinish) {
 		this.setState({
@@ -57,15 +59,73 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 	
+	/**
+	 * Dismisses the message that notifies the user that they have successfully deleted a comment
+	 */
 	onDismissCommentSuccessMessage() {
 		this.setState({
 			successfullyDeletedComment: false
 		});
 	}
 	
+	/**
+	 * Dismisses the message that notifies the user that they have failed to deleted a comment
+	 */
 	onDismissCommentErrorMessage() {
 		this.setState({
 			failedDeleteComment: false
+		});
+	}
+	
+	/**
+	 * Handles attempting to delete an image
+	 * @param {String} sidewalkId - the ID of the sidewalk the image is linked to
+	 * @param {String} imageId - the ID of the image to delete
+	 * @param {function} onFinish - callback function that is called once the request has been resolved. 
+	 *					 The first parameter indicates whether the request was succesful or not
+	 */
+	onDeleteImage(sidewalkId, imageId, onFinish) {
+		this.setState({
+			isDeletingImage: true,
+			successfullyDeletedImage: false,
+			failedDeleteImage: false
+		});
+		
+		RestUtil.sendPostRequest(`sidewalk/${sidewalkId}/image/delete`, {
+			imageId: imageId,
+			username: this.state.username,
+			password: this.state.password
+		}).then(() => {
+			this.setState({
+				isDeletingImage: false,
+				successfullyDeletedImage: true
+			});
+			return onFinish(true);
+		}).catch((err) => {
+			this.setState({
+				isDeletingImage: false,
+				failedDeleteImage: true
+			});
+			console.error(err);
+			return onFinish(false);
+		});
+	}
+	
+	/**
+	 * Dismisses the message that notifies the user that they have successfully deleted an image
+	 */
+	onDismissImageSuccessMessage() {
+		this.setState({
+			successfullyDeletedImage: false
+		});
+	}
+	
+	/**
+	 * Dismisses the message that notifies the user that they have failed to deleted an image
+	 */
+	onDismissImageErrorMessage() {
+		this.setState({
+			failedDeleteImage: false
 		});
 	}
 }

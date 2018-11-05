@@ -95,12 +95,16 @@ export default class SidewalkStore extends Reflux.Store {
 				hasNextImagesPage: res.hasMoreImages,
 				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images)
 			});
-			updateStateCallback();
+			return updateStateCallback();
 		}).catch((err) => {
 			console.error(err);
 		});
 	}
 
+	/**
+	 * Uploads a comment to the database for the current sidewalk
+	 * @param {String} comment - the comment to upload
+	 */
 	onUploadComment(comment) {
 		this.setState({
 			uploadingComment: true
@@ -155,6 +159,37 @@ export default class SidewalkStore extends Reflux.Store {
 			this.setState({
 				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments, totalComments: newTotalComments})
 			});
+		}
+	}
+	
+	/**
+	 * Removes the specified image from the currently loaded sidewalk
+	 * @param {Object} image - the image to remove
+	 * @param {function} onLastImageDeleted - a callback function that will be called if the deleted image is the last loaded one
+	 * @param {function} onNoImagesRemaining - a callback function that will be called if there are no images remaining
+	 */
+	onRemoveLoadedImage(image, onLastImageDeleted, onNoImagesRemaining) {
+		const index = this.state.loadedUserImages.indexOf(image);
+		if (index !== -1) {
+			const newImagesCount = this.state.currentSidewalk.totalImages - 1,
+				newImages = this.state.loadedUserImages.slice(),
+				sidewalkOverride = {totalImages: newImagesCount};			
+			newImages.splice(index, 1);
+			if (this.state.currentSidewalk.lastImage === image) {
+				sidewalkOverride.lastImage = newImages[0] || null;
+			}
+
+			this.setState({
+				currentSidewalk: Object.assign(this.state.currentSidewalk, sidewalkOverride),
+				loadedUserImages: newImages
+			});
+			
+			if (index === newImages.length && index > 0) {
+				onLastImageDeleted(index);
+			}
+			if (newImages.length === 0) {
+				return onNoImagesRemaining();
+			}
 		}
 	}
 }

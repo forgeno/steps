@@ -9,6 +9,7 @@ export default class ImageGallery {
 		this.rows = Selector(".infiniteImageListRow");
 		this.selectedImage = Selector(".selectedImageWrapper");
 		this.closeButton = Selector(".closeButton");
+		this.imageDeleteButton = Selector(".infiniteImageRowSelected").find(".closeButton");
     }
 	
 	/**

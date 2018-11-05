@@ -59,6 +59,10 @@ body {
 	margin-right: 0;
 }
 
+.closeButton:hover {
+	color: red;
+}
+
 .clickableItem {
 	cursor: pointer;
 }

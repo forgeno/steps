@@ -1,4 +1,4 @@
-import { RequestLogger } from 'testcafe';
+import { RequestLogger, RequestMock } from 'testcafe';
 
 import config from "../config";
 import MapPage from "../pages/MapPage";
@@ -8,6 +8,7 @@ import BaseModal from "../pages/BaseModal";
 import ImageUploadModal from "../pages/ImageUploadModal";
 import Notifications from "../pages/Notifications";
 import ImageGallery from "../pages/ImageGallery";
+import SidewalkUtilities from "../util/SidewalkUtilities";
 
 // constants
 const COMMENT_TEXT = `Automation test comment ${Date.now()}`;
@@ -25,6 +26,8 @@ const logger = RequestLogger({
     logResponseHeaders: true,
     logResponseBody: true
 });
+
+const mock = RequestMock().onRequestTo("http://199.116.235.159:8000/api/sidewalk/2/image/delete/").respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -132,18 +135,7 @@ test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
 
 test("viewing images on a sidewalk", async (t) => {
 	await t.click(drawer.imagesHeader);
-	
-	await t.eval(() => {
-		const TEST_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/375px-Google_Images_2015_logo.svg.png";
-		const sidewalk = DEV_SIDEWALK_STORE.state.currentSidewalk;
-		sidewalk.lastImage = TEST_IMAGE;
-		sidewalk.totalImages = 10;
-		const images = [];
-		for (let i = 0; i < 10; ++i) {
-			images.push({url: TEST_IMAGE, id: "1"});
-		}
-		DEV_SIDEWALK_STORE.setState({currentSidewalk: sidewalk, loadedUserImages: images});
-	});
+	await SidewalkUtilities.generateDummyImages(t);
 	
 	// check to see all rows loaded
 	await t.click(drawer.previewImagesButton)
@@ -161,4 +153,32 @@ test("viewing images on a sidewalk", async (t) => {
 	// close the gallery and make sure the sidewalk drawer returns
 	await t.click(imageGallery.closeButton)
 		.expect(drawer.imagesHeader.visible).eql(true);
+});
+
+test.requestHooks(logger)("attempting to delete an image but cancelling", async (t) => {
+    await t.click(drawer.imagesHeader);
+	await SidewalkUtilities.generateDummyImages(t);
+	await t.click(drawer.previewImagesButton);
+	
+	await t.click(imageGallery.imageDeleteButton)
+		.click(baseModal.cancel)
+		.expect(baseModal.cancel.exists).eql(false)
+		.wait(1000);
+	
+	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/"))).notOk();
+});
+
+test.requestHooks(logger, mock)("deleting an image on a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader);
+	await SidewalkUtilities.generateDummyImages(t);
+	await t.click(drawer.previewImagesButton);
+	
+	const loadedImages = await SidewalkUtilities.getLoadedImagesCount(t);
+	await t.click(imageGallery.imageDeleteButton)
+		.click(baseModal.confirm);
+	
+	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/") && record.response.statusCode === 200)).ok()
+		.expect(baseModal.cancel.exists).eql(false);
+	
+	await t.expect(await SidewalkUtilities.getLoadedImagesCount(t)).eql(loadedImages - 1);
 });

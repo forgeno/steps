@@ -52,7 +52,7 @@ describe("<InfiniteImageGallery />", function() {
 				expect(wrapper.instance()._loadMoreRows.calledOnce).to.be.true;
 				expect(wrapper.instance()._loadMoreRows.getCall(0).args[0]).to.deep.equal({
 					startIndex: 2,
-					endIndex: 2
+					stopIndex: 2
 				});
 			});
 		});
@@ -115,7 +115,19 @@ describe("<InfiniteImageGallery />", function() {
 		});
 		wrapper.instance().render();
 		const res = wrapper.instance()._rowRenderer({index: 1, key: 1, style: {}});
-		expect(res.props.children.props.children.props.children.props.src).to.be.equal("testUrl");
+		expect(res.props.children.props.children.props.children[1].props.src).to.be.equal("testUrl");
+	});
+	
+	it("Tests _rowRenderer with a loaded item and renderAboveImage prop", () => {
+		const fakeComponent = <div>a</div>;
+		sandbox.stub(wrapper.instance(), "_isRowLoaded").returns(true);
+		wrapper.setProps({
+			loadedImages: [{}, {url: "testUrl"}],
+			renderAboveImage: () => fakeComponent
+		});
+		wrapper.instance().render();
+		const res = wrapper.instance()._rowRenderer({index: 1, key: 1, style: {}});
+		expect(res.props.children.props.children.props.children[0]).to.be.equal(fakeComponent);
 	});
 	
 	it("Tests _rowRenderer with an unloaded item", () => {

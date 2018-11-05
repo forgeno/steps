@@ -19,15 +19,7 @@ export default class InfiniteImageGallery extends React.Component {
 			currentImageIndex: 0
 		};
 
-		this.selfRef = React.createRef();
-	}
-	
-	componentDidMount() {
-		window.addEventListener("keydown", this._handleKeyDown);
-	}
-	
-	componentWillUnmount() {
-		window.removeEventListener("keydown", this._handleKeyDown);
+		//this.selfRef = React.createRef();
 	}
 	
 	/**
@@ -75,8 +67,9 @@ export default class InfiniteImageGallery extends React.Component {
 		if (this._isRowLoaded({index})) {
 			content = (
 				<div className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
-					<Card onClick={() => {this._onImageClicked(index)}} className="clickableItem">
-						<img className="img-responsive" alt="uploaded" src={this.props.loadedImages[index].url} />
+					<Card className="clickableItem">
+						{this.props.renderAboveImage && this.props.renderAboveImage(this.state.currentImageIndex === index, this.props.loadedImages[index])}
+						<img onClick={() => {this._onImageClicked(index)}} className="img-responsive fillAvailable" alt="uploaded" src={this.props.loadedImages[index].url} />
 					</Card>
 				</div>
 			);
@@ -99,14 +92,13 @@ export default class InfiniteImageGallery extends React.Component {
 			return;
 		}
 		if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-			// TODO: do some testing here
 			if (this.state.currentImageIndex === this.props.loadedImages.length - 1) {
 				if (!this.props.hasNextPage) {
 					return;
 				}
 				this._loadMoreRows({
 					startIndex: this.state.currentImageIndex + 1,
-					endIndex: this.state.currentImageIndex + 1
+					stopIndex: this.state.currentImageIndex + 1
 				});
 			}
 			this.setState({
@@ -152,7 +144,7 @@ export default class InfiniteImageGallery extends React.Component {
 	render() {
 		// TODO: decide which design to use
 		return (
-			<div className="noOutlineDiv">
+			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
 				<Drawer open={this.props.visible}
 						variant="persistent"
 						onClose={this.props.onClose}

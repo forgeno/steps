@@ -26,7 +26,7 @@ export default class ImageDisplayList extends React.PureComponent {
 					  height={1000}
 					  onRowsRendered={onRowsRendered}
 					  rowCount={loadedCount}
-					  rowHeight={160}
+					  rowHeight={200}
 					  rowRenderer={this.props.rowRenderer}
 					  width={250}
 					  style={{outline: "none"}}

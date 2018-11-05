@@ -188,6 +188,100 @@ describe("Tests the SidewalkStore", function() {
 		expect(store.state.currentSidewalk.totalComments).to.be.equal(0);
 	});
 	
+	it("tests the onRemoveLoadedImage method with a non-existent image", () => {
+		store.setState({
+			currentSidewalk: {
+				totalImages: 5
+			},
+			loadedUserImages: [{}, {}, {}, {}, {}]
+		})
+		const setStateSpy = sandbox.spy(store, "setState");
+		store.onRemoveLoadedImage({});
+		expect(setStateSpy.notCalled).to.be.true;
+	});
+	
+	it("tests the onRemoveLoadedImage method with a found image when it is the first image", () => {
+		const first = {},
+			spy1 = sandbox.spy(),
+			spy2 = sandbox.spy(),
+			second = {},
+			third = {};
+		store.setState({
+			currentSidewalk: {
+				totalImages: 55,
+				lastImage: first
+			},
+			loadedUserImages: [first, second, third]
+		})
+		store.onRemoveLoadedImage(first, spy1, spy2);
+		expect(store.state.loadedUserImages).to.deep.equal([second, third]);
+		expect(store.state.currentSidewalk.totalImages).to.be.equal(54);
+		expect(store.state.currentSidewalk.lastImage).to.be.equal(second);
+		expect(spy1.notCalled).to.be.true;
+		expect(spy2.notCalled).to.be.true;
+	});
+	
+	it("tests the onRemoveLoadedImage method with a found image when it is the second image", () => {
+		const first = {},
+			spy1 = sandbox.spy(),
+			spy2 = sandbox.spy(),
+			second = {},
+			third = {};
+		store.setState({
+			currentSidewalk: {
+				totalImages: 55,
+				lastImage: first
+			},
+			loadedUserImages: [first, second, third]
+		})
+		store.onRemoveLoadedImage(second, spy1, spy2);
+		expect(store.state.loadedUserImages).to.deep.equal([first, third]);
+		expect(store.state.currentSidewalk.totalImages).to.be.equal(54);
+		expect(store.state.currentSidewalk.lastImage).to.be.equal(first);
+		expect(spy1.notCalled).to.be.true;
+		expect(spy2.notCalled).to.be.true;
+	});
+	
+	it("tests the onRemoveLoadedImage method with a found image when it is the third image", () => {
+		const first = {},
+			spy1 = sandbox.spy(),
+			spy2 = sandbox.spy(),
+			second = {},
+			third = {};
+		store.setState({
+			currentSidewalk: {
+				totalImages: 55,
+				lastImage: first
+			},
+			loadedUserImages: [first, second, third]
+		})
+		store.onRemoveLoadedImage(third, spy1, spy2);
+		expect(store.state.loadedUserImages).to.deep.equal([first, second]);
+		expect(store.state.currentSidewalk.totalImages).to.be.equal(54);
+		expect(store.state.currentSidewalk.lastImage).to.be.equal(first);
+		expect(spy1.calledOnce).to.be.true;
+		expect(spy2.notCalled).to.be.true;
+	});
+	
+	it("tests the onRemoveLoadedImage method with a found image when it is the only image", () => {
+		const first = {},
+			spy1 = sandbox.spy(),
+			spy2 = sandbox.spy();
+		store.setState({
+			currentSidewalk: {
+				totalImages: 55,
+				lastImage: first
+			},
+			loadedUserImages: [first]
+		})
+		store.onRemoveLoadedImage(first, spy1, spy2);
+		expect(store.state.loadedUserImages.length).to.be.equal(0);
+		expect(store.state.currentSidewalk.totalImages).to.be.equal(54);
+		expect(store.state.currentSidewalk.lastImage).to.be.equal(null);
+		expect(spy1.notCalled).to.be.true;
+		expect(spy2.calledOnce).to.be.true;
+	});
+	
 	afterEach(() => {
 		sandbox.restore();
 	});
