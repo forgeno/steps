@@ -2,20 +2,15 @@ import {Selector} from "testcafe";
 
 import config from "../config";
 import Header from "../pages/Header";
-import MapPage from "../pages/MapPage";
 import BrowserUtilities from "../util/BrowserUtilities";
 import AdminUtilities from "../util/AdminUtilities";
 import StatisticsPage from "../pages/StatisticsPage";
 
 const header = new Header();
-const mapPage = new MapPage();
 const statsPage = new StatisticsPage();
 
 fixture `Tests navigation with the header`
-    .page `${config.baseUrl}`
-	.beforeEach(async (t) => {
-		await t.click(mapPage.closeButton);
-	});
+    .page `${config.baseUrl}`;
 
 test("going to the about page", async (t) => {
     await t.click(header.aboutButton)

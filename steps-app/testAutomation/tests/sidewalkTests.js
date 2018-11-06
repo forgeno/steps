@@ -32,8 +32,7 @@ const mock = RequestMock().onRequestTo("http://199.116.235.159:8000/api/sidewalk
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
 	.beforeEach(async (t) => {
-		await t.click(mapPage.closeButton)
-			.click(mapPage.map, {offsetX: 375, offsetY: 349});
+		await t.click(mapPage.map, {offsetX: 375, offsetY: 349});
 		await AdminUtilities.silentLogin(t);
 	});
 

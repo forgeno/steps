@@ -7,10 +7,7 @@ const mapPage = new MapPage();
 const drawer = new SidewalkDrawer();
 
 fixture `Tests the map dashboard page`
-    .page `${config.baseUrl}`
-	.beforeEach(async (t) => {
-		await t.click(mapPage.closeButton);
-	});
+    .page `${config.baseUrl}`;
 
 // Tests
 test("opening the drawer when clicking on a sidewalk", async (t) => {

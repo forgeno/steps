@@ -24,7 +24,7 @@ export default class CommentsListComponent extends Reflux.Component {
 	
 	/**
 	 * Determines whether the current input text is valid or not
-	 * @return {boolean} - whether the current comment text can be posted or not
+	 * @return {String} - a representation whether the current comment text can be posted or not ("error" or "success")
 	 */
 	_validateCommentState() {
 		const length = this.state.enteredComment.length;

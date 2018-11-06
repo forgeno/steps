@@ -2,7 +2,6 @@ import { Selector, ClientFunction } from 'testcafe';
 
 export default class Page {
     constructor () {
-		this.closeButton = Selector("#dijit_form_Button_1_label", {timeout: 20000});
         this.map = Selector('div.esri-view-root > div.esri-view-surface.esri-view-surface--inset-outline', {timeout: 20000});
 		this.zoomInButton = Selector("div[title='Zoom In']");
 		this.zoomOutButton = Selector("div[title='Zoom Out']");
