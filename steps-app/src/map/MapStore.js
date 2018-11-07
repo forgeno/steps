@@ -198,9 +198,7 @@ export default class MapStore extends Reflux.Store {
 						longitude: event.mapPoint.longitude,
 						latitude: event.mapPoint.latitude,
 						sidewalkSelected: true,
-						selectedSidewalkDetails: {
-							id: sidewalkID
-						}
+						selectedSidewalkDetails: this.state.sidewalks.find((s) => s.id === sidewalkID)
 					});
 				}
           	});
