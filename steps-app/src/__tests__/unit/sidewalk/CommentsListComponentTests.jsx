@@ -61,7 +61,6 @@ describe("<CommentsListComponent />", function() {
 		expect(uploadCommentSpy.called).to.be.true
 	});
 
-<<<<<<< HEAD
 	it("Should disable submit button when a swear or bad word is detected.", () => {
 		const wrapper = shallow(<CommentsListComponent/>);
 		const testObject = {
@@ -96,7 +95,6 @@ describe("<CommentsListComponent />", function() {
 		const output = wrapper.instance()._validateCommentState();
 		expect(output).to.equal("error");
 	});
-=======
 	it("should call a sidewalk action when the delete comment confirmation modal was closed successfully", () => {
 		const removeCommentSpy = sandbox.stub(SidewalkActions, "removeLoadedComment"),
 			wrapper = shallow(<CommentsListComponent />),
@@ -162,7 +160,6 @@ describe("<CommentsListComponent />", function() {
 		expect(wrapper.find("CommentDeletionModal").props().visible).to.be.false;
 	});
 	
->>>>>>> f6be11b2d2d4f6975762e3f54ffe8784f2fff557
 	afterEach(() => {
 		sandbox.restore();
 	});

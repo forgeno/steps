@@ -128,4 +128,36 @@ export default class AdminStore extends Reflux.Store {
 			failedDeleteImage: false
 		});
 	}
+	onHandlePendingImages(accepted, imageId) {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image/respond`, {
+			username: this.username,
+			password: this.password,
+			accepted: accepted,
+			imageId: imageId
+		}).then((result) => {
+			this.setState({
+				userName: result.userName,
+				password: result.password,
+				startIndex: result.startIndex,
+				endIndex: result.endIndex
+			})
+		}).catch((error) => {
+			console.error(error);
+		});
+	}
+	onGetUnapprovedImages(startIndex, endIndex) {
+		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
+			username: this.state.username,
+			password: this.state.password,
+			startIndex: startIndex,
+			endIndex: endIndex
+		}).then((result) => {
+			this.setState({
+				hasMoreImages: result.hasMoreImages,
+				pendingImages: result.images
+			})
+		}).catch((error) => {
+			console.error(error);
+		})
+	}
 }

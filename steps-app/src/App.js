@@ -4,6 +4,7 @@ import './style/App.scss';
 
 import MapDashboard from "./map/MapDashboard";
 import AboutPageView from "./misc-components/AboutPageView";
+import AdminPanelView from "./admin/AdminPanelView";
 import NavbarComponent from "./misc-components/NavbarComponent";
 import SummaryStatisticsView from "./summary/SummaryStatisticsView";
 
@@ -16,7 +17,7 @@ class App extends Component {
 		<Switch>
 			<Route path="/about/" component={AboutPageView} />
 			<Route path="/statistics" component={SummaryStatisticsView} />
-			<Route path="/login" component={MapDashboard} />
+			<Route path="/login" component={AdminPanelView} />
 			<Route path="/map/:id" component={MapDashboard} />
             <Route path="/dashboard" component={MapDashboard} />
 			<Route path="/" component={MapDashboard} />
