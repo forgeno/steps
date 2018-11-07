@@ -4,9 +4,14 @@ const Actions = Reflux.createActions([
 	"deleteComment",
 	"dismissCommentSuccessMessage",
 	"dismissCommentErrorMessage",
+	"checkCredentials",
 	"deleteImage",
 	"dismissImageSuccessMessage",
-	"dismissImageErrorMessage"
+	"dismissImageErrorMessage",
+	"dismissLoginSuccess", 
+	"dismissLoginError",
+	"getUnapprovedImages",
+	"handlePendingImages"
 ]);
 
 export default Actions;

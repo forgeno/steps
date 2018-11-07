@@ -18,7 +18,8 @@ describe("<InfiniteImageGallery />", function() {
 		}});
 		wrapper = shallow(<InfiniteImageGallery isNextPageLoading={false}
 			loadMoreData={sandbox.spy()}
-			visible={true} onClose={sandbox.spy()} hasNextPage={true} loadedImages={[]} />);
+			visible={true} onClose={sandbox.spy()} hasNextPage={true} loadedImages={[]}
+			getImageIndex={()=>{}} />);
 	});
 	
 	describe("Tests _handleKeyDown", function() {
@@ -88,6 +89,7 @@ describe("<InfiniteImageGallery />", function() {
 	
 	it("Tests _onImageClicked updating the current image index", () => {
 		wrapper.instance()._onImageClicked(4);
+
 		expect(wrapper.state("currentImageIndex")).to.be.equal(4);
 	});
 	

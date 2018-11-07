@@ -7,6 +7,7 @@ import ImageDisplayList from "./ImageDisplayList";
 import MasonryInfiniteScroller from "react-masonry-infinite";
 
 import Card from '@material-ui/core/Card';
+import { withStyles } from '@material-ui/core/styles';
 
 /**
  * This component handles the view where the user can see all of the images posted to a sidewalk
@@ -18,7 +19,6 @@ export default class InfiniteImageGallery extends React.Component {
 		this.state = {
 			currentImageIndex: 0
 		};
-
 		//this.selfRef = React.createRef();
 	}
 	
@@ -30,6 +30,9 @@ export default class InfiniteImageGallery extends React.Component {
 		this.setState({
 			currentImageIndex: index
 		});
+		if(this.props.getImageIndex !== undefined){
+			this.props.getImageIndex(index);
+		}
 	};
 	
 	/**
@@ -140,38 +143,50 @@ export default class InfiniteImageGallery extends React.Component {
 			</div>
 		);
 	}
+
+	displayImageDrawer() {
+
+			const ImageDrawer = withStyles(this.props.classes)(Drawer);
+
+			return(
+				<div>
+					<ImageDrawer open={this.props.visible}
+						variant="persistent"
+							onClose={this.props.onClose}
+							anchor="left"
+							SlideProps={{
+								unmountOnExit: true
+								}}
+						>
+						{this.renderSelectedImage()}
+					</ImageDrawer>
+					<ImageDrawer open={this.props.visible}
+							variant="persistent"
+							onClose={this.props.onClose}
+							anchor="right"
+							SlideProps={{
+								unmountOnExit: true
+							}}
+						>
+						<CloseIcon className="closeButton" onClick={this.props.onClose} />
+						<ImageDisplayList isRowLoaded={this._isRowLoaded}
+							loadMoreRows={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
+							rowRenderer={this._rowRenderer}
+							hasNextPage={this.props.hasNextPage}
+							loadedItemCount={this.props.loadedImages.length}
+							isNextPageLoading={this.props.isNextPageLoading}
+						/>
+					</ImageDrawer>
+				</div> 
+			);
+		}
 	
 	render() {
 		// TODO: decide which design to use
+
 		return (
 			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
-				<Drawer open={this.props.visible}
-						variant="persistent"
-						onClose={this.props.onClose}
-						anchor="left"
-						SlideProps={{
-							unmountOnExit: true
-						  }}
-					>
-					{this.renderSelectedImage()}
-				</Drawer>
-				<Drawer open={this.props.visible}
-						variant="persistent"
-						onClose={this.props.onClose}
-						anchor="right"
-						SlideProps={{
-							unmountOnExit: true
-						}}
-					>
-					<CloseIcon className="closeButton" onClick={this.props.onClose} />
-					<ImageDisplayList isRowLoaded={this._isRowLoaded}
-						loadMoreRows={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
-						rowRenderer={this._rowRenderer}
-						hasNextPage={this.props.hasNextPage}
-						loadedItemCount={this.props.loadedImages.length}
-						isNextPageLoading={this.props.isNextPageLoading}
-					/>
-				</Drawer>
+				{this.displayImageDrawer()}
 			</div>
 		);
 		// TODO: set rendered image width to 200 for this

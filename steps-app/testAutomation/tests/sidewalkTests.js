@@ -27,12 +27,13 @@ const logger = RequestLogger({
     logResponseBody: true
 });
 
-const mock = RequestMock().onRequestTo("http://199.116.235.159:8000/api/sidewalk/2/image/delete/").respond();
+const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
 	.beforeEach(async (t) => {
-		await t.wait(2000).click(mapPage.map, {offsetX: 375, offsetY: 349});
+		await mapPage.waitForLoad(t);
+		await mapPage.loadDefaultSidewalk(t);
 		await AdminUtilities.silentLogin(t);
 	});
 
@@ -144,10 +145,10 @@ test("viewing images on a sidewalk", async (t) => {
 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
 	// test selecting a different image
-	await t.click(imageGallery.rows.nth(5).find(".clickableItem"))
+	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
 		.wait(1500);
 	await t.expect(await imageGallery.getSelectedRowIndex(t))
-		.eql(5);
+		.eql(4);
 	
 	// close the gallery and make sure the sidewalk drawer returns
 	await t.click(imageGallery.closeButton)

@@ -8,11 +8,14 @@
     "bad-words": "^3.0.0",
     "bootstrap": "^3.3.7",
     "esri-loader": "^2.5.0",
+    "md5": "^2.2.1",
+    "password-hash": "^1.2.2",
     "react": "^16.5.2",
     "react-bootstrap": "^0.32.4",
     "react-chartjs-2": "^2.7.4",
     "react-dom": "^16.5.2",
     "react-masonry-infinite": "^1.2.2",
+    "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.0.4",
     "react-virtualized": "^9.20.1",
@@ -25,7 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests/sidewalkTests.js"
+    "auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests"
   },
   "eslintConfig": {
     "extends": "react-app"

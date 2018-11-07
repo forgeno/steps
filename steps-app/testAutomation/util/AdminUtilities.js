@@ -12,7 +12,7 @@ export default class AdminUtilities {
 			window.DEV_ADMIN_STORE.setState({
 				isLoggedIn: true,
 				username: "stepsAdmin",
-				password: "stepsSix"
+				password: "716481e86d31433e772f52de60b915c4"
 			});
 		});
 	}

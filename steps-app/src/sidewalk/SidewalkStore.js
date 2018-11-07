@@ -36,8 +36,8 @@ export default class SidewalkStore extends Reflux.Store {
 	}
 	
 	/**
-	 * Loads the specified sidewalk
-	 * @param {Object} sidewalk - a basic sumamry of the sidewalk to load, including it's id and average ratings
+	 * Loads data about the specified sidewalk
+	 * @param {Object} sidewalk - a basic summary of the sidewalk to load, including it's id and average ratings
 	 */
 	onLoadSidewalkDetails(sidewalk) {
 		this.setState(this._getDefaultSidewalkState());

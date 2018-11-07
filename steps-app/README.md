@@ -19,4 +19,4 @@ The front-end component of the STEPS application.
 
 ### Running Tests
 #### Unit and integration tests can be run with the `npm test` command
-#### e2e tests can be run with the `npm run auto BROWSER` command, where BROWSER is the name of the browser you want to run with (chrome, firefox, safari)
+#### e2e tests can be run with the `./node_modules/.bin/testcafe BROWSER ./testAutomation/tests` command, where BROWSER is the name of the browser you want to run with (chrome, firefox, safari)
