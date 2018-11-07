@@ -44,10 +44,10 @@ export default class MapStore extends Reflux.Store {
 	 * @param {class} FeatureLayer allows the layering of the maps on the basemap
 	 */
 
-    onDisplay(Map, MapView, FeatureLayer, Circle, Graphic, Legend) {
-		
+    onDisplay(Map, MapView, FeatureLayer, PopupTemplate, Circle, Graphic, watchUtils, UniqueValueRenderer, SimpleFillSymbol, SimpleLineSymbol, MapImage, Legend) {
 		const map = new Map({
 			basemap: "dark-gray-vector"
+			//layers: [featureLayer],
 		});
 
 		var Rating = 4;
@@ -112,43 +112,60 @@ export default class MapStore extends Reflux.Store {
 					style: "solid"
 				}
 			  }],
+			  highlightOptions: {
+				color: [255, 241, 58],
+				fillOpacity: 0.4
+			  }
 		  };
- 
-		const view = new MapView({
-			map: map,
-			container: "mapContainer",
-			basemap: 'osm',
-			center: [this.state.longitude, this.state.latitude],
-			zoom: 15
-		});
 
 		const featureLayer = new FeatureLayer({
 			url: layerURL,
 			renderer: sidewalkColorMapRenderer
 		});
-		
-		const demoSym = {
-          type: "simple-fill",
-          color: [33, 188, 220, 0.9],
-          style: "solid",
-          outline: {
-            color: "blue",
-            width: 1
-          }
-        };
-        
+ 
+		const view = new MapView({
+			map: map,
+			container: "mapContainer",
+			center: [this.state.longitude, this.state.latitude],
+			zoom: 15
+		});
+
+		  view.when(function() {
+			// get the first layer in the collection of operational layers in the WebMap
+			// when the resources in the MapView have loaded.
+			//var featureLayer = map.layers.getItemAt(0);
+			console.log(map.layers)
+			var legend = new Legend({
+			  view: view,
+			  layerInfos: [{
+				layer: featureLayer,
+				title: "Sidewalk Ratings"
+			  }]
+			});
+  
+			// Add widget to the bottom right corner of the view
+			view.ui.add(legend, "bottom-left");
+		  });
+
         // radius to search in
-        const pxRadius = 5;
+		const pxRadius = 5;
 		map.add(featureLayer);
 
 		view.on("click", (event) => {	
 			//let pxToMeters = view.extent.width / view.width;
-			let a = 5;
+
+			var highlightSelect, highlightHover;
 			let pxToMeters = view.extent.width / view.width;
 
-			featureLayer.popupEnabled = false
+			featureLayer.popupEnabled = true;
+			view.popup.dockEnabled = true;
+			view.popup.visible = false;
+			view.popup.dockOptions = {
+				buttonEnabled: false
+			}
 			featureLayer.popupTemplate = {
-				content: "Unique ID: {osm_id}"
+				title: "Street ID: {osm_id}",
+				content: "Average Rating: {Rating}"
 			}  
 					
 			let c = new Circle({
@@ -156,20 +173,26 @@ export default class MapStore extends Reflux.Store {
 				radius: pxRadius * pxToMeters // meters by default
 			  });
 
-			let g = new Graphic({
-				geometry: c,
-				symbol: demoSym
-			  });
 
 			let q = featureLayer.createQuery();
 			q.geometry = c;
 			featureLayer.queryFeatures(q).then((results) => {
 				if(results.features.length !== 0){
-					let sidewalkID = parseInt(results.features[0].attributes.osm_id)
-					let ratingValue = parseInt(results.features[0].attributes.Rating)
-					console.log(results);
-					console.log(results.features);
-					view.center = [event.mapPoint.longitude, event.mapPoint.latitude];
+
+					let resultingFeatures = results.features
+					console.log(resultingFeatures)
+					let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
+					let ratingValue = parseInt(resultingFeatures[0].attributes.Rating)
+
+					//console.log(resultingFeatures)
+					//Add graphic to the map graphics layer.
+
+					view.goTo({
+						center: [event.mapPoint.longitude, event.mapPoint.latitude],
+						animate: true,
+						duration: 200,
+						easing: "easy-in"
+					})
 					this.setState({
 						longitude: event.mapPoint.longitude,
 						latitude: event.mapPoint.latitude,
@@ -183,7 +206,6 @@ export default class MapStore extends Reflux.Store {
 				}
           	});
 		  }); 
-		  
 
 		this.setState({
 			map,

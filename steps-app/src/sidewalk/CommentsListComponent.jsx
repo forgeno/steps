@@ -27,7 +27,15 @@ export default class CommentsListComponent extends Reflux.Component {
 	 * @return {String} - a representation whether the current comment text can be posted or not ("error" or "success")
 	 */
 	_validateCommentState() {
+		let Filter = require('bad-words'),
+		// eslint-disable-next-line
+		filter = new Filter({ replaceRegex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im});
+		filter.addWords('@','587','780')
 		const length = this.state.enteredComment.length;
+		//console.log(filter.isProfane(this.state.enteredComment));
+		if(filter.isProfane(this.state.enteredComment)){
+			return "error";
+		}
 		if (length === 0) {
 			return "error";
 		} else if (length <= 300) {
@@ -54,6 +62,7 @@ export default class CommentsListComponent extends Reflux.Component {
 			enteredComment: ""
 		});
 	}
+
 	
 	_openConfirmationModal = (selectedComment) => {
 		this.setState({
