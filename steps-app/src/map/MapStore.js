@@ -42,13 +42,78 @@ export default class MapStore extends Reflux.Store {
 	 * @param {class} Map class that specifies the type of basemap for the map to laod as
 	 * @param {class} MapView specifies which div element to bind to, the initial map location and functions to pass in
 	 * @param {class} FeatureLayer allows the layering of the maps on the basemap
-	 * @param {class} PopupTemplate displays a popup on the map when clicked
 	 */
-    onDisplay(Map, MapView, FeatureLayer, PopupTemplate) {
+
+    onDisplay(Map, MapView, FeatureLayer, Circle, Graphic, Legend) {
+		
 		const map = new Map({
-			basemap: "osm"
+			basemap: "dark-gray-vector"
 		});
-	
+
+		var Rating = 4;
+
+		// TODO: Confirm if it is impossible to pass a variable in the field parameter instead
+		const sidewalkColorMapRenderer = {
+			type: "unique-value",  // autocasts as new UniqueValueRenderer()
+			field: "Rating",
+			defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
+			uniqueValueInfos: [{
+				// All features with value of "North" will be blue
+				value: 5,
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#00A300",
+					style: "solid"
+				}
+			}, {
+				// All features with value of "East" will be green
+				value: 4,
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#00A392",
+					style: "solid"
+				}
+			}, {
+				// All features with value of "East" will be green
+				value: 3,
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#FF7A00",
+					style: "solid"
+				}
+			}, {
+				// All features with value of "East" will be green
+				value: 2,
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#FFDF00",
+					style: "solid"
+				}
+			}, {
+				// All features with value of "East" will be green
+				value: 1,
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#FF0000",
+					style: "solid"
+				}
+			}, {
+				// All features with value of "East" will be green
+				value: "",
+				symbol: {
+					type: "simple-line",  // autocasts as new SimpleLineSymbol()
+					width: 3,
+					color: "#D2D3D1",
+					style: "solid"
+				}
+			  }],
+		  };
+ 
 		const view = new MapView({
 			map: map,
 			container: "mapContainer",
@@ -56,26 +121,69 @@ export default class MapStore extends Reflux.Store {
 			center: [this.state.longitude, this.state.latitude],
 			zoom: 15
 		});
-		
+
 		const featureLayer = new FeatureLayer({
-			url: layerURL
+			url: layerURL,
+			renderer: sidewalkColorMapRenderer
 		});
-
+		
+		const demoSym = {
+          type: "simple-fill",
+          color: [33, 188, 220, 0.9],
+          style: "solid",
+          outline: {
+            color: "blue",
+            width: 1
+          }
+        };
+        
+        // radius to search in
+        const pxRadius = 5;
 		map.add(featureLayer);
-		view.on("click",(data) => {
-			// featureLayer.popupTemplate = {
-			// 	content: "Unique ID: {osm_id}"
-			// }
-			// TODO: set sidewalk ID from data instead of using mock
-			view.center = [data.mapPoint.longitude, data.mapPoint.latitude];
-			this.setState({
-				longitude: data.mapPoint.longitude,
-				latitude: data.mapPoint.latitude,
-				sidewalkSelected: true,
-				selectedSidewalkDetails: this.state.sidewalks.find((sidewalk) => sidewalk.id === 2)
 
-			});
-		});
+		view.on("click", (event) => {	
+			//let pxToMeters = view.extent.width / view.width;
+			let a = 5;
+			let pxToMeters = view.extent.width / view.width;
+
+			featureLayer.popupEnabled = false
+			featureLayer.popupTemplate = {
+				content: "Unique ID: {osm_id}"
+			}  
+					
+			let c = new Circle({
+				center: event.mapPoint,
+				radius: pxRadius * pxToMeters // meters by default
+			  });
+
+			let g = new Graphic({
+				geometry: c,
+				symbol: demoSym
+			  });
+
+			let q = featureLayer.createQuery();
+			q.geometry = c;
+			featureLayer.queryFeatures(q).then((results) => {
+				if(results.features.length !== 0){
+					let sidewalkID = parseInt(results.features[0].attributes.osm_id)
+					let ratingValue = parseInt(results.features[0].attributes.Rating)
+					console.log(results);
+					console.log(results.features);
+					view.center = [event.mapPoint.longitude, event.mapPoint.latitude];
+					this.setState({
+						longitude: event.mapPoint.longitude,
+						latitude: event.mapPoint.latitude,
+						sidewalkSelected: true,
+						selectedSidewalkDetails: {
+							id: sidewalkID,
+							overallRating: ratingValue,
+							connectivity: 3
+						}
+					});
+				}
+          	});
+		  }); 
+		  
 
 		this.setState({
 			map,

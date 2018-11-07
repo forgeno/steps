@@ -19,9 +19,9 @@ export default class SummaryMapView extends Component {
 	}
 
 	load() {
-		Promise.all([esriLoader.loadModules(['esri/Map', 'esri/views/MapView'], esriURL), esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate"], esriURL)]).then((data) => {
-			Actions.display(data[0][0],data[0][1],data[1][0],data[1][1]);
-		});
+		Promise.all([esriLoader.loadModules(['esri/Map', 'esri/views/MapView'], esriURL), esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic"], esriURL)]).then((data) => {
+				Actions.display(data[0][0],data[0][1],data[1][0], data[1][1], data[1][2], data[1][3]);
+			});
 	}
 	
 	render() {
