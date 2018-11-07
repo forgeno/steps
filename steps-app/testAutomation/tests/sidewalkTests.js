@@ -145,10 +145,10 @@ test("viewing images on a sidewalk", async (t) => {
 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
 	// test selecting a different image
-	await t.click(imageGallery.rows.nth(5).find(".clickableItem"))
+	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
 		.wait(1500);
 	await t.expect(await imageGallery.getSelectedRowIndex(t))
-		.eql(5);
+		.eql(4);
 	
 	// close the gallery and make sure the sidewalk drawer returns
 	await t.click(imageGallery.closeButton)
