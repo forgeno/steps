@@ -8,7 +8,7 @@ export default class BaseModal {
     constructor() {
 		this.confirm = Selector(".modal-footer > button").nth(1);
 		this.cancel = Selector(".modal-footer > button").nth(0);
-		this.modal = Selector(".modal-header");
+		this.modal = Selector(".modal-header", {timeout: 10000});
     }
 	
 }

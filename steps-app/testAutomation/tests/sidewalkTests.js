@@ -27,12 +27,13 @@ const logger = RequestLogger({
     logResponseBody: true
 });
 
-const mock = RequestMock().onRequestTo("http://199.116.235.159:8000/api/sidewalk/2/image/delete/").respond();
+const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
 	.beforeEach(async (t) => {
-		await t.wait(2000).click(mapPage.map, {offsetX: 375, offsetY: 349});
+		await mapPage.waitForLoad(t);
+		await t.click(mapPage.map, {offsetX: 669, offsetY: 226});
 		await AdminUtilities.silentLogin(t);
 	});
 

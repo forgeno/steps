@@ -3,19 +3,19 @@ import { Selector } from 'testcafe';
 export default class SidewalkDrawer {
 	
     constructor() {
-		this.drawer = Selector(".sidewalkDrawer", {timeout: 20000});
+		this.drawer = Selector(".sidewalkDrawer", {timeout: 40000});
 		this.addressName = Selector(".streetNameSection");
-		this.sectionHeaders = Selector(".sidewalkDrawer p");
+		this.sectionHeaders = Selector(".sidewalkDrawer *[data-sidewalk-header]", {timeout: 40000});
 		
 		// comments
-		this.commentsHeader = this.sectionHeaders.withText("Comments");
+		this.commentsHeader = this.sectionHeaders.withText("Comments", {timeout: 30000});
 		this.commentInput = Selector(".comments .commentBox textarea");
 		this.submitComment = Selector(".comments button");
 		this.comments = Selector(".commentDisplaySection h5");
 		
 		// images
-		this.imagesHeader = this.sectionHeaders.withText("Images");
-		this.uploadImagesButton = Selector(".btn.btn-primary");
+		this.imagesHeader = this.sectionHeaders.withText("Images", {timeout: 30000});
+		this.uploadImagesButton = Selector(".uploadSidewalkImageText").parent();
 		this.previewImagesButton = Selector(".previewSidewalkImages .btn");
     }
 	

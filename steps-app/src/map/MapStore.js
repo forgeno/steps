@@ -180,11 +180,11 @@ export default class MapStore extends Reflux.Store {
 			featureLayer.queryFeatures(q).then((results) => {
 				if(results.features.length !== 0){
 
-					let resultingFeatures = results.features
-					console.log(resultingFeatures)
+					let resultingFeatures = results.features;
+					
+					// TODO: fix some sidewalks osm_id being " " (NaN)
 					let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
 					let ratingValue = parseInt(resultingFeatures[0].attributes.Rating)
-
 					//console.log(resultingFeatures)
 					//Add graphic to the map graphics layer.
 
@@ -199,9 +199,7 @@ export default class MapStore extends Reflux.Store {
 						latitude: event.mapPoint.latitude,
 						sidewalkSelected: true,
 						selectedSidewalkDetails: {
-							id: sidewalkID,
-							overallRating: ratingValue,
-							connectivity: 3
+							id: sidewalkID
 						}
 					});
 				}

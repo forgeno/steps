@@ -9,22 +9,21 @@ const drawer = new SidewalkDrawer();
 fixture `Tests the map dashboard page`
     .page `${config.baseUrl}`
 	.beforeEach(async (t) => {
-		await t.wait(5000);
+		await mapPage.waitForLoad(t);
 	});
 
 // Tests
 test("opening the drawer when clicking on a sidewalk", async (t) => {
-    await t.click(mapPage.map, {offsetX: 375, offsetY: 349})
+    await t.click(mapPage.map, {offsetX: 669, offsetY: 226})
         .expect(drawer.drawer.visible).eql(true, {timeout: 30000})
-		.expect(drawer.addressName.textContent).eql("test2");
+		.expect(drawer.addressName.textContent).eql("InitialAddress");
 });
 
-// TODO: uncomment this when this is implemented
-/*test("not opening the drawer when a non-sidewalk point is clicked", async (t) => {
+test("not opening the drawer when a non-sidewalk point is clicked", async (t) => {
 	await t.click(mapPage.map, {offsetX: 386, offsetY: 173})
 		.wait(3000)
         .expect(drawer.drawer.exists).eql(false)
-});*/
+});
 
 test("zooming with the zoom buttons", async (t) => {
 	const startingZoom = await mapPage.getZoomLevel();

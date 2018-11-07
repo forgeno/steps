@@ -68,7 +68,7 @@ class SidewalkDetailsView extends Component {
 		const { classes } = this.props;
 		return (
 			<ExpansionPanel defaultExpanded={expanded}>
-				<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+				<ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} data-sidewalk-header={header}>
 					<Typography className={classes.heading}>{header}</Typography>
 				</ExpansionPanelSummary>
 				<ExpansionPanelDetails>
