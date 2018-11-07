@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from api.models import Sidewalk, SidewalkComment
 import api.views.viewUtils
+from api.views.sidewalkView import SidewalkView
 
 # Tests for fetching all comments on a sidewalk
 class GetSidewalkCommentsTests(APITestCase):
@@ -174,6 +175,41 @@ class PostCommentTests(APITestCase):
 		self.assertEqual(newComment.sidewalk_id, self.sidewalk["id"])
 		self.assertEqual(newComment.text, "a test comment")
 
+	def tearDown(self):
+		with connection.cursor() as cursor:
+			cursor.execute("DELETE FROM api_sidewalkcomment")
+			cursor.execute("DELETE FROM api_sidewalk")
+
+class TestCommentsCount(APITestCase):
+	def setUp(self):
+		self.sidewalk1 = Sidewalk.objects.create(address="aaa").__dict__
+		self.sidewalk2 = Sidewalk.objects.create(address="aaa").__dict__
+		self.instance = SidewalkView()
+	
+	def test_fake_sidewalk(self):
+		self.assertEqual(self.instance._getCommentsCount(999929), 0)
+	
+	def test_with_no_comments(self):
+		self.assertEqual(self.instance._getCommentsCount(self.sidewalk1["id"]), 0)
+		
+	def test_with_diff_sidewalk_rating(self):
+		SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij")
+		self.assertEqual(self.instance._getCommentsCount(self.sidewalk2["id"]), 0)
+		
+	def test_one_rating(self):
+		SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij")
+		self.assertEqual(self.instance._getCommentsCount(self.sidewalk1["id"]), 1)
+		
+	def test_two_comments(self):
+		SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij")
+		SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij")
+		self.assertEqual(self.instance._getCommentsCount(self.sidewalk1["id"]), 2)
+		
+	def test_hundred_comments(self):
+		for i in range(0, 100):
+			SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij")
+		self.assertEqual(self.instance._getCommentsCount(self.sidewalk1["id"]), 100)
+	
 	def tearDown(self):
 		with connection.cursor() as cursor:
 			cursor.execute("DELETE FROM api_sidewalkcomment")

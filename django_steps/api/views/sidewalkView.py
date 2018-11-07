@@ -73,6 +73,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## @return {List<Object>} - a list consisting of each activity, and the relative occurrences each activity represents as a percentage (0 to 1)
 	def _getMobilityTypeDistribution(self, pk):
 		# TODO: limit to just the given sidewalk with primary key
+		# TODO: write unit tests when this is implemented
 		with connection.cursor() as cursor:
 			cursor.execute("SELECT activity_title as activityTitle, COUNT(*) FROM api_pedestrian GROUP BY activity_title")
 			rows = cursor.fetchall()
@@ -105,6 +106,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	
 	## TODO: Check Why this is not returning a table
 	def _getCSV(self):
+		# TODO: write tests when this is fixed
 		with connection.cursor as cursor:
 			cursor.execute("""SELECT s.id, s.address, sc.comment_id, sc.text, sc.posted_time_comment, sc.is_deleted_comment, 
 			sr.rating_id, sr.accessibility_rating, sr.connectivity_rating, sr.comfort_rating, sr.physical_safety_rating, 
@@ -124,13 +126,13 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 				(SELECT id as image_id, image_url, posted_time as posted_time_image, is_pending, is_deleted as is_deleted_image 
 				FROM api_sidewalkimage) as si ON 
 				ISNULL(s.id, sc.sidewalk_id, sr.sidewalk_id) = si.sidewalk_id)""")
-			rows = fetchall()
+			rows = cursor.fetchall()
 			
 		return rows
 		
 	## Returns the total number of sidewalks, ratings and comments in sidewalk database
-	## @return {list} - list of numbers with the values of total sidewalk/ratings/comments
-	def _totalSidewalkRatingComment(self):
+	## @return {list} - a list of counts in the form of [sidewalk count, rating count, comment count, image count]
+	def _getTotalCounts(self):
 		with connection.cursor() as cursor:
 			cursor.execute("""SELECT 
 			(SELECT COUNT(*) FROM api_sidewalk) as sidewalk_count, 
@@ -138,61 +140,69 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 			(SELECT COUNT(*) FROM api_sidewalkcomment) as comment_count,
 			(SELECT COUNT(*) FROM api_sidewalkimage) as image_count""")
 			row = cursor.fetchall()
-		return row
+		return row[0]
 
-	## Compute the average rating of all the sidewalks and their attributes
-	## @return {list} - iist contains number with the average rating of all the sidewalks
-	def _avgOverallRating(self):
-		with connection.cursor() as cursor:
-			cursor.execute("""SELECT ((acc + con + com + ps + sec)/total) as avg
-			FROM (SELECT SUM(accessibility_rating) as acc, 
-			SUM(connectivity_rating) as con, 
-			SUM(comfort_rating) as com, 
-			SUM(physical_safety_rating) as ps, 
-			SUM(security_rating) as sec, 
-			COUNT(*) as total
-			FROM api_sidewalkrating) as sum_indiv_rating""")
-			row = cursor.fetchall()
-
-		return row
-	
 	## Computes the individual rating of each feature of sidewalk for all sidewalks combined
-	## @return {list} - Returns the average values of the feature of sidewalks.
+	## @return {list} - the average values of each walkability attribute across all sidewalks in the order
+	## 			[accessibility, connectivity, comfort, physical safety, security]
 	def _avgIndivRating(self):
 		with connection.cursor() as cursor:
-			cursor.execute("""SELECT AVG(accessibility_rating), 
-			AVG(connectivity_rating), 
-			AVG(comfort_rating), 
-			AVG(physical_safety_rating), 
-			AVG(security_rating)
+			cursor.execute("""SELECT TRUNCATE(IFNULL(AVG(accessibility_rating), 0), 2), 
+			TRUNCATE(IFNULL(AVG(connectivity_rating), 0), 2), 
+			TRUNCATE(IFNULL(AVG(comfort_rating), 0), 2), 
+			TRUNCATE(IFNULL(AVG(physical_safety_rating), 0), 2), 
+			TRUNCATE(IFNULL(AVG(security_rating), 0), 2)
 			FROM api_sidewalkrating""")
-			row = cursor.fetchall()
+			row = cursor.fetchone()
 
 		return row
 
-	## Calculate the total number of ratings done in a specific month and year
-	## @return {list} - returns a list of contribution done in a specific month and year 
+	## Computes the average rating of all the sidewalks and their attributes
+	## @return {number} - the average overall rating across all sidewalks
+	def _avgOverallRating(self):
+		indiv = self._avgIndivRating()
+		return round((indiv[0] + indiv[1] + indiv[2] + indiv[3] + indiv[4]) / 5, 2)
+	
+	## Calculate the total number of contributions made in a specific month and year
+	## @return {list} - returns a list of contribution made by specific month and year in the form [(month + year, contribution count), ...]
 	def _contributionsByMonth(self):
 		with connection.cursor() as cursor:
 			cursor.execute("""SELECT month, year, COUNT(*)
-			FROM (SELECT YEAR(posted_time) as year, MONTH(posted_time) as month FROM api_sidewalkrating) as dates
+			FROM (SELECT YEAR(posted_time) as year, MONTH(posted_time) as month FROM api_sidewalkrating) ratings
 			GROUP BY year, month;""")
-			row = cursor.fetchall()
+			ratings = cursor.fetchall()
+			
+			cursor.execute("""SELECT month, year, COUNT(*)
+			FROM (SELECT YEAR(posted_time) as year, MONTH(posted_time) as month FROM api_sidewalkcomment) comments
+			GROUP BY year, month;""")
+			comments = cursor.fetchall()
+			
+			cursor.execute("""SELECT month, year, COUNT(*)
+			FROM (SELECT YEAR(posted_time) as year, MONTH(posted_time) as month FROM api_sidewalkimage) images
+			GROUP BY year, month;""")
+			images = cursor.fetchall()
 
-		return row
+		joined = {}
+		for type in (ratings, comments, images):
+			for dateInstance in type:
+				date = str(dateInstance[0]) + "/" + str(dateInstance[1])
+				if date in joined:
+					joined[date] += dateInstance[2]
+				else:
+					joined[date] = dateInstance[2]
+		return joined.items()
 
 	## formats the results computed by __contributionsByMonth function to display in summary
-	## @return {list} - values of the contribution and monath and year in dicitionary format with their respective values 
-	def _contributionsByMonthFormat(self, contMonth):
-		dictionaryList = []
-		for i in range(0, len(contMonth)):
-			monthYearDictionary = {}
-			value = calendar.month_name[contMonth[i][0]] + " " + str(contMonth[i][1])
-			monthYearDictionary['monthYear'] = value
-			monthYearDictionary['contributions'] = contMonth[0][2]
-			dictionaryList.append(monthYearDictionary)
-		
-		return dictionaryList
+	## @return {list} - values of the contribution and month and year in dicitionary format with their respective values 
+	def _getFormattedContributions(self):
+		contMonth = self._contributionsByMonth()
+		contributions = []
+		for contrib in contMonth:
+			contributions.append({
+				"monthYear": contrib[0],
+				"contributions": contrib[1]
+			})
+		return contributions
 
 	## Returns the set of all unapproved images from sidewalk database starting from a specific offset to the end of list.
 	## @param {Number} startIndex - the number of rows to skip before starting to return
@@ -471,23 +481,23 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## @return {Response} - the response to the post request
 	@action(methods=['get'], detail=False, url_path='summary')
 	def sidewalkSummary(self, request):
-		count_values = self._totalSidewalkRatingComment()
-		contMonth = self._contributionsByMonth()
+		count_values = self._getTotalCounts()
+		avgRatings = self._avgIndivRating()
 
 		response = {
-			"totalSidewalks": count_values[0][0],
-			"totalRatings": count_values[0][1],
-			"totalComments": count_values[0][2],
-			"totalImagesUploaded": count_values[0][3],
-			"averageOverallRating": self._avgOverallRating()[0][0],
-			"contributionsByMonth": self._contributionsByMonthFormat(contMonth),
+			"totalSidewalks": count_values[0],
+			"totalRatings": count_values[1],
+			"totalComments": count_values[2],
+			"totalImagesUploaded": count_values[3],
+			"averageOverallRating": self._avgOverallRating(),
+			"contributionsByMonth": self._getFormattedContributions(),
 
 			"averageRatings": {
-				"accessibility": self._avgIndivRating()[0][0],
-				"connectivity": self._avgIndivRating()[0][1],
-				"comfort": self._avgIndivRating()[0][2],
-				"physical safety": self._avgIndivRating()[0][3],
-				"security": self._avgIndivRating()[0][4]
+				"accessibility": avgRatings[0],
+				"connectivity": avgRatings[1],
+				"comfort": avgRatings[2],
+				"physical safety": avgRatings[3],
+				"security": avgRatings[4]
 			}
 
 		}

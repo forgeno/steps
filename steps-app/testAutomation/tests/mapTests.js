@@ -7,12 +7,15 @@ const mapPage = new MapPage();
 const drawer = new SidewalkDrawer();
 
 fixture `Tests the map dashboard page`
-    .page `${config.baseUrl}`;
+    .page `${config.baseUrl}`
+	.beforeEach(async (t) => {
+		await t.wait(5000);
+	});
 
 // Tests
 test("opening the drawer when clicking on a sidewalk", async (t) => {
     await t.click(mapPage.map, {offsetX: 375, offsetY: 349})
-        .expect(drawer.drawer.visible).eql(true)
+        .expect(drawer.drawer.visible).eql(true, {timeout: 30000})
 		.expect(drawer.addressName.textContent).eql("test2");
 });
 
