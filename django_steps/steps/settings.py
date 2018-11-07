@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'frontend',
     'rest_framework',
     'api.apps.ApiConfig',
-    'corsheaders'
+    'corsheaders',
+	'cloudinary'
 ]
 
 MIDDLEWARE = [
@@ -84,25 +85,35 @@ WSGI_APPLICATION = 'steps.wsgi.application'
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
-
-DATABASES = {
-    'default': {
-      'ENGINE': 'django.db.backends.mysql',
-      'NAME': 'stepsdb',
-      'USER': 'root',
-      'PASSWORD': 'sql##123',
-      'HOST': 'localhost',
-      'PORT': '3306',
-    #   'OPTIONS' : {
-    #       'init_command' : "SET sql_mode = 'STRICT_TRANS_TABLES'",
-    #       'charset':'utf8mb4',
-    #   },
-    #   'TEST': {
-    #       'CHARSET':'utf8mb4',
-    #       'COLLATION': 'utf8mb4_unicode_ci',
-    #   }
-   }
-}   
+if os.getenv('TRAVIS', None):
+	DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.mysql',
+			'NAME': 'stepsdb',
+			'USER': 'travis',
+			'PASSWORD': '',
+			'HOST': '127.0.0.1',
+		}
+	}
+else:
+	DATABASES = {
+		'default': {
+			'ENGINE': 'django.db.backends.mysql',
+			'NAME': 'stepsdb',
+			'USER': 'root',
+			'PASSWORD': 'sql##123',
+			'HOST': 'localhost',
+			'PORT': '3306',
+		#   'OPTIONS' : {
+		#       'init_command' : "SET sql_mode = 'STRICT_TRANS_TABLES'",
+		#       'charset':'utf8mb4',
+		#   },
+		#   'TEST': {
+		#       'CHARSET':'utf8mb4',
+		#       'COLLATION': 'utf8mb4_unicode_ci',
+		#   }
+		}
+	}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

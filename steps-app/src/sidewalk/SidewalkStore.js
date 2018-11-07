@@ -10,27 +10,43 @@ export default class SidewalkStore extends Reflux.Store {
 
 	constructor() {
 		super();
-		this.state = {
+		this.state = this._getDefaultSidewalkState();
+		this.listenables = Actions;
+
+		if (process.env.NODE_ENV === "development"){
+			window.DEV_SIDEWALK_STORE = this;
+		}
+	}
+
+	/**
+	 * Gets the default state of the store before a sidewalk is selected
+	 * @return {Object} - the default state of the store before a sidewalk is selected
+	 */
+	_getDefaultSidewalkState() {
+		return {
 			loadedUserImages: [],
 			hasNextImagesPage: true,
 			currentSidewalk: null,
 			uploadingSidewalkImage: false,
 			uploadedImageError: false,
 			uploadingComment: false,
-			uploadCommentFailed: false
+			uploadCommentFailed: false,
+			uploadImageSucceeded: false
 		};
-		this.listenables = Actions;
 	}
-
+	
 	/**
 	 * Loads the specified sidewalk
 	 * @param {Object} sidewalk - a basic sumamry of the sidewalk to load, including it's id and average ratings
 	 */
 	onLoadSidewalkDetails(sidewalk) {
+		this.setState(this._getDefaultSidewalkState());
 		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
 			const newSidewalk = Object.assign({}, sidewalk, data);
 			this.setState({
-				currentSidewalk: newSidewalk
+				currentSidewalk: newSidewalk,
+				hasNextImagesPage: newSidewalk.lastImage,
+				loadedUserImages: [newSidewalk.lastImage]
 			});
 		}).catch((err) => {
 			console.error(err);
@@ -44,7 +60,8 @@ export default class SidewalkStore extends Reflux.Store {
 	onUploadSidewalkImage(base64Image) {
 		this.setState({
 			uploadingSidewalkImage: true,
-			uploadedImageError: false
+			uploadedImageError: false,
+			uploadImageSucceeded: false
 		});
 
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image/create`, {
@@ -52,7 +69,7 @@ export default class SidewalkStore extends Reflux.Store {
 		}).then(() => {
 			this.setState({
 				uploadingSidewalkImage: false,
-				uploadedImageError: false
+				uploadImageSucceeded: true
 			});
 		}).catch((err) => {
 			this.setState({
@@ -74,17 +91,20 @@ export default class SidewalkStore extends Reflux.Store {
 			startIndex: startIndex,
 			endIndex: stopIndex
 		}).then((res) => {
-			// TODO: potentially fetch data for each new loaded image and assign to data attribute
 			this.setState({
 				hasNextImagesPage: res.hasMoreImages,
 				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images)
 			});
-			updateStateCallback();
+			return updateStateCallback();
 		}).catch((err) => {
 			console.error(err);
 		});
 	}
 
+	/**
+	 * Uploads a comment to the database for the current sidewalk
+	 * @param {String} comment - the comment to upload
+	 */
 	onUploadComment(comment) {
 		this.setState({
 			uploadingComment: true
@@ -106,5 +126,70 @@ export default class SidewalkStore extends Reflux.Store {
 			});
 			console.error(err);
 		});
+	}
+	
+	/**
+	 * Dismisses the message notifying the user that an error happened when uploading an image
+	 */
+	onDismissImageErrorMessage() {
+		this.setState({
+			uploadedImageError: false
+		});
+	}
+	
+	/**
+	 * Dismisses the message notifying the user that their image was successfully uploaded
+	 */
+	onDismissImageSuccessMessage() {
+		this.setState({
+			uploadImageSucceeded: false
+		});
+	}
+	
+	/**
+	 * Removes the specified comment from the currently loaded sidewalk
+	 * @param {Object} comment - the comment to remove
+	 */
+	onRemoveLoadedComment(comment) {
+		const currentSidewalkComments = this.state.currentSidewalk.comments.slice(),
+			index = currentSidewalkComments.indexOf(comment);
+		if (index !== -1) {
+			const newTotalComments = this.state.currentSidewalk.totalComments - 1;
+			currentSidewalkComments.splice(index, 1);
+			this.setState({
+				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments, totalComments: newTotalComments})
+			});
+		}
+	}
+	
+	/**
+	 * Removes the specified image from the currently loaded sidewalk
+	 * @param {Object} image - the image to remove
+	 * @param {function} onLastImageDeleted - a callback function that will be called if the deleted image is the last loaded one
+	 * @param {function} onNoImagesRemaining - a callback function that will be called if there are no images remaining
+	 */
+	onRemoveLoadedImage(image, onLastImageDeleted, onNoImagesRemaining) {
+		const index = this.state.loadedUserImages.indexOf(image);
+		if (index !== -1) {
+			const newImagesCount = this.state.currentSidewalk.totalImages - 1,
+				newImages = this.state.loadedUserImages.slice(),
+				sidewalkOverride = {totalImages: newImagesCount};			
+			newImages.splice(index, 1);
+			if (this.state.currentSidewalk.lastImage === image) {
+				sidewalkOverride.lastImage = newImages[0] || null;
+			}
+
+			this.setState({
+				currentSidewalk: Object.assign(this.state.currentSidewalk, sidewalkOverride),
+				loadedUserImages: newImages
+			});
+			
+			if (index === newImages.length && index > 0) {
+				onLastImageDeleted(index);
+			}
+			if (newImages.length === 0) {
+				return onNoImagesRemaining();
+			}
+		}
 	}
 }

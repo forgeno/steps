@@ -6,7 +6,7 @@ import LoaderComponent from "../misc-components/LoaderComponent";
 import ImageDisplayList from "./ImageDisplayList";
 import MasonryInfiniteScroller from "react-masonry-infinite";
 
-// TODO: potentially use .data instead of .url for loaded images (depends on which is faster but there is also memory tradeoff)
+import Card from '@material-ui/core/Card';
 
 /**
  * This component handles the view where the user can see all of the images posted to a sidewalk
@@ -19,30 +19,7 @@ export default class InfiniteImageGallery extends React.Component {
 			currentImageIndex: 0
 		};
 
-		this.selfRef = React.createRef();
-	}
-	
-	/**
-	 * Handles the window being resized
-	 */
-	_onResize = () => {
-		if (this.props.visible) {
-			this.forceUpdate();
-		}
-	};
-	
-	componentDidMount() {
-		window.addEventListener("resize", this._onResize);
-	}
-	
-	componentDidUpdate(prevProps) {
-		if (prevProps.visible !== this.props.visible && this.props.visible) {
-			this.selfRef.current.focus();
-		}
-	}
-	
-	componentWillUnmount() {
-		window.removeEventListener("resize", this._onResize);
+		//this.selfRef = React.createRef();
 	}
 	
 	/**
@@ -75,7 +52,7 @@ export default class InfiniteImageGallery extends React.Component {
 			startIndex = this.props.loadedImages.length;
 			stopIndex = startIndex + 1;
 		}
-		this.props.loadMoreData(startIndex, stopIndex);
+		this.props.loadMoreData(startIndex, stopIndex + 4);
 	};
 	
 	/**
@@ -89,10 +66,11 @@ export default class InfiniteImageGallery extends React.Component {
 		let content;
 		if (this._isRowLoaded({index})) {
 			content = (
-				<div onClick={() => {this._onImageClicked(index)}} className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
-					<img className="img-responsive" alt="uploaded"
-						width={140}
-						src={this.props.loadedImages[index].url} />
+				<div className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
+					<Card className="clickableItem">
+						{this.props.renderAboveImage && this.props.renderAboveImage(this.state.currentImageIndex === index, this.props.loadedImages[index])}
+						<img onClick={() => {this._onImageClicked(index)}} className="img-responsive fillAvailable" alt="uploaded" src={this.props.loadedImages[index].url} />
+					</Card>
 				</div>
 			);
 		} else {
@@ -110,12 +88,17 @@ export default class InfiniteImageGallery extends React.Component {
 	 * @param {Object} event - the event representing the key press
 	 */
 	_handleKeyDown = (event) => {
+		if (!this.props.visible) {
+			return;
+		}
 		if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-			// TODO: do some testing here
 			if (this.state.currentImageIndex === this.props.loadedImages.length - 1) {
+				if (!this.props.hasNextPage) {
+					return;
+				}
 				this._loadMoreRows({
 					startIndex: this.state.currentImageIndex + 1,
-					endIndex: this.state.currentImageIndex + 1
+					stopIndex: this.state.currentImageIndex + 1
 				});
 			}
 			this.setState({
@@ -152,9 +135,7 @@ export default class InfiniteImageGallery extends React.Component {
 		}
 		
 		return (
-			// TODO: find a way to do this without inline styling. width = 100vw - 250px gives some weird problem
-			// where this container is open if the window is maximized
-			<div style={{width: window.innerWidth - 250}} className="selectedImageWrapper">
+			<div className="selectedImageWrapper">
 				{content}
 			</div>
 		);
@@ -163,11 +144,14 @@ export default class InfiniteImageGallery extends React.Component {
 	render() {
 		// TODO: decide which design to use
 		return (
-			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv" >
+			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
 				<Drawer open={this.props.visible}
 						variant="persistent"
 						onClose={this.props.onClose}
 						anchor="left"
+						SlideProps={{
+							unmountOnExit: true
+						  }}
 					>
 					{this.renderSelectedImage()}
 				</Drawer>
@@ -175,13 +159,17 @@ export default class InfiniteImageGallery extends React.Component {
 						variant="persistent"
 						onClose={this.props.onClose}
 						anchor="right"
+						SlideProps={{
+							unmountOnExit: true
+						}}
 					>
-					<CloseIcon className="closeImageListButton" onClick={this.props.onClose} />
+					<CloseIcon className="closeButton" onClick={this.props.onClose} />
 					<ImageDisplayList isRowLoaded={this._isRowLoaded}
 						loadMoreRows={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
 						rowRenderer={this._rowRenderer}
 						hasNextPage={this.props.hasNextPage}
 						loadedItemCount={this.props.loadedImages.length}
+						isNextPageLoading={this.props.isNextPageLoading}
 					/>
 				</Drawer>
 			</div>

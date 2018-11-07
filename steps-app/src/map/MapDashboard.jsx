@@ -1,7 +1,10 @@
 import React from "react";
 import { Component } from 'reflux';
+
 import SummaryMapView from "./SummaryMapView";
 import SidewalkDetailsView from "../sidewalk/SidewalkDetailsView";
+import SidewalkUploadedImagesGallery from "../sidewalk/images/SidewalkUploadedImagesGallery";
+import AlertsContainer from "./AlertsContainer";
 
 import MapStore from "./MapStore";
 import MapActions from "./MapActions";
@@ -10,7 +13,9 @@ export default class MapDashboard extends Component {
 
 	constructor(props) {
 		super(props);
-		this.state = {};
+		this.state = {
+			viewingImages: false
+		};
 		this.store = MapStore;
 	}
 
@@ -20,7 +25,34 @@ export default class MapDashboard extends Component {
 		}
 	}
 	
-	_onClose = () => {
+	/**
+	 * Opens up the uploaded images view
+	 */
+	_viewImages = () => {
+		MapActions.setDrawerOpened(false);
+		this.setState({
+			viewingImages: true
+		});
+	};
+	
+	/**
+	 * Closes the uploaded images view
+	 * @param {boolean} reopenDrawer - whether the drawer should be reopened or not
+	 */
+	_closeImages = (reopenDrawer = true) => {
+		if (reopenDrawer) {
+			MapActions.setDrawerOpened(true);
+		}
+		this.setState({
+			viewingImages: false
+		});
+	};
+
+	/**
+	 * Handles the user closing the drawer
+	 */
+	_onCloseDrawer = () => {
+		this._closeImages(false);
 		MapActions.setDrawerOpened(false);
 	};
 	
@@ -28,7 +60,14 @@ export default class MapDashboard extends Component {
 		return (
 			<div>
 				<SummaryMapView />
-				<SidewalkDetailsView visible={this.state.sidewalkSelected} onClose={this._onClose} selectedSidewalkDetails={this.state.selectedSidewalkDetails} />
+				<SidewalkDetailsView
+					visible={this.state.sidewalkSelected}
+					onClose={this._onCloseDrawer}
+					selectedSidewalkDetails={this.state.selectedSidewalkDetails}
+					onOpenImages={this._viewImages}
+				/>
+				<SidewalkUploadedImagesGallery onClose={this._closeImages} visible={this.state.viewingImages} />
+				<AlertsContainer />
 			</div>
 		);
 	}

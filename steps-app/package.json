@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.2.0",
     "@material-ui/icons": "^3.0.1",
+    "bad-words": "^3.0.0",
     "bootstrap": "^3.3.7",
     "esri-loader": "^2.5.0",
     "react": "^16.5.2",
@@ -23,7 +24,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests/sidewalkTests.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,6 +43,7 @@
     "mocha": "^5.2.0",
     "node-sass": "^4.9.3",
     "sass-loader": "^7.1.0",
-    "sinon": "^6.3.5"
+    "sinon": "^6.3.5",
+    "testcafe": "^0.23.0"
   }
 }

@@ -1,4 +1,35 @@
-language: node_js
-node_js:
- - "node"
-script: sh ./scripts/ciTests.sh
+matrix:
+  include:
+  - language: python
+    python:
+    - 3.5.2
+    services:
+    - mysql
+    before_install:
+     - cd django_steps/
+    install:
+     - pip3 install -r requirements.txt
+    before_script:
+     - mysql -e 'create database stepsdb;'
+     - python3 manage.py makemigrations
+     - python3 manage.py migrate
+    script:
+     - python3 manage.py test api.tests
+  - language: node_js
+    node_js:
+    - "node"
+    dist: trusty
+    sudo: required
+    addons:
+      firefox: latest
+      apt:
+        sources:
+        - google-chrome
+        packages:
+        - google-chrome-stable fluxbox
+    before_script:
+      - "export DISPLAY=:99.0"
+      - "sh -e /etc/init.d/xvfb start"
+      - sleep 3
+      - fluxbox >/dev/null 2>&1 &
+    script: sh ./scripts/ciTests.sh

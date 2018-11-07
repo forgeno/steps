@@ -61,6 +61,108 @@ describe("<CommentsListComponent />", function() {
 		expect(uploadCommentSpy.called).to.be.true
 	});
 
+<<<<<<< HEAD
+	it("Should disable submit button when a swear or bad word is detected.", () => {
+		const wrapper = shallow(<CommentsListComponent/>);
+		const testObject = {
+			target: {value: "bad work is bum"}
+			};
+
+		wrapper.instance()._handleChange(testObject);
+
+		const output = wrapper.instance()._validateCommentState();
+		expect(output).to.equal("error");
+	});
+
+	it("Should disable submit button when a phone number is detected", () => {
+		const wrapper = shallow(<CommentsListComponent/>);
+		const testObject = {
+			target: {value: "bad work is 587-1111-2312 and 780-231-4123"}
+			};
+
+		wrapper.instance()._handleChange(testObject);
+		const output = wrapper.instance()._validateCommentState();
+		expect(output).to.equal("error");
+	});
+
+	it("Should disable submit button when an email is detected", () => {
+		const wrapper = shallow(<CommentsListComponent/>);
+		const testObject = {
+			target: {value: "hey i love pizza, email me at johnpizzaco@gmail.com"}
+			};
+
+		wrapper.instance()._handleChange(testObject);
+
+		const output = wrapper.instance()._validateCommentState();
+		expect(output).to.equal("error");
+	});
+=======
+	it("should call a sidewalk action when the delete comment confirmation modal was closed successfully", () => {
+		const removeCommentSpy = sandbox.stub(SidewalkActions, "removeLoadedComment"),
+			wrapper = shallow(<CommentsListComponent />),
+			comment = {
+				id: "stuff"
+			};
+		wrapper.instance()._openConfirmationModal(comment);
+		wrapper.instance()._closeConfirmationModal(true);
+		expect(removeCommentSpy.calledOnce).to.be.true;
+		expect(removeCommentSpy.getCall(0).args[0]).to.be.equal(comment);
+	});
+	
+	it("should not call a sidewalk action when the delete comment confirmation modal was closed unsuccessfully", () => {
+		const removeCommentSpy = sandbox.stub(SidewalkActions, "removeLoadedComment"),
+			wrapper = shallow(<CommentsListComponent />),
+			comment = {
+				id: "stuff"
+			};
+		wrapper.instance()._openConfirmationModal(comment);
+		wrapper.instance()._closeConfirmationModal();
+		expect(removeCommentSpy.notCalled).to.be.true;
+	});
+	
+	it("should render the modal when a comment is attempting to be deleted", () => {
+		const wrapper = shallow(<CommentsListComponent />),
+			comment = {
+				id: "stuff",
+				text: "moreStuff"
+			};
+		wrapper.instance().store.singleton.setState({
+			currentSidewalk: {
+				comments: []
+			}
+		});
+		wrapper.instance()._openConfirmationModal(comment);
+		expect(wrapper.find("CommentDeletionModal").props().visible).to.be.true;
+	});
+	
+	it("should not render the modal when a comment is not attempting to be deleted", () => {
+		const wrapper = shallow(<CommentsListComponent />);
+		wrapper.instance().store.singleton.setState({
+			currentSidewalk: {
+				comments: []
+			}
+		});
+		expect(wrapper.find("CommentDeletionModal").props().visible).to.be.false;
+	});
+	
+	it("should not render the modal after it is closed", () => {
+		const wrapper = shallow(<CommentsListComponent />),
+			comment = {
+				id: "stuff",
+				text: "moreStuff"
+			};
+		wrapper.instance().store.singleton.setState({
+			currentSidewalk: {
+				comments: []
+			}
+		});
+		sandbox.stub(SidewalkActions, "removeLoadedComment");
+		wrapper.instance()._openConfirmationModal(comment);
+		wrapper.instance()._closeConfirmationModal(true);
+		expect(wrapper.find("CommentDeletionModal").props().visible).to.be.false;
+	});
+	
+>>>>>>> f6be11b2d2d4f6975762e3f54ffe8784f2fff557
 	afterEach(() => {
 		sandbox.restore();
 	});

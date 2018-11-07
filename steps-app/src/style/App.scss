@@ -5,6 +5,7 @@
 @import "Images.scss";
 @import "SummaryMap.scss";
 @import "SidewalkDrawer.scss";
+@import "Alerts.scss";
 
 /* bootstrap button overrides */
 .btn-primary {
@@ -36,4 +37,40 @@ body {
 
 .padding25 {
 	padding: 25px 25px 25px 25px;
+}
+
+.marginUpDown15 {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.marginTop10 {
+	margin-top: 10px;
+}
+
+.marginRight10 {
+	margin-right: 10px;
+}
+
+.closeButton {
+	float: right;
+	cursor: pointer;
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.closeButton:hover {
+	color: red;
+}
+
+.clickableItem {
+	cursor: pointer;
+}
+
+div.noOutlineDiv:focus {
+	outline: none;
+}
+
+.wrapText {
+	word-break: break-word;
 }

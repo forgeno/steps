@@ -25,6 +25,7 @@ class SidewalkImage(models.Model):
 	posted_time = models.DateTimeField(auto_now_add=True)
 	is_pending = models.BooleanField(default=True)
 	is_deleted = models.BooleanField(default=False)
+	uploaded_id = models.CharField(max_length=128, default="")
 
 class SidewalkRating(models.Model):
 	sidewalk = models.ForeignKey(Sidewalk, on_delete=models.CASCADE)
@@ -33,6 +34,7 @@ class SidewalkRating(models.Model):
 	comfort_rating = models.FloatField()
 	physical_safety_rating = models.FloatField()
 	security_rating = models.FloatField()
+	posted_time = models.DateTimeField(auto_now_add=True)
 
 class AdminAccount(models.Model):
 	username = models.CharField(max_length=255)
