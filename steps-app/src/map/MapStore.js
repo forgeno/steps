@@ -157,7 +157,8 @@ export default class MapStore extends Reflux.Store {
 			var highlightSelect, highlightHover;
 			let pxToMeters = view.extent.width / view.width;
 
-			featureLayer.popupEnabled = true;
+			// this may be removed later 
+			featureLayer.popupEnabled = false;
 			view.popup.dockEnabled = true;
 			view.popup.visible = false;
 			view.popup.dockOptions = {
