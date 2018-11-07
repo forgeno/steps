@@ -33,7 +33,7 @@ fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
 	.beforeEach(async (t) => {
 		await mapPage.waitForLoad(t);
-		await t.click(mapPage.map, {offsetX: 669, offsetY: 226});
+		await mapPage.loadDefaultSidewalk(t);
 		await AdminUtilities.silentLogin(t);
 	});
 

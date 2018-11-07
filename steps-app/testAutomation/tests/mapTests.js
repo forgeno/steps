@@ -14,9 +14,9 @@ fixture `Tests the map dashboard page`
 
 // Tests
 test("opening the drawer when clicking on a sidewalk", async (t) => {
-    await t.click(mapPage.map, {offsetX: 669, offsetY: 226})
-        .expect(drawer.drawer.visible).eql(true, {timeout: 30000})
-		.expect(drawer.addressName.textContent).eql("InitialAddress");
+	await mapPage.loadDefaultSidewalk(t);
+    await t.expect(drawer.drawer.visible).eql(true, {timeout: 30000})
+		.expect(drawer.addressName.textContent).eql("test2");
 });
 
 test("not opening the drawer when a non-sidewalk point is clicked", async (t) => {
