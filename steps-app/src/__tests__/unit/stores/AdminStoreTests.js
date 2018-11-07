@@ -186,6 +186,49 @@ describe("Tests the AdminStore", function() {
 		expect(store.state.successfullyDeletedImage).to.be.false;
 	});
 
+	it("should successfully be able to handle acceptng images and call for new images to be pending", () => {
+		
+		const getUnapprovedImagesStub = sandbox.stub(store, "onGetUnapprovedImages");
+		sandbox.stub(RestUtil, "sendPostRequest").returns({
+			then:(callback) => {
+				callback();
+				return {
+
+					catch: () => {}
+				}
+			}
+		});
+
+		store.onHandlePendingImages(true, "testId");
+
+		expect(getUnapprovedImagesStub.called).to.be.true;
+		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
+	});
+
+	it("should return an error if the user is unable to accept or reject an image", () => {
+        sandbox.stub(console, "error");
+        sandbox.stub(RestUtil, "sendPostRequest").returns({
+			then: () => {
+				return {
+					catch: (errorCallback) => {
+						errorCallback("error message");
+					}
+				}
+			}
+		});
+		
+		store.setState({
+			userName: "hacker",
+			password: "should fail"
+		});
+
+		store.onHandlePendingImages(true, "testId");
+
+		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
+        expect(console.error.calledOnce).to.be.true;
+        expect(console.error.getCall(0).args[0]).to.be.equal("error message");
+	});
+
 	it("Tests the getUnpprovedImages method to get pending images to approve", () => {
 
         sandbox.stub(console, "error");
@@ -202,12 +245,7 @@ describe("Tests the AdminStore", function() {
 				}
 			}
 		});
-		
-		store.setState({
-			username: "stepsAdmin",
-			password: "stepsSix"
-		})
- 
+
 		store.onGetUnapprovedImages(0, 5);
         expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
 		expect(store.state.hasMoreImages).to.equal(true);
@@ -229,7 +267,7 @@ describe("Tests the AdminStore", function() {
 		store.setState({
 			userName: "hacker",
 			password: "should fail"
-		})
+		});
 
         store.onGetUnapprovedImages(0, 5);
         

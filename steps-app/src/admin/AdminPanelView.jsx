@@ -4,6 +4,7 @@ import Reflux from "reflux";
 import InfiniteImageGallery from "../images/InfiniteImageGallery";
 import AdminStore from "./AdminStore";
 import AdminActions from "./AdminActions";
+import {Button} from "react-bootstrap";
 
 export default class AdminDrawerImageGallery extends Reflux.Component {
     constructor(props) {
@@ -11,6 +12,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
         this.store = AdminStore;
         this.state = {
         }
+        this.imageIndex = 0;
     }
     
     componentDidMount() {
@@ -30,26 +32,57 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 			}, 50);
         });
     };
+
+    handleAccept = () => {
+        const imageId = this.state.pendingImages[this.imageIndex].id;
+        AdminActions.handlePendingImages( true, imageId);
+    }
+
+    handleReject = () => {
+        const imageId = this.state.pendingImages[this.imageIndex].id;
+        AdminActions.handlePendingImages(false, imageId);
+    }
+
+    getImageIndex = (imageIndex) => {
+        this.setState(
+            {
+                currentImageIndex: imageIndex
+            }
+        )
+        this.imageIndex = imageIndex;
+    }
 	
 	render() {
         if (this.state.pendingImages) {
             const styles = {
-				paper: {
-					margin: "65px 0px 0px 0px"
+                paper: {
+                    margin: "65px 0px 0px 0px"
             }
-		};
-
-            return (            
-                <InfiniteImageGallery
-                    classes={styles}
-                    loadedImages={this.state.pendingImages}
-                    hasNextPage={this.state.hasMoreImages}
-                    loadMoreData={this.loadMoreImages}
-                    visible={true}
-                    isNextPageLoading={this.state.isNextPageLoading}
-            />);
+        };
+             return (   
+                 <div>       
+                    <InfiniteImageGallery
+                        classes={styles}
+                        loadedImages={this.state.pendingImages}
+                        hasNextPage={this.state.hasMoreImages}
+                        loadMoreData={this.loadMoreImages}
+                        visible={true}
+                        isNextPageLoading={this.state.isNextPageLoading}
+                        getImageIndex={this.getImageIndex}
+                    >
+                    </InfiniteImageGallery>
+                    <div className="buttonContainer">
+                        <div>
+                            <Button bsStyle="success" onClick={this.handleAccept}> Success </Button>
+                        </div>
+                        <div>
+                            <Button bsStyle="danger" onClick={this.handleReject}> Reject </Button> 
+                        </div>       
+                    </div>
+                </div>
+             );
         }
         
         return <h1>No images uploaded</h1>
-	}
+}
 }

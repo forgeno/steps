@@ -15,7 +15,7 @@ export default class AdminStore extends Reflux.Store {
 			isDeletingComment: false,
 			successfullyDeletedComment: false,
 			failedDeleteComment: false,
-			username: "",
+			username: "stepsAdmin",
 			password: ""
 		};
         this.listenables = Actions;
@@ -128,29 +128,26 @@ export default class AdminStore extends Reflux.Store {
 			failedDeleteImage: false
 		});
 	}
+	
 	onHandlePendingImages(accepted, imageId) {
-		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk}/image/respond`, {
-			username: this.username,
-			password: this.password,
+		RestUtil.sendPostRequest(`sidewalk/2/image/respond`, {
+			username: this.state.username,
+			password: "716481e86d31433e772f52de60b915c4",
 			accepted: accepted,
-			imageId: imageId
+			imageId: String(imageId)
 		}).then((result) => {
-			this.setState({
-				userName: result.userName,
-				password: result.password,
-				startIndex: result.startIndex,
-				endIndex: result.endIndex
-			})
+			this.onGetUnapprovedImages(0,5); //dont hardcode
 		}).catch((error) => {
 			console.error(error);
 		});
 	}
-	onGetUnapprovedImages(startIndex, endIndex) {
+
+	onGetUnapprovedImages(startingIndex, endingIndex) {
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
-			password: this.state.password,
-			startIndex: startIndex,
-			endIndex: endIndex
+			password: "716481e86d31433e772f52de60b915c4", // needs to be unhashed
+			startIndex: startingIndex,
+			endIndex: endingIndex
 		}).then((result) => {
 			this.setState({
 				hasMoreImages: result.hasMoreImages,

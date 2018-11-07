@@ -30,6 +30,9 @@ export default class InfiniteImageGallery extends React.Component {
 		this.setState({
 			currentImageIndex: index
 		});
+		if(this.props.getImageIndex !== undefined){
+			this.props.getImageIndex(index);
+		}
 	};
 	
 	/**
