@@ -15,8 +15,9 @@ export default class AdminStore extends Reflux.Store {
 			isDeletingComment: false,
 			successfullyDeletedComment: false,
 			failedDeleteComment: false,
-			username: "stepsAdmin",
-			password: ""
+			username: "",
+			password: "",
+			credentialError: false
 		};
         this.listenables = Actions;
 
@@ -76,7 +77,26 @@ export default class AdminStore extends Reflux.Store {
 			failedDeleteComment: false
 		});
 	}
-	
+
+	onCheckCredentials(user, pass) {
+		RestUtil.sendPostRequest('adminAccount/login',{
+			username: user,
+			password: pass
+		}).then((res) => {
+			this.setState({
+				isLoggedIn: true,
+				successfullyLoggedIn: true
+			});
+		}).catch((err) => {
+			this.setState({
+				isLoggedIn: false,
+				failedToLogIn: true
+
+			});
+			console.error(err)
+		});
+	}
+
 	/**
 	 * Handles attempting to delete an image
 	 * @param {String} sidewalkId - the ID of the sidewalk the image is linked to
@@ -84,7 +104,7 @@ export default class AdminStore extends Reflux.Store {
 	 * @param {function} onFinish - callback function that is called once the request has been resolved. 
 	 *					 The first parameter indicates whether the request was succesful or not
 	 */
-	onDeleteImage(sidewalkId, imageId, onFinish) {
+	onDeleteImage(sidewalkId, imageId, onFinish){
 		this.setState({
 			isDeletingImage: true,
 			successfullyDeletedImage: false,
@@ -123,20 +143,39 @@ export default class AdminStore extends Reflux.Store {
 	/**
 	 * Dismisses the message that notifies the user that they have failed to deleted an image
 	 */
-	onDismissImageErrorMessage() {
+	onDismissImageErrorMessage(){
 		this.setState({
 			failedDeleteImage: false
 		});
 	}
+
+	/**
+	 * Dismisses the message that notifies the user that they have successfully deleted a comment
+	 */
+	onDismissLoginSuccess() {
+		this.setState({
+			successfullyLoggedIn: false
+		});
+	}
+	
+	/**
+	 * Dismisses the message that notifies the user that they have successfully deleted a comment
+	 */
+	onDismissLoginError() {
+		this.setState({
+			failedToLogIn: false
+		});
+	}
+	
 	
 	onHandlePendingImages(accepted, imageId) {
 		RestUtil.sendPostRequest(`sidewalk/2/image/respond`, {
 			username: this.state.username,
-			password: "716481e86d31433e772f52de60b915c4",
+			password: this.state.password,
 			accepted: accepted,
 			imageId: String(imageId)
 		}).then((result) => {
-			this.onGetUnapprovedImages(0,5); //dont hardcode
+			// this.onGetUnapprovedImages(0,5); //dont hardcode
 		}).catch((error) => {
 			console.error(error);
 		});
@@ -145,7 +184,7 @@ export default class AdminStore extends Reflux.Store {
 	onGetUnapprovedImages(startingIndex, endingIndex) {
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
-			password: "716481e86d31433e772f52de60b915c4", // needs to be unhashed
+			password: this.state.password,
 			startIndex: startingIndex,
 			endIndex: endingIndex
 		}).then((result) => {
