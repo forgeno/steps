@@ -21,7 +21,6 @@ export default class AdminLogin extends Component {
             username: "",
             password: ""
           };
-       
     }
     
     /**
@@ -70,18 +69,10 @@ export default class AdminLogin extends Component {
         AdminActions.dismissLoginError();
 	};
 
-    // _invalidCredentialError = (e) => {
-    //     if(this.state.credentialError) {
-    //        return (
-    //         //    <p className = "credentialErrorDisplay">Entered credentials are Incorrect</p>
-    //        )
-    //     }
-    // }
-
     _validCredentialAdminPage = (e) => {
         if(this.state.isLoggedIn){
             return(
-                this.props.history.push('/About')
+                this.props.history.push('/dashboard')
             )
         }
     }
@@ -115,7 +106,6 @@ export default class AdminLogin extends Component {
                     placeholder="Password"/>
                 </FormGroup> 
                 
-                {/* {this._invalidCredentialError()} */}
                 {this._validCredentialAdminPage()}
                 <Button bsStyle="primary" type="submit" onClick = {this._handleSubmit} disabled={this._validateCredentials() === "error"}>Login</Button>
                 </form>

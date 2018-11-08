@@ -85,7 +85,9 @@ export default class AdminStore extends Reflux.Store {
 		}).then((res) => {
 			this.setState({
 				isLoggedIn: true,
-				successfullyLoggedIn: true
+				successfullyLoggedIn: true,
+				username: "stepsAdmin",
+				password: "716481e86d31433e772f52de60b915c4"
 			});
 		}).catch((err) => {
 			this.setState({
@@ -95,6 +97,12 @@ export default class AdminStore extends Reflux.Store {
 			});
 			console.error(err)
 		});
+	}
+
+	onCheckUserLogin() {
+		if (this.state.LoggedIn === false) {
+
+		}
 	}
 
 	/**
@@ -175,7 +183,7 @@ export default class AdminStore extends Reflux.Store {
 			accepted: accepted,
 			imageId: String(imageId)
 		}).then((result) => {
-			// this.onGetUnapprovedImages(0,5); //dont hardcode
+			this.onGetUnapprovedImages(0,5); //dont hardcode
 		}).catch((error) => {
 			console.error(error);
 		});
@@ -191,7 +199,7 @@ export default class AdminStore extends Reflux.Store {
 			this.setState({
 				hasMoreImages: result.hasMoreImages,
 				pendingImages: result.images
-			})
+			});
 		}).catch((error) => {
 			console.error(error);
 		})

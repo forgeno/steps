@@ -68,16 +68,6 @@ describe("<AdminLoginComponent>", function() {
 		expect(adminLogin.called).to.be.true
     });
 
-    it("should display error message for incorrect password", () => {
-        const wrapper = shallow(<AdminLoginComponent/>);
-        wrapper.setState({
-            credentialError: true
-        });
-        wrapper.instance()._invalidCredentialError();
-        expect(wrapper.find('p.credentialErrorDisplay').text()).to.equal("Entered Credentials are Incorrect")
-
-    });
-
     it("should direct to new page if valid credentials entered", () => {
         const history = [];
         const wrapper = shallow(<AdminLoginComponent history={history}/>);
@@ -85,6 +75,6 @@ describe("<AdminLoginComponent>", function() {
         wrapper.setState({
             isLoggedIn: true
         });
-        expect(history).to.deep.equal(["/About"]);
+        expect(history).to.deep.equal(["/dashboard"]);
     });
 });

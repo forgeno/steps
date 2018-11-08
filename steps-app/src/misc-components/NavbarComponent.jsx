@@ -1,6 +1,7 @@
 import React from "react";
 import Reflux from "reflux";
 import { withStyles } from "@material-ui/core/styles";
+import {Link} from "react-router-dom";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
@@ -53,14 +54,14 @@ class NavbarComponent extends Reflux.Component {
 			<div className={classes.root}>
 				<AppBar position="static">
 					<Toolbar>
-						<Button color="inherit" className={classes.titleButton} href="/">STEPS</Button>
-						<Button color="inherit" className={classes.button} href="/about">About</Button>
-						<Button color="inherit" className={classes.button} href="/statistics">Statistics</Button>
+						<Link to="/"><Button color="inherit" className={classes.titleButton}>STEPS </Button> </Link>
+						<Link to="/about/"><Button color="inherit" className={classes.button}>  About </Button></Link>
+						<Link to="/statistics/"><Button color="inherit" className={classes.button}> <Link to="/statistics/"/> Statistics </Button></Link>
 						{
-							!this.state.isLoggedIn && <Button color="inherit" className={classes.button} href="/login">Login</Button>
+							!this.state.isLoggedIn && <Link to="/login"><Button color="inherit" className={classes.button}> Login </Button> </Link>
 						}
 						{
-							this.state.isLoggedIn && <Button color="inherit" className={classes.button} href="/dashboard">Dashboard</Button>
+							this.state.isLoggedIn && <Link to="/dashboard"><Button color="inherit" className={classes.button}>  Dashboard</Button></Link>
 						}
 					</Toolbar>
 				</AppBar>

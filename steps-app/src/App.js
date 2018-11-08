@@ -17,14 +17,14 @@ class App extends Component {
     return (
       <div className="App">
         <NavbarComponent />
-		<Switch>
-			<Route path="/about/" component={AboutPageView} />
-			<Route path="/statistics" component={SummaryStatisticsView} />
-			<Route path="/login" component={AdminLogin} />
-			<Route path="/map/:id" component={MapDashboard} />
-      <Route path="/dashboard" component={AdminPanelView} />
-			<Route path="/" component={MapDashboard} />
-		</Switch>
+        <Switch>
+          <Route path="/about/" component={AboutPageView} />
+          <Route path="/statistics" component={SummaryStatisticsView} />
+          <Route path="/login" component={AdminLogin} />
+          <Route path="/map/:id" component={MapDashboard} />
+          <Route path="/dashboard" component={AdminPanelView} />
+          <Route path="/" component={MapDashboard} />
+        </Switch>
       </div>
     );
   }
