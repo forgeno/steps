@@ -16,7 +16,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
     }
     
     componentDidMount() {
-        AdminActions.getUnapprovedImages(0, 5);
+        AdminActions.getUnapprovedImages();
      }
      
 	loadMoreImages = (startIndex, stopIndex) => {

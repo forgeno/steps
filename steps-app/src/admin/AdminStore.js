@@ -183,18 +183,18 @@ export default class AdminStore extends Reflux.Store {
 			accepted: accepted,
 			imageId: String(imageId)
 		}).then((result) => {
-			this.onGetUnapprovedImages(0,5); //dont hardcode
+			this.onGetUnapprovedImages(0,5);
 		}).catch((error) => {
 			console.error(error);
 		});
 	}
 
-	onGetUnapprovedImages(startingIndex, endingIndex) {
+	onGetUnapprovedImages() {
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
 			password: this.state.password,
-			startIndex: startingIndex,
-			endIndex: endingIndex
+			startIndex: 0, //link for react causes issues with the index to load more images
+			endIndex: 5
 		}).then((result) => {
 			this.setState({
 				hasMoreImages: result.hasMoreImages,
