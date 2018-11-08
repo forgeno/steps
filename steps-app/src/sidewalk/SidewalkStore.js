@@ -172,13 +172,9 @@ export default class SidewalkStore extends Reflux.Store {
 			});
 		}).catch((error) => {
 			console.error(error);
-			
-
 		});
 	}
 
-
-	
 	/**
 	 * Removes the specified comment from the currently loaded sidewalk
 	 * @param {Object} comment - the comment to remove

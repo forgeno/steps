@@ -207,23 +207,17 @@ class SidewalkDetailsView extends Component {
 		const { safetyValue } = this.state;
 		const { securityValue } = this.state;
 		
-		
-		
 		return (
 			<div >
-				<Button onClick={this.handleClickOpen}>Rate this sidewalk</Button>
-				<Dialog 
+				<Button bsStyle="primary" onClick={this.handleClickOpen}>Rate this sidewalk</Button>
+				<Dialog
 					//className="dialogFormat"
 					open={this.state.open}
 					onClose={this.handleClose}
 					aria-labelledby="form-dialog-title"
 				>
-					<DialogTitle id="form-dialog-title"><h3>Rate the Sidewalk</h3><n/><h5>
-							Please rate the sidewalk out of the sacle of 1 to 5.</h5></DialogTitle>
+					<DialogTitle id="form-dialog-title">Rate Sidewalk</DialogTitle>
 					<DialogContent>
-						{/* <DialogContentText>
-            			</DialogContentText> */}
-
 						<h5> Accessibility </h5>
 						<div className="ratingSlider">
 							<div className={classes.root}>
@@ -272,7 +266,6 @@ class SidewalkDetailsView extends Component {
 						
 						<h5> Physical Safety </h5>
 						<div className="ratingSlider">
-							{/* <p>Min:0 </p> */}
 							<div className={classes.root}>
 								<Slider
 									classes={{ container: classes.slider }}
@@ -303,10 +296,10 @@ class SidewalkDetailsView extends Component {
 						
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={this.handleClose} color="primary">
+						<Button onClick={this.handleClose}>
 							Cancel
             			</Button>
-						<Button onClick={this._handleSubmitRating} color="primary">
+						<Button bsStyle="primary" onClick={this._handleSubmitRating}>
 							Submit
             			</Button>
 					</DialogActions>
@@ -325,8 +318,6 @@ class SidewalkDetailsView extends Component {
 			</div >
 		);
 	}
-
-
 
 	renderComments() {
 		return <CommentsListComponent />;

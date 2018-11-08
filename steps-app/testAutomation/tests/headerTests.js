@@ -14,13 +14,13 @@ fixture `Tests navigation with the header`
 
 test("going to the about page", async (t) => {
     await t.click(header.aboutButton)
-		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/about`)
+		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/about/`)
 		.expect(Selector("#root > .App > div.padding25").visible).eql(true);
 });
 
 test("going to the statistics page", async (t) => {
 	await t.click(header.statsButton)
-		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/statistics`)
+		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/statistics/`)
 		.expect(statsPage.stats.visible).eql(true);
 });
 

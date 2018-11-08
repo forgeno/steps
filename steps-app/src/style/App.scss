@@ -7,7 +7,6 @@
 @import "SidewalkDrawer.scss";
 @import "Alerts.scss";
 @import "AdminLogin.scss";
-@import "AdminPanel.scss";
 
 /* bootstrap button overrides */
 .btn-primary {
@@ -63,6 +62,14 @@ body {
 
 .closeButton:hover {
 	color: red;
+}
+
+.acceptButton {
+	@extend .closeButton;
+}
+
+.acceptButton:hover {
+	color: green;
 }
 
 .clickableItem {

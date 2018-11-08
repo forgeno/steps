@@ -86,8 +86,8 @@ export default class AdminStore extends Reflux.Store {
 			this.setState({
 				isLoggedIn: true,
 				successfullyLoggedIn: true,
-				username: "stepsAdmin",
-				password: "716481e86d31433e772f52de60b915c4"
+				username: user,
+				password: pass
 			});
 		}).catch((err) => {
 			this.setState({
@@ -97,12 +97,6 @@ export default class AdminStore extends Reflux.Store {
 			});
 			console.error(err)
 		});
-	}
-
-	onCheckUserLogin() {
-		if (this.state.LoggedIn === false) {
-
-		}
 	}
 
 	/**
@@ -175,26 +169,38 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 	
-	
-	onHandlePendingImages(accepted, imageId) {
-		RestUtil.sendPostRequest(`sidewalk/2/image/respond`, {
+	// TODO: remove hardcoded sidewalkId value
+	onHandlePendingImages(accepted, imageId, sidewalkId = "2") {
+		this.setState({
+			respondingToImage: true,
+			successfullyRespondedToImage: false,
+			failedToRespondToImage: false
+		});
+		RestUtil.sendPostRequest(`sidewalk/${sidewalkId}/image/respond`, {
 			username: this.state.username,
 			password: this.state.password,
 			accepted: accepted,
 			imageId: String(imageId)
 		}).then((result) => {
-			this.onGetUnapprovedImages(0,5);
+			this.setState({
+				respondingToImage: false,
+				successfullyRespondedToImage: true
+			});
 		}).catch((error) => {
+			this.setState({
+				respondingToImage: false,
+				failedToRespondToImage: true
+			});
 			console.error(error);
 		});
 	}
 
-	onGetUnapprovedImages() {
+	onGetUnapprovedImages(startIndex, endIndex) {
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
 			password: this.state.password,
-			startIndex: 0, //link for react causes issues with the index to load more images
-			endIndex: 5
+			startIndex: startIndex,
+			endIndex: endIndex
 		}).then((result) => {
 			this.setState({
 				hasMoreImages: result.hasMoreImages,
@@ -203,5 +209,17 @@ export default class AdminStore extends Reflux.Store {
 		}).catch((error) => {
 			console.error(error);
 		})
+	}
+	
+	onDismissImageApprovalNotification() {
+		this.setState({
+			successfullyRespondedToImage: false,
+		});
+	}
+	
+	onDismissImageRejectionNotification() {
+		this.setState({
+			failedToRespondToImage: false,
+		});
 	}
 }

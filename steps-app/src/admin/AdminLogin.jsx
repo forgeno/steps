@@ -18,9 +18,9 @@ export default class AdminLogin extends Component {
         this.store = Store;
         this._validCredentialAdminPage = this._validCredentialAdminPage.bind(this)
 		this.state = {
-            username: "",
-            password: ""
-          };
+            enteredName: "",
+            enteredPassword: ""
+        };
     }
     
     /**
@@ -28,7 +28,7 @@ export default class AdminLogin extends Component {
 	 */
 	_handleUserChange = (e) => {
 		this.setState({ 
-            username: e.target.value,
+            enteredName: e.target.value,
 		});
     }
     
@@ -37,28 +37,26 @@ export default class AdminLogin extends Component {
 	 */
     _handlePassChange = (e) => {
 		this.setState({ 
-            password: e.target.value
+            enteredPassword: e.target.value
 		});
 	}
 
     _validateCredentials = (e) => {  
-        const userLength = this.state.username.length
-        const passLength = this.state.password.length
+        const userLength = this.state.enteredName.length
+        const passLength = this.state.enteredPassword.length
         if (userLength === 0 || passLength === 0){
             return "error"
-        }
-        else{
+        } else {
             return "success"
         }
     }
 
     _handleSubmit = (e) => {
-        var md5 = require('md5');
-        const hashpass = md5(String(this.state.password))       
-        AdminActions.checkCredentials(String(this.state.username), hashpass);
+        const hashpass = md5(String(this.state.enteredPassword))       
+        AdminActions.checkCredentials(String(this.state.enteredName), hashpass);
 		this.setState({
-            username: "",
-            password: ""
+            enteredName: "",
+            enteredPassword: ""
         });
     }
     /**
@@ -89,7 +87,7 @@ export default class AdminLogin extends Component {
                 
                 <FormControl 
                     autoFocus type="username" 
-                    value={this.state.username}
+                    value={this.state.enteredName}
                     onChange={this._handleUserChange}
                     placeholder="Username"/>
                 </FormGroup>
@@ -100,7 +98,7 @@ export default class AdminLogin extends Component {
                 
                 <ControlLabel>Password</ControlLabel>
                 <FormControl 
-                    value={this.state.password} 
+                    value={this.state.enteredPassword} 
                     onChange={this._handlePassChange}
                     type="password"
                     placeholder="Password"/>

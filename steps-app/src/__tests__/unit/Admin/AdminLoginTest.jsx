@@ -21,34 +21,34 @@ describe("<AdminLoginComponent>", function() {
             target: {value: "test String"}
         };
         wrapper.instance()._handleUserChange(testObject);
-        expect(wrapper.state("username")).to.equal("test String");
+        expect(wrapper.state("enteredName")).to.equal("test String");
     });
 
-    it("should call the reflux action when the text is entered or changed in the input of password", () => {
+    it("should call the reflux action when the text is entered or changed in the input of enteredPassword", () => {
         const wrapper = shallow(<AdminLoginComponent/>);
         const testObject = {
             target: {value: "test String"}
         };
         wrapper.instance()._handlePassChange(testObject);
-        expect(wrapper.state("password")).to.equal("test String");
+        expect(wrapper.state("enteredPassword")).to.equal("test String");
     });
 
-    it("should return success if credentials entered are correct",() => {
+    it("should return success if credentials are not blank",() => {
         const wrapper = shallow(<AdminLoginComponent/>);
         wrapper.setState({
-            username: "stepsAdmin",
-            password: "stepsSix"
+            enteredName: "bbbb",
+            enteredPassword: "aaaa"
         });
 
         const output = wrapper.instance()._validateCredentials();
         expect(output).to.equal("success");
     });
 
-    it("should return error if incorrect credentials are entered", () => {
+    it("should return error if credentials are blank", () => {
         const wrapper = shallow(<AdminLoginComponent/>);
         wrapper.setState({
-            username: "",
-            password: "hello"
+            enteredName: "",
+            enteredPassword: "hello"
         });
 
         const output = wrapper.instance()._validateCredentials();
@@ -60,8 +60,8 @@ describe("<AdminLoginComponent>", function() {
 		wrapper = shallow(<AdminLoginComponent/>);
 
 		wrapper.setState({
-            username: "hello",
-            password: "pass"
+            enteredName: "hello",
+            enteredPassword: "pass"
 		});
 
 		wrapper.instance()._handleSubmit();

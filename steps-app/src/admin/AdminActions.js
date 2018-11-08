@@ -11,7 +11,9 @@ const Actions = Reflux.createActions([
 	"dismissLoginSuccess", 
 	"dismissLoginError",
 	"getUnapprovedImages",
-	"handlePendingImages"
+	"handlePendingImages",
+	"dismissImageApprovalNotification",
+	"dismissImageRejectionNotification"
 ]);
 
 export default Actions;

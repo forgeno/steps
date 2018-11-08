@@ -2,7 +2,7 @@ import Reflux from "reflux";
 
 const Actions = Reflux.createActions([
 	"loadAllSidewalks",
-	"display",
+	"loadMapDetails",
 	"setDrawerOpened"
 ]);
 

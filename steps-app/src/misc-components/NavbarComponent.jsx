@@ -24,7 +24,8 @@ const styles = {
 		},
 		"&:focus": {
 			color: SECONDARY_COLOUR
-		}
+		},
+		color: "white"
 	},
 	titleButton: {
 		fontSize: 18,
@@ -34,6 +35,7 @@ const styles = {
 		"&:focus": {
 			color: SECONDARY_COLOUR
 		},
+		color: "white",
 		fontFamily: FONT_FAMILY
 	}
 };

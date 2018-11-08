@@ -186,25 +186,6 @@ describe("Tests the AdminStore", function() {
 		expect(store.state.successfullyDeletedImage).to.be.false;
 	});
 
-	it("should successfully be able to handle acceptng images and call for new images to be pending", () => {
-		
-		const getUnapprovedImagesStub = sandbox.stub(store, "onGetUnapprovedImages");
-		sandbox.stub(RestUtil, "sendPostRequest").returns({
-			then:(callback) => {
-				callback();
-				return {
-
-					catch: () => {}
-				}
-			}
-		});
-
-		store.onHandlePendingImages(true, "testId");
-
-		expect(getUnapprovedImagesStub.called).to.be.true;
-		expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
-	});
-
 	it("should return an error if the user is unable to accept or reject an image", () => {
         sandbox.stub(console, "error");
         sandbox.stub(RestUtil, "sendPostRequest").returns({
@@ -218,7 +199,7 @@ describe("Tests the AdminStore", function() {
 		});
 		
 		store.setState({
-			userName: "hacker",
+			username: "hacker",
 			password: "should fail"
 		});
 
