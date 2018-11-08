@@ -31,10 +31,10 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadedImageError: false,
 			uploadingComment: false,
 			uploadCommentFailed: false,
-			uploadImageSucceeded: false
+			uploadImageSucceeded: false,
 		};
 	}
-	
+
 	/**
 	 * Loads data about the specified sidewalk
 	 * @param {Object} sidewalk - a basic summary of the sidewalk to load, including it's id and average ratings
@@ -42,11 +42,13 @@ export default class SidewalkStore extends Reflux.Store {
 	onLoadSidewalkDetails(sidewalk) {
 		this.setState(this._getDefaultSidewalkState());
 		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
+			
 			const newSidewalk = Object.assign({}, sidewalk, data);
 			this.setState({
 				currentSidewalk: newSidewalk,
 				hasNextImagesPage: newSidewalk.lastImage,
-				loadedUserImages: [newSidewalk.lastImage]
+				loadedUserImages: [newSidewalk.lastImage],
+				accessibilityValue: newSidewalk.accessibility
 			});
 		}).catch((err) => {
 			console.error(err);
@@ -117,7 +119,8 @@ export default class SidewalkStore extends Reflux.Store {
 			this.setState({
 				uploadingComment: false,
 				uploadCommentFailed: false,
-				currentSidewalk: Object.assign(this.state.currentSidewalk, {comments: currentSidewalkComments})
+				commentHint: "Comment Successfully Uploaded!",
+				currentSidewalk: Object.assign(this.state.currentSidewalk, { comments: currentSidewalkComments })
 			});
 		}).catch((err) => {
 			this.setState({
@@ -127,7 +130,7 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
-	
+
 	/**
 	 * Dismisses the message notifying the user that an error happened when uploading an image
 	 */
@@ -136,7 +139,7 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadedImageError: false
 		});
 	}
-	
+
 	/**
 	 * Dismisses the message notifying the user that their image was successfully uploaded
 	 */
@@ -145,6 +148,36 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadImageSucceeded: false
 		});
 	}
+
+	/**
+	 * Handles the user uploading the ratings
+	 */
+
+	onUploadRatings(accessibility, comfort, connectivity, physicalSafety, senseOfSecurity) {
+
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/rate`, {
+			accessibility: parseFloat(accessibility),
+			comfort: parseFloat(comfort),
+			connectivity: parseFloat(connectivity),
+			senseOfSecurity: parseFloat(senseOfSecurity),
+			physicalSafety: parseFloat(physicalSafety)
+			
+		}).then((result) => {
+			this.setState({
+				accessibility: 3,
+				comfort: 3,
+				connectivity: 3,
+				physicalSafety: 3,
+				senseOfSecurity: 3
+			});
+		}).catch((error) => {
+			console.error(error);
+			
+
+		});
+	}
+
+
 	
 	/**
 	 * Removes the specified comment from the currently loaded sidewalk

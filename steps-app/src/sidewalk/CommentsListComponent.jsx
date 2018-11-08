@@ -1,11 +1,19 @@
 import React from "react";
 import Reflux from "reflux";
+
 import { Button, FormGroup, FormControl } from "react-bootstrap";
 
 import SidewalkStore from "./SidewalkStore";
 import SidewalkActions from "./SidewalkActions";
 import SidewalkCommentComponent from "./SidewalkCommentComponent";
 import CommentDeletionModal from "./CommentDeletionModal";
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import DateUtilities from "../util/DateUtilities";
+
+
+
 
 /**
  * This class renders the list of all comments left on a sidewalk, as well as the form for
@@ -18,6 +26,7 @@ export default class CommentsListComponent extends Reflux.Component {
 		this.store = SidewalkStore;
 		this.state = {
 			enteredComment: "",
+			commentHint: "Enter your comment here!",
 			modalOpened: false
 		};
 	}
@@ -32,7 +41,6 @@ export default class CommentsListComponent extends Reflux.Component {
 		filter = new Filter({ replaceRegex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im});
 		filter.addWords('@','587','780')
 		const length = this.state.enteredComment.length;
-		//console.log(filter.isProfane(this.state.enteredComment));
 		if(filter.isProfane(this.state.enteredComment)){
 			return "error";
 		}
@@ -59,7 +67,8 @@ export default class CommentsListComponent extends Reflux.Component {
 	_handleSubmit = (e) => {
 		SidewalkActions.uploadComment(this.state.enteredComment);
 		this.setState({
-			enteredComment: ""
+			enteredComment: "",
+			commentHint: "Comment Successfully Updated!"
 		});
 	}
 
@@ -88,33 +97,54 @@ export default class CommentsListComponent extends Reflux.Component {
 
 		const comments = this.state.currentSidewalk.comments;
 		return (
-			<div className="comments">
-				<div className="commentBox">
-						<FormGroup
-							bsSize="small"
-							controlId="formBasicText"
-							validationState={this._validateCommentState()}
-						>
-							<FormControl
-								componentClass="textarea"
-								value={this.state.enteredComment}
-								placeholder="Enter a comment"
-								onChange={this._handleChange}
-								rows={4}
-							/>
-							<FormControl.Feedback />
-						</FormGroup>
+			<div>
+				<div className="commentUploadSection">
+				
+					<div className="commentBox">
+						<form>
+							<FormGroup
+								bsSize="small"
+								controlId="formBasicText"
+								validationState={this._validateCommentState()}
+							>
+								<FormControl
+									type="textarea"
+									value={this.state.enteredComment}
+									placeholder={this.state.commentHint}
+									onChange={this._handleChange}
+								/>
+								<FormControl.Feedback />
+							</FormGroup>
+						</form>
+					</div>
+					
+					<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this._validateCommentState() === "error"} >
+						Submit
+					</Button>
 				</div>
-				<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this._validateCommentState() === "error"} >
-					Submit
-				</Button>
-				<hr />
+				<br />
+				
+			
+				
+						<div className="commentDisplaySection">
+				{/* <GridList cellHeight={160} className="gridList" cols={1}> */}
+				<List className="displayList" >
 
-				<div className="commentDisplaySection">
-					{comments.map((details, index) =>
-						<SidewalkCommentComponent details={details} key={index} onDelete={this._openConfirmationModal} />
+					{comments.map((item, index) =>
+						<div className="commentDisplayBox" key={index}>
+							<h5>{item.text}</h5>
+							<h6>{DateUtilities.formatDateForDisplay(new Date(item.date))}</h6>
+						</div>
 					)}
+				
+				</List>
 				</div>
+
+
+						
+
+				
+				
 				<CommentDeletionModal comment={this.state.selectedComment}
 									  sidewalkId={this.state.currentSidewalk.id}
 									  onClose={this._closeConfirmationModal}
