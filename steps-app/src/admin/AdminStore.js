@@ -17,7 +17,8 @@ export default class AdminStore extends Reflux.Store {
 			failedDeleteComment: false,
 			username: "",
 			password: "",
-			credentialError: false
+			credentialError: false,
+			pendingImages: []
 		};
         this.listenables = Actions;
 
@@ -182,9 +183,11 @@ export default class AdminStore extends Reflux.Store {
 			accepted: accepted,
 			imageId: String(imageId)
 		}).then((result) => {
+			const newImages = this.state.pendingImages.filter((image) => image.id !== imageId);
 			this.setState({
 				respondingToImage: false,
-				successfullyRespondedToImage: true
+				successfullyRespondedToImage: true,
+				pendingImages: newImages
 			});
 		}).catch((error) => {
 			this.setState({
@@ -202,9 +205,10 @@ export default class AdminStore extends Reflux.Store {
 			startIndex: startIndex,
 			endIndex: endIndex
 		}).then((result) => {
+			const newImages = this.state.pendingImages.slice().concat(result.images);
 			this.setState({
 				hasMoreImages: result.hasMoreImages,
-				pendingImages: result.images
+				pendingImages: newImages
 			});
 		}).catch((error) => {
 			console.error(error);
