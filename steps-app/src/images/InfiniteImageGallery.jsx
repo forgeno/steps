@@ -3,11 +3,9 @@ import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
 
 import LoaderComponent from "../misc-components/LoaderComponent";
-import ImageDisplayList from "./ImageDisplayList";
-import MasonryInfiniteScroller from "react-masonry-infinite";
+import ImageDisplayList from "../misc-components/InfiniteLoadingList";
 
 import Card from '@material-ui/core/Card';
-import { withStyles } from '@material-ui/core/styles';
 
 /**
  * This component handles the view where the user can see all of the images posted to a sidewalk
@@ -19,7 +17,6 @@ export default class InfiniteImageGallery extends React.Component {
 		this.state = {
 			currentImageIndex: 0
 		};
-		//this.selfRef = React.createRef();
 	}
 	
 	/**
@@ -117,15 +114,6 @@ export default class InfiniteImageGallery extends React.Component {
 	};
 	
 	renderSelectedImage() {
-		/*if (this.props.loadedImages[this.state.currentImageIndex]) {
-			return (
-				<img className="backgroundImage"
-					alt="selected"
-					src={this.props.loadedImages[this.state.currentImageIndex].url} />
-			);
-		}
-		return <LoaderComponent />;*/
-		
 		let content;
 		if (this.props.loadedImages[this.state.currentImageIndex]) {
 			content = (
@@ -145,70 +133,45 @@ export default class InfiniteImageGallery extends React.Component {
 	}
 
 	displayImageDrawer() {
-
-			const ImageDrawer = withStyles(this.props.classes)(Drawer);
-
-			return(
-				<div>
-					<ImageDrawer open={this.props.visible}
-						variant="persistent"
-							onClose={this.props.onClose}
-							anchor="left"
-							SlideProps={{
-								unmountOnExit: true
-								}}
-						>
-						{this.renderSelectedImage()}
-					</ImageDrawer>
-					<ImageDrawer open={this.props.visible}
-							variant="persistent"
-							onClose={this.props.onClose}
-							anchor="right"
-							SlideProps={{
-								unmountOnExit: true
+		return(
+			<div>
+				<Drawer open={this.props.visible}
+					variant="persistent"
+						onClose={this.props.onClose}
+						anchor="left"
+						SlideProps={{
+							unmountOnExit: true
 							}}
-						>
-						<CloseIcon className="closeButton" onClick={this.props.onClose} />
-						<ImageDisplayList isRowLoaded={this._isRowLoaded}
-							loadMoreRows={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
-							rowRenderer={this._rowRenderer}
-							hasNextPage={this.props.hasNextPage}
-							loadedItemCount={this.props.loadedImages.length}
-							isNextPageLoading={this.props.isNextPageLoading}
-						/>
-					</ImageDrawer>
-				</div> 
-			);
-		}
+					>
+					{this.renderSelectedImage()}
+				</Drawer>
+				<Drawer open={this.props.visible}
+						variant="persistent"
+						onClose={this.props.onClose}
+						anchor="right"
+						SlideProps={{
+							unmountOnExit: true
+						}}
+					>
+					<CloseIcon className="closeButton" onClick={this.props.onClose} />
+					<ImageDisplayList isRowLoaded={this._isRowLoaded}
+						loadMoreRows={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
+						rowRenderer={this._rowRenderer}
+						hasNextPage={this.props.hasNextPage}
+						loadedItemCount={this.props.loadedImages.length}
+						isNextPageLoading={this.props.isNextPageLoading}
+					/>
+				</Drawer>
+			</div> 
+		);
+	}
 	
 	render() {
-		// TODO: decide which design to use
-
 		return (
 			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
 				{this.displayImageDrawer()}
 			</div>
 		);
-		// TODO: set rendered image width to 200 for this
-		/*return (
-			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv" >
-				{this.renderSelectedImage()}
-				<MasonryInfiniteScroller
-					hasMore={this.props.hasNextPage}
-					loadMore={this.props.isNextPageLoading ? () => {} : this._loadMoreRows}
-					sizes={[{ columns: 3, gutter: 0 },
-					{ mq: '768px', columns: 4, gutter: 0 },
-					{ mq: '1024px', columns: 5, gutter: 0 }]}
-				>
-					{
-						this.props.loadedImages.map((id, index) =>
-							this._rowRenderer({index: index, key: index, style: {height: 200, width: 200}})
-						)
-					}
-				</MasonryInfiniteScroller>
-				{this.props.isNextPageLoading && <LoaderComponent />}
-			</div>
-		);*/
 	}
 	
 }

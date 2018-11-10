@@ -6,6 +6,10 @@ import CommentDeleteSuccessComponent from "../sidewalk/CommentDeleteSuccessCompo
 import CommentDeleteErrorComponent from "../sidewalk/CommentDeleteErrorComponent";
 import ImageDeleteErrorComponent from "../sidewalk/images/ImageDeleteErrorComponent";
 import ImageDeleteSuccessComponent from "../sidewalk/images/ImageDeleteSuccessComponent";
+import CommentPostSuccessComponent from "../sidewalk/CommentPostSuccessComponent";
+import CommentPostErrorComponent from "../sidewalk/CommentPostErrorComponent";
+import PostRatingSuccessComponent from "../sidewalk/PostRatingSuccessComponent";
+import PostRatingErrorComponent from "../sidewalk/PostRatingErrorComponent";
 
 /**
  * Renders any alerts that the user may see
@@ -21,6 +25,10 @@ export default class AlertsContainer extends React.Component {
 				<CommentDeleteErrorComponent />
 				<ImageDeleteErrorComponent />
 				<ImageDeleteSuccessComponent />
+				<CommentPostErrorComponent />
+				<CommentPostSuccessComponent />
+				<PostRatingSuccessComponent />
+				<PostRatingErrorComponent />
 			</div>
 		)
 	}

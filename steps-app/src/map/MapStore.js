@@ -231,4 +231,28 @@ export default class MapStore extends Reflux.Store {
 		});
 		
 	}
+	
+	/**
+	 * Updates the ratings for the currently selected sidewalk
+	 * @param {Object} sidewalk - the current sidewalk
+	 */
+	onUpdateSidewalkRatings(sidewalk) {
+		const updatedSidewalks = this.state.sidewalks.slice();
+		const selectedSidewalk = updatedSidewalks.find((sidewalk) => {
+			return sidewalk.id === this.state.selectedSidewalkDetails.id;
+		});
+		if (!selectedSidewalk) {
+			return;
+		}
+		
+		selectedSidewalk.accessibility = sidewalk.accessibility;
+		selectedSidewalk.overallRating = sidewalk.overallRating;
+		selectedSidewalk.comfort = sidewalk.comfort;
+		selectedSidewalk.connectivity = sidewalk.connectivity;
+		selectedSidewalk.physicalSafety = sidewalk.physicalSafety;
+		selectedSidewalk.senseOfSecurity = sidewalk.senseOfSecurity;
+		this.setState({
+			sidewalks: updatedSidewalks
+		});
+	}
 }

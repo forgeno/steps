@@ -139,14 +139,15 @@ test("viewing images on a sidewalk", async (t) => {
 	
 	// check to see all rows loaded
 	await t.click(drawer.previewImagesButton)
-		.expect(imageGallery.getRowCount()).eql(10);
+		.wait(6000)
+		.expect(imageGallery.getRowCount()).eql(15);
 	
 	// check the default selected image
 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
 	// test selecting a different image
 	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
-		.wait(1500);
+		.wait(3500);
 	await t.expect(await imageGallery.getSelectedRowIndex(t))
 		.eql(4);
 	

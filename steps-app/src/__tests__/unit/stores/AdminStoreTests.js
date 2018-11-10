@@ -211,7 +211,7 @@ describe("Tests the AdminStore", function() {
 	});
 
 	it("Tests the getUnpprovedImages method to get pending images to approve", () => {
-
+		const callback = sandbox.spy();
         sandbox.stub(console, "error");
         sandbox.spy(store, "setState");
         sandbox.stub(RestUtil, "sendPostRequest").returns({
@@ -227,10 +227,11 @@ describe("Tests the AdminStore", function() {
 			}
 		});
 
-		store.onGetUnapprovedImages(0, 5);
+		store.onGetUnapprovedImages(0, 5, callback);
         expect(RestUtil.sendPostRequest.calledOnce).to.be.true;
 		expect(store.state.hasMoreImages).to.equal(true);
 		expect(store.state.pendingImages).to.deep.equal([{}, {}]);
+		expect(callback.calledOnce).to.be.true;
     });
 
     it("should throw an error if there are no images to load or if images are unable to be loaded ", () => {

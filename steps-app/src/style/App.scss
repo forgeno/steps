@@ -83,3 +83,24 @@ div.noOutlineDiv:focus {
 .wrapText {
 	word-break: break-word;
 }
+
+.icon:hover {
+	color: $primary;
+	cursor: pointer;
+}
+
+.nextIcon {
+	float: right;
+	cursor: pointer;
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.nextIcon:hover {
+	color: $primary;
+	cursor: pointer;
+}
+
+.modal-title {
+	padding: 20px 23px;
+}

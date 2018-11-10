@@ -50,63 +50,6 @@ describe("<SidewalkDetailsView />", function () {
 		expect(spy.calledOnce).to.be.true;
 	});
 
-
-	it("should set the state to close when called hendle close", () => {
-		const wrapper = shallow(<SidewalkDetailsView />).dive();
-		wrapper.setState({
-			open: true
-		});
-
-		wrapper.instance().handleClose();
-		expect(wrapper.state("open")).to.equal(false);
-	});
-
-	it("should set the state to open when called handle open", () => {
-		const wrapper = shallow(<SidewalkDetailsView />).dive();
-		wrapper.setState({
-			open: false
-		});
-
-		wrapper.instance().handleClickOpen();
-		expect(wrapper.state("open")).to.equal(true);
-	});
-
-
-	it("should call the reflux action when the button is clicked for submitting ratings", () => {
-		const uploadRatingSpy = sandbox.stub(SidewalkActions, "uploadRatings"),
-			wrapper = shallow(<SidewalkDetailsView />).dive();
-
-		wrapper.setState({
-			accessibilityValue: 2,
-			connectivityValue: 1,
-			comfortValue: 2,
-			safetyValue: 3,
-			securityValue: 1,
-		});
-		wrapper.instance()._handleSubmitRating();
-		expect(uploadRatingSpy.called).to.be.true
-	});
-
-	/**
-	 * TO-DO Need to investigate change handler
-	
-	it("should set the state of the value to the proper string", () => {
-		const wrapper = shallow(<SidewalkDetailsView />).dive();
-		const testObject = {
-			target: { accessibilityValue:",2" }
-		};
-		wrapper.setState({
-			accessibilityValue: 3,
-		});
-		wrapper.instance().changeAccessibility(testObject);
-		console.error(wrapper.state())
-		expect(wrapper.state("accessibilityValue")).to.equal(2);
-	});
-
-	*/
-
-
-
 	afterEach(() => {
 		sandbox.restore();
 	});
