@@ -25,4 +25,12 @@ export default class DateUtilities {
 		return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear() + " - " + getTimeDisplay(date);
 	}
 
+	/**
+	 * Gets the name of the month matching the specified month number
+	 * @param {number} monthNumber - the month number to get the name of (1 - 12)
+	 * @return {String} - the name of the month matching the specified month number
+	 */
+	static getMonthName(monthNumber) {
+		return months[monthNumber - 1];
+	}
 }

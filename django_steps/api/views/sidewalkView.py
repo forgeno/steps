@@ -400,7 +400,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## @param {Request} request - the HTTP GET request to service
 	## @return {Response} - a list of all sidewalks and their average ratings
 	def list(self, request):
-		qs = SidewalkRating.objects.raw("""select s.id, IFNULL(agg.accessibility, 0) as accessibility,
+		qs = SidewalkRating.objects.raw("""select s.id, s.address, IFNULL(agg.accessibility, 0) as accessibility,
 		 IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, 
 		 IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity
 		 from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, 

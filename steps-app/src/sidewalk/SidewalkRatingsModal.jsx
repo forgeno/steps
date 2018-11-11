@@ -1,18 +1,17 @@
 import React from "react";
 import { Component } from "reflux";
-import Store from "./SidewalkStore";
-import Actions from "./SidewalkActions";
-import LoaderComponent from "../misc-components/LoaderComponent";
 
 import Slider from '@material-ui/lab/Slider';
 import {Button} from "react-bootstrap";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-
 import { withStyles } from '@material-ui/core/styles';
+
+import Store from "./SidewalkStore";
+import Actions from "./SidewalkActions";
+import LoaderComponent from "../misc-components/LoaderComponent";
+import {getRatingDescription} from "../util/RatingUtil";
 import { FONT_FAMILY } from "../constants/ThemeConstants";
 
 const styles = theme => ({
@@ -109,7 +108,9 @@ class SidewalkRatingsModal extends Component {
 							onChange={onChange}
 						/>
 					</div>
-					{value}/5
+					<span style={{paddingLeft: "15px"}}>
+						{getRatingDescription(value)}
+					</span>
 				</div>
 			</div>
 		)
@@ -146,7 +147,7 @@ class SidewalkRatingsModal extends Component {
 						<Button onClick={this.props.onClose}>
 							Cancel
 						</Button>
-						<Button bsStyle="primary" onClick={this._handleSubmitRating}>
+						<Button bsStyle="primary" onClick={this._handleSubmitRating} disabled={this.state.isUploadingRatings}>
 							Submit
 						</Button>
 					</DialogActions>

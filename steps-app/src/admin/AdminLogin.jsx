@@ -1,10 +1,13 @@
-// import Reflux from "reflux";
 import React from "react";
 import { Component } from "reflux";
 import md5 from "md5";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+
 import AdminActions from "./AdminActions";
 import Store from "./AdminStore";
+
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 
@@ -16,15 +19,20 @@ export default class AdminLogin extends Component {
     constructor() {
         super();
         this.store = Store;
-        this._validCredentialAdminPage = this._validCredentialAdminPage.bind(this)
 		this.state = {
             enteredName: "",
             enteredPassword: ""
         };
     }
     
+	componentWillUpdate() {
+		if (this.state.isLoggedIn){
+            this.props.history.push('/dashboard');
+        }
+	}
+	
     /**
-	 * Handles the user changing their email text value
+	 * Handles the user changing their username text value
 	 */
 	_handleUserChange = (e) => {
 		this.setState({ 
@@ -33,7 +41,7 @@ export default class AdminLogin extends Component {
     }
     
     /**
-	 * Handles the user changing their email text value
+	 * Handles the user changing their password text value
 	 */
     _handlePassChange = (e) => {
 		this.setState({ 
@@ -41,19 +49,16 @@ export default class AdminLogin extends Component {
 		});
 	}
 
-    _validateCredentials = (e) => {  
-        const userLength = this.state.enteredName.length
-        const passLength = this.state.enteredPassword.length
-        if (userLength === 0 || passLength === 0){
-            return "error"
-        } else {
-            return "success"
-        }
+	/**
+	 * Gets whether the submit button is enabled or not
+	 * @return {boolean} - whether the submit button is enabled or not
+	 */
+    _validateCredentials = () => {
+		return this.state.enteredName.length > 0 && this.state.enteredPassword.length > 0;
     }
 
-    _handleSubmit = (e) => {
-        const hashpass = md5(String(this.state.enteredPassword))       
-        AdminActions.checkCredentials(String(this.state.enteredName), hashpass);
+    _handleSubmit = () => {
+        AdminActions.checkCredentials(this.state.enteredName, md5(this.state.enteredPassword));
 		this.setState({
             enteredName: "",
             enteredPassword: ""
@@ -67,52 +72,46 @@ export default class AdminLogin extends Component {
         AdminActions.dismissLoginError();
 	};
 
-    _validCredentialAdminPage = (e) => {
-        if(this.state.isLoggedIn){
-            return(
-                this.props.history.push('/dashboard')
-            )
-        }
-    }
-
     render(){
         return (
-            <div className="loginContainer col-lg-4 col-md-6">
-                <h3 className="adminTitleLogin">Admin Login</h3>
-                <form>
-                <FormGroup 
-                    controlId="username" 
-                    bsSize="small">
-                <ControlLabel>Username</ControlLabel>
+            <div className="loginContainer" data-admin-login={true}>
+				<Card>
+					<CardContent>
+						<h3 className="adminTitleLogin">Admin Login</h3>
+						<form>
+							<FormGroup 
+								controlId="username" 
+								bsSize="small">
+								<ControlLabel>Username</ControlLabel>
+								<FormControl 
+									autoFocus type="username" 
+									value={this.state.enteredName}
+									onChange={this._handleUserChange}
+									placeholder="Username"/>
+							</FormGroup>
+							
+							<FormGroup 
+								controlId="password" 
+								bsSize="small">
+								<ControlLabel>Password</ControlLabel>
+								<FormControl 
+									value={this.state.enteredPassword} 
+									onChange={this._handlePassChange}
+									type="password"
+									placeholder="Password"/>
+							</FormGroup> 
+							
+							<Button bsStyle="primary" type="submit" onClick = {this._handleSubmit} disabled={!this._validateCredentials()}>Login</Button>
+						</form>
+					</CardContent>
+				</Card>
                 
-                <FormControl 
-                    autoFocus type="username" 
-                    value={this.state.enteredName}
-                    onChange={this._handleUserChange}
-                    placeholder="Username"/>
-                </FormGroup>
-                
-                <FormGroup 
-                    controlId="password" 
-                    bsSize="small">
-                
-                <ControlLabel>Password</ControlLabel>
-                <FormControl 
-                    value={this.state.enteredPassword} 
-                    onChange={this._handlePassChange}
-                    type="password"
-                    placeholder="Password"/>
-                </FormGroup> 
-                
-                {this._validCredentialAdminPage()}
-                <Button bsStyle="primary" type="submit" onClick = {this._handleSubmit} disabled={this._validateCredentials() === "error"}>Login</Button>
-                </form>
                 <SuccessAlertComponent onClose={this._handleClose}
 								 visible={this.state.successfullyLoggedIn}
-								 message="Successfully Loggedin."/>
+								 message="You have successfully been logged in."/>
                 <ErrorAlertComponent onClose={this._handleClose}
 								 visible={this.state.failedToLogIn}
-								 message="Invalid Credentials"/>
+								 message="You have entered an incorrect username or password."/>
             </div>
         )
     }

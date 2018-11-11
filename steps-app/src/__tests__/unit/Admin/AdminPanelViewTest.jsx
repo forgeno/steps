@@ -15,13 +15,16 @@ describe("Test the AdminPanelView component", () => {
 
     it("should call getUnapprovedImages when component mounts", () => {
         const getUnapprovedImagesStub = sandbox.stub(AdminActions, "getUnapprovedImages"),
-                AdminPanelViewWrapper = shallow(<AdminPanelView/>);
-
-        expect(getUnapprovedImagesStub.called).to.be.true;
+			AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
+		AdminPanelViewWrapper.setState({
+			isLoggedIn: true
+		});
+		AdminPanelViewWrapper.instance().componentDidMount();
+        expect(getUnapprovedImagesStub.calledOnce).to.be.true;
     });
 
     it("should call adminActions to accept an image upload", () => {
-        const AdminPanelViewWrapper = shallow(<AdminPanelView/>),
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>),
             handlePendingImageStub = sandbox.stub(AdminActions, "handlePendingImages");
         AdminPanelViewWrapper.setState({
             pendingImages: [{id: 0}, {}]
@@ -32,7 +35,7 @@ describe("Test the AdminPanelView component", () => {
     });
 
     it("should call adminActions to reject an image upload", () => {
-        const AdminPanelViewWrapper = shallow(<AdminPanelView/>),
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>),
             handlePendingImageStub = sandbox.stub(AdminActions, "handlePendingImages");
 
         AdminPanelViewWrapper.setState({

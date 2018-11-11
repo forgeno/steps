@@ -27,7 +27,11 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
     }
     
     componentDidMount() {
-		AdminActions.getUnapprovedImages(0, 5);
+		if (!this.state.isLoggedIn) {
+			this.props.history.push('/login');
+		} else {
+			AdminActions.getUnapprovedImages(0, 5);
+		}
     }
     
 	_dismissNotifications = () => {

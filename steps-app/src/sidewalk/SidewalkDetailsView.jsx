@@ -6,6 +6,7 @@ import CommentsListComponent from "./CommentsListComponent";
 import SidewalkImageDetailsComponent from "./images/SidewalkImageDetailsComponent";
 import PedestrianDataComponent from "./PedestrianDataComponent";
 import SidewalkRatingsModal from "./SidewalkRatingsModal";
+import {getRatingDescription} from "../util/RatingUtil";
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
@@ -119,7 +120,7 @@ class SidewalkDetailsView extends Component {
 	}
 
 	_formatRating(value) {
-		return value && value.toFixed(2);
+		return value ? getRatingDescription(value) : "-";
 	}
 
 	_openRatingsModal = () => {

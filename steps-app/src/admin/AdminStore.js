@@ -50,7 +50,7 @@ export default class AdminStore extends Reflux.Store {
 				isDeletingComment: false,
 				successfullyDeletedComment: true
 			});
-			onFinish(true);
+			return onFinish(true);
 		}).catch((err) => {
 			this.setState({
 				isDeletingComment: false,
@@ -94,7 +94,6 @@ export default class AdminStore extends Reflux.Store {
 			this.setState({
 				isLoggedIn: false,
 				failedToLogIn: true
-
 			});
 			console.error(err)
 		});

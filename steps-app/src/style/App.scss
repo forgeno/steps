@@ -7,6 +7,7 @@
 @import "SidewalkDrawer.scss";
 @import "Alerts.scss";
 @import "AdminLogin.scss";
+@import "Statistics.scss";
 
 /* bootstrap button overrides */
 .btn-primary {
@@ -103,4 +104,11 @@ div.noOutlineDiv:focus {
 
 .modal-title {
 	padding: 20px 23px;
+}
+
+.formLabel {
+	font-size: 14px;
+	font-family: $fontFamily;
+	margin-right: 20px;
+	cursor: pointer;
 }
