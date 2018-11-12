@@ -1,7 +1,6 @@
 import React from "react";
 import InfiniteLoader from "react-virtualized/dist/commonjs/InfiniteLoader";
 import List from "react-virtualized/dist/commonjs/List";
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
 export default class InfiniteLoadingList extends React.PureComponent {
 	

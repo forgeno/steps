@@ -8,6 +8,7 @@ import Button from "@material-ui/core/Button";
 import {SECONDARY_COLOUR, FONT_FAMILY} from "../constants/ThemeConstants";
 
 import AdminStore from "../admin/AdminStore";
+import SearchBarComponent from "./SearchBarComponent";
 
 const styles = {
 	root: {
@@ -65,6 +66,7 @@ class NavbarComponent extends Reflux.Component {
 						{
 							this.state.isLoggedIn && <Link to="/dashboard"><Button color="inherit" className={classes.button}>  Dashboard</Button></Link>
 						}
+						<SearchBarComponent />
 					</Toolbar>
 				</AppBar>
 			</div>

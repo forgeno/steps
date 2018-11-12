@@ -7,6 +7,8 @@ export default class Header {
 		this.mapButton = this.buttons.withText("STEPS");
 		this.aboutButton = this.buttons.withText("ABOUT");
 		this.statsButton = this.buttons.withText("STATISTICS");
+		
+		this.searchBar = Selector(".searchBar");
     }
 	
 	getLoginButton() {

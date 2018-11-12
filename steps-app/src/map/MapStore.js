@@ -13,7 +13,8 @@ export default class MapStore extends Reflux.Store {
 			sidewalks: [],
 			sidewalkSelected: false,
 			longitude: downtownLongitude,
-			latitude: downtownLatitude
+			latitude: downtownLatitude,
+			searchVisible: false
 		};
 		this.listenables = Actions;
 
@@ -22,6 +23,32 @@ export default class MapStore extends Reflux.Store {
 		}
 	}
 
+	/**
+	 * Displays the selected sidewalk
+	 * @param {Object} sidewalk - details about the sidewalk
+	 * @param {number} latitude - the latitude of the sidewalk's center position
+	 * @param {number} longitude - the longitude of the sidewalk's center position
+	 */
+	viewSidewalkDetails(sidewalk, latitude, longitude) {
+		if (!this.state.view) {
+			console.error("The view was not loaded");
+			return;
+		}
+
+		this.state.view.goTo({
+			center: [longitude, latitude],
+			animate: true,
+			duration: 200,
+			easing: "easy-in"
+		});
+		this.setState({
+			longitude: longitude,
+			latitude: latitude,
+			sidewalkSelected: true,
+			selectedSidewalkDetails: sidewalk
+		});
+	}
+	
 	onLoadAllSidewalks() {
 		RestUtil.sendGetRequest("sidewalk").then((res) => {
 			this.setState({
@@ -150,8 +177,12 @@ export default class MapStore extends Reflux.Store {
 				url: layerURL,
 				renderer: sidewalkColorMapRenderer
 			});
+			
+			this.setState({
+				featureLayer: featureLayer
+			});
 	 
-			view.when(function() {
+			view.when(() => {
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
 				//var featureLayer = map.layers.getItemAt(0);
@@ -192,8 +223,7 @@ export default class MapStore extends Reflux.Store {
 				let c = new Circle({
 					center: event.mapPoint,
 					radius: pxRadius * pxToMeters // meters by default
-				  });
-
+				});
 
 				let q = featureLayer.createQuery();
 				q.geometry = c;
@@ -213,18 +243,7 @@ export default class MapStore extends Reflux.Store {
 						//console.log(resultingFeatures)
 						//Add graphic to the map graphics layer.
 
-						view.goTo({
-							center: [event.mapPoint.longitude, event.mapPoint.latitude],
-							animate: true,
-							duration: 200,
-							easing: "easy-in"
-						})
-						this.setState({
-							longitude: event.mapPoint.longitude,
-							latitude: event.mapPoint.latitude,
-							sidewalkSelected: true,
-							selectedSidewalkDetails: sidewalk
-						});
+						this.viewSidewalkDetails(sidewalk, event.mapPoint.latitude, event.mapPoint.longitude);
 					}
 				});
 			});
@@ -253,6 +272,44 @@ export default class MapStore extends Reflux.Store {
 		selectedSidewalk.senseOfSecurity = sidewalk.senseOfSecurity;
 		this.setState({
 			sidewalks: updatedSidewalks
+		});
+	}
+	
+	/**
+	 * Displays the search bar
+	 */
+	onDisplaySearch() {
+		this.setState({
+			searchVisible: true
+		});
+	}
+	
+	/**
+	 * Hides the search bar
+	 */
+	onDismissSearch() {
+		this.setState({
+			searchVisible: false
+		});
+	}
+	
+	/**
+	 * Selects the specified sidewalk and displays details about it, when the user searches for the sidewalk
+	 */
+	onSelectSidewalk(sidewalk) {
+		if (!this.state.featureLayer) {
+			this.viewSidewalkDetails(sidewalk, this.state.latitude, this.state.longitude);
+			return;
+		}
+
+		const q = this.state.featureLayer.createQuery();
+		this.state.featureLayer.queryFeatures(q).then((results) => {
+			const result = results.features.find((feature) => parseInt(feature.attributes.osm_id) === sidewalk.id);
+			if (result) {
+				this.viewSidewalkDetails(sidewalk, result.geometry.extent.center.latitude, result.geometry.extent.center.longitude);
+			} else {
+				this.viewSidewalkDetails(sidewalk, this.state.latitude, this.state.longitude);
+			}
 		});
 	}
 }
