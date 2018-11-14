@@ -276,24 +276,6 @@ export default class MapStore extends Reflux.Store {
 	}
 	
 	/**
-	 * Displays the search bar
-	 */
-	onDisplaySearch() {
-		this.setState({
-			searchVisible: true
-		});
-	}
-	
-	/**
-	 * Hides the search bar
-	 */
-	onDismissSearch() {
-		this.setState({
-			searchVisible: false
-		});
-	}
-	
-	/**
 	 * Selects the specified sidewalk and displays details about it, when the user searches for the sidewalk
 	 */
 	onSelectSidewalk(sidewalk) {

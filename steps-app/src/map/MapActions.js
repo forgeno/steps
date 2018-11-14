@@ -5,8 +5,6 @@ const Actions = Reflux.createActions([
 	"loadMapDetails",
 	"setDrawerOpened",
 	"updateSidewalkRatings",
-	"displaySearch",
-	"dismissSearch",
 	"selectSidewalk"
 ]);
 

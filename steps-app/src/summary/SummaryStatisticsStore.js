@@ -45,13 +45,4 @@ export default class SummaryStatisticsStore extends Reflux.Store {
 		});
 	}
 	
-	onLoadSidewalkContributionsSummary() {
-		RestUtil.sendGetRequest("sidewalk").then((res) => {
-			this.setState({
-				sidewalks: res
-			});
-		}).catch((err) => {
-			console.error(err);
-		});
-	}
 }

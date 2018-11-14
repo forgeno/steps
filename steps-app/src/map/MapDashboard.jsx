@@ -23,11 +23,6 @@ export default class MapDashboard extends Component {
 		if (!this.state.sidewalks || this.state.sidewalks.length === 0) {
 			MapActions.loadAllSidewalks();
 		}
-		MapActions.displaySearch();
-	}
-	
-	componentWillUnmount() {
-		MapActions.dismissSearch();
 	}
 	
 	/**

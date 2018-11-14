@@ -1,8 +1,7 @@
 import Reflux from "reflux";
 
 const Actions = Reflux.createActions([
-	"loadSummaryStatistics",
-	"loadSidewalkContributionsSummary"
+	"loadSummaryStatistics"
 ]);
 
 export default Actions;
