@@ -1,7 +1,8 @@
 import React from "react";
 import Reflux from "reflux";
-import { Button, FormGroup, FormControl } from "react-bootstrap";
+import { Button, FormGroup, FormControl, Alert } from "react-bootstrap";
 import Filter from "bad-words";
+import swearsList from "bad-words/lib/lang";
 
 import SidewalkStore from "./SidewalkStore";
 import SidewalkActions from "./SidewalkActions";
@@ -9,10 +10,10 @@ import SidewalkCommentComponent from "./SidewalkCommentComponent";
 import CommentDeletionModal from "./CommentDeletionModal";
 import LoaderComponent from "../misc-components/LoaderComponent";
 
-const filter = new Filter({ replaceRegex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im});
-filter.addWords('@','587','780')
+import {COMMENTS_PER_PAGE, COMMENT_ERROR_STATE, COMMENT_PROFANITY_MESSAGE, EMPTY_COMMENT_MESSAGE, PHONE_REGEX, SECONDARY_PHONE_REGEX} from "../constants/CommentConstants";
 
-const COMMENTS_PER_PAGE = 25;
+const filter = new Filter({ replaceRegex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im, placeHolder: "*"});
+filter.addWords('@');
 
 /**
  * This class renders the list of all comments left on a sidewalk, as well as the form for
@@ -27,40 +28,117 @@ export default class CommentsListComponent extends Reflux.Component {
 			enteredComment: "",
 			modalOpened: false,
 			isLoadingComments: false,
-			currentPage: 0
+			currentPage: 0,
+			commentValidation: {
+				state: COMMENT_ERROR_STATE,
+				message: EMPTY_COMMENT_MESSAGE
+			}
 		};
 	}
 	
 	/**
 	 * Determines whether the current input text is valid or not
-	 * @return {String} - a representation whether the current comment text can be posted or not ("error" or "success")
+	 * @param {String} comment - the comment to validate
+	 * @return {Object} - details about whether the input text is valid or not
+	 * {
+	 *		state: 	 a representation whether the current comment text can be posted or not ("error" or "success")
+	 *		message: a reason why the comment can not be posted, if state is error
+	 * }
 	 */
-	_validateCommentState() {
-		const length = this.state.enteredComment.length;
-		if (filter.isProfane(this.state.enteredComment)) {
-			return "error";
+	_validateCommentState = (comment) => {
+		const length = comment.length;
+		if (filter.isProfane(comment)) {
+			return {
+				state: COMMENT_ERROR_STATE,
+				message: COMMENT_PROFANITY_MESSAGE
+			};
+		} else {
+			if (comment.match(PHONE_REGEX)) {
+				return {
+					state: COMMENT_ERROR_STATE,
+					message: `This comment contains a phone number: ${comment.match(PHONE_REGEX)[0]}`
+				};
+			} else if (comment.match(SECONDARY_PHONE_REGEX)) {
+				return {
+					state: COMMENT_ERROR_STATE,
+					message: `This comment contains a phone number: ${comment.match(SECONDARY_PHONE_REGEX)[0]}`
+				};
+			}
 		}
+
 		if (length === 0) {
-			return "error";
+			return {
+				state: COMMENT_ERROR_STATE,
+				message: EMPTY_COMMENT_MESSAGE
+			};
 		} else if (length <= 300) {
-			return "success";
+			return {
+				state: "success",
+				message: ""
+			};
 		}
-		return "error";
+		return {
+			state: COMMENT_ERROR_STATE,
+			message: "Comments can be no more than 300 characters."
+		};
 	}
 
+	/**
+	 * Performs extra validation of the specified comment to make sure it does not have swears
+	 * Separated from _validateCommentState() due to performance reasons
+	 * @param {String} comment - the comment to validate
+	 * @return {Object} - details about whether the input text is valid or not
+	 * {
+	 *		state: 	 a representation whether the current comment text can be posted or not ("error" or "success")
+	 *		message: a reason why the comment can not be posted, if state is error
+	 * }
+	 */
+	_validateSubstringSwears = (comment) => {
+		for (const swear of swearsList.words) {
+			if (swear === "hell" || swear.includes("as")) {
+				continue;
+			}
+			if (comment.toLowerCase().includes(swear)) {
+				return {
+					state: COMMENT_ERROR_STATE,
+					message: COMMENT_PROFANITY_MESSAGE
+				};
+			}
+		}
+		return {
+			state: "success",
+			message: ""
+		};
+	};
+	
+	_onCommentBlur = () => {
+		const validation = this._validateSubstringSwears(this.state.enteredComment);
+		if (validation.state === COMMENT_ERROR_STATE) {
+			this.setState({
+				commentValidation: validation
+			});
+		}
+	};
+	
 	/**
 	 * Handles the user changing their comment text value
 	 */
 	_handleChange = (e) => {
 		this.setState({ 
-			enteredComment: e.target.value 
+			enteredComment: e.target.value,
+			commentValidation: this._validateCommentState(e.target.value)
 		});
 	}
 
 	/**
 	 * Handles the user submitting their entered comment text
 	 */
-	_handleSubmit = (e) => {
+	_handleSubmit = () => {
+		const validateComment = this._validateSubstringSwears(this.state.enteredComment);
+		if (validateComment.state === COMMENT_ERROR_STATE) {
+			this.setState({commentValidation: validateComment});
+			return;
+		}
 		SidewalkActions.uploadComment(this.state.enteredComment);
 		this.setState({
 			enteredComment: ""
@@ -159,23 +237,31 @@ export default class CommentsListComponent extends Reflux.Component {
 		const comments = this.state.currentSidewalk.comments;
 		return (
 			<div className="comments">
+				{
+					this.state.commentValidation.message.length > 0 && (
+						<Alert bsStyle="danger">
+							{this.state.commentValidation.message}
+						</Alert>
+					)
+				}
 				<div className="commentBox">
 						<FormGroup
 							bsSize="small"
 							controlId="formBasicText"
-							validationState={this._validateCommentState()}
+							validationState={this.state.commentValidation.state}
 						>
 							<FormControl
 								componentClass="textarea"
 								value={this.state.enteredComment}
 								placeholder="Enter a comment"
 								onChange={this._handleChange}
+								onBlur={this._onCommentBlur}
 								rows={4}
 							/>
 							<FormControl.Feedback />
 						</FormGroup>
 				</div>
-				<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this.state.uploadingComment || this._validateCommentState() === "error"} >
+				<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this.state.uploadingComment || this.state.commentValidation.state === COMMENT_ERROR_STATE} >
 					Submit
 				</Button>
 				{

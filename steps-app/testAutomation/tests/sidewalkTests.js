@@ -11,7 +11,7 @@ import ImageGallery from "../pages/ImageGallery";
 import SidewalkUtilities from "../util/SidewalkUtilities";
 
 // constants
-const COMMENT_TEXT = `Automation test comment ${Date.now()}`;
+const COMMENT_TEXT = `Automation test comment ${new Date().toISOString()}`;
 
 // pages
 const mapPage = new MapPage();

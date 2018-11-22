@@ -5,8 +5,6 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Grid from "@material-ui/core/Grid";
 import {BootstrapTable, TableHeaderColumn} from "react-bootstrap-table";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
 import {Line} from "react-chartjs-2";
 
 import "react-bootstrap-table/dist/react-bootstrap-table-all.min.css";
