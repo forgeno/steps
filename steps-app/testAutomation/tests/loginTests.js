@@ -21,17 +21,25 @@ fixture `Tests logging into the application`
     .page `${config.baseUrl}/login`;
 
 test("logging in with incorrect credentials", async (t) => {
-	await t.typeText(loginPage.username, "etkoapwkeopawe")
-		.typeText(loginPage.password, "ioawkoieoiawoiea")
+	await t.typeText(loginPage.username, "lorem ipsum")
+		.typeText(loginPage.password, "a random password")
 		.click(loginPage.submit)
 		.expect(notifications.text.textContent).contains("incorrect");
 });
 
 test.requestHooks(logger, mock)("logging in with correct credentials", async (t) => {
-	await t.typeText(loginPage.username, "etkoapwkeopawe")
-		.typeText(loginPage.password, "ioawkoieoiawoiea")
+	await t.typeText(loginPage.username, "lorem iiii")
+		.typeText(loginPage.password, "aVery strong pa$$w0rd")
 		.click(loginPage.submit)
 		.expect(logger.contains(record => record.request.url.includes("/adminAccount/login/") && record.response.statusCode === 200)).ok();
 	
 	await t.expect(adminPage.page.visible).eql(true);
+});
+
+test("that the login button is disabled with an empty username or password", async (t) => {
+	await t.expect(loginPage.submit.hasAttribute("disabled")).eql(true)
+		.typeText(loginPage.username, "lorem ipsum")
+		.expect(loginPage.submit.hasAttribute("disabled")).eql(true)
+		.typeText(loginPage.password, "ioawkoieoiawoiea")
+		.expect(loginPage.submit.hasAttribute("disabled")).eql(false);
 });

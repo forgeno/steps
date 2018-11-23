@@ -31,4 +31,17 @@ export default class SidewalkUtilities {
 			return DEV_SIDEWALK_STORE.state.loadedUserImages.length;
 		});
 	}
+	
+	/**
+	 * Ensures that there are no images in the currently selected sidewalk
+	 * @param {Object} t - the testcafe runner
+	 */
+	static async forceNoImages(t) {
+		await t.eval(() => {
+			const sidewalk = DEV_SIDEWALK_STORE.state.currentSidewalk;
+			sidewalk.lastImage = null;
+			sidewalk.totalImages = 0;
+			DEV_SIDEWALK_STORE.setState({currentSidewalk: sidewalk, loadedUserImages: []});
+		});
+	}
 }

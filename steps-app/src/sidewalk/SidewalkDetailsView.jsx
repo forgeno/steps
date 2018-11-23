@@ -202,7 +202,11 @@ class SidewalkDetailsView extends Component {
 	render() {
 		return (
 			<div tabIndex={0} onKeyDown={this._handleKeyDown} ref={this.selfRef} className="noOutlineDiv">
-				<Drawer open={this.props.visible} anchor="right" variant="temporary">
+				<Drawer open={this.props.visible}
+						anchor="right"
+						variant="temporary"
+						ModalProps={{ onBackdropClick: this._handleClose }}
+						>
 					<CloseIcon onClick={this._handleClose} className="closeButton" />
 					{this.renderDrawerDetails()}
 				</Drawer>

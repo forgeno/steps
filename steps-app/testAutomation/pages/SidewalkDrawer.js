@@ -17,6 +17,11 @@ export default class SidewalkDrawer {
 		this.imagesHeader = this.sectionHeaders.withText("Images", {timeout: 30000});
 		this.uploadImagesButton = Selector(".uploadSidewalkImageText").parent();
 		this.previewImagesButton = Selector(".previewSidewalkImages .btn");
+		this.lastUploadedImage = Selector(".drawerImageSection");
+		
+		// ratings
+		this.ratingsHeader = this.sectionHeaders.withText("Ratings", {timeout: 30000});
+		this.submitRatingButton = this.drawer.find("button").withText("Rate this sidewalk");
     }
 	
 	/**
