@@ -70,12 +70,16 @@ export default class MapStore extends Reflux.Store {
 	 */
 
     onLoadMapDetails() {
-		esriLoader.loadModules(['esri/Map', 'esri/views/MapView'], esriURL).then((data) => {
+		esriLoader.loadModules(['esri/Map', 'esri/views/MapView','esri/widgets/Search', "esri/widgets/BasemapToggle"], esriURL).then((data) => {
 			const Map = data[0],
 				MapView = data[1];
 			
+			const Search = data[2];
+			const BasemapToggle = data[3];
+
 			const map = new Map({
 				basemap: "dark-gray-vector"
+				// basemap: "satellite"
 				//layers: [featureLayer],
 			});
 
@@ -86,11 +90,24 @@ export default class MapStore extends Reflux.Store {
 				zoom: 15
 			});
 
+			const toggle = new BasemapToggle({
+				view: view, // view that provides access to the map's 'topo' basemap
+				nextBasemap: "osm" // allows for toggling to the 'hybrid' basemap
+			  });
+	  
+			view.ui.add(toggle, "");
+
+			const search = new Search({
+				view: view
+			});
+
+			view.ui.add(search, "top-right");
+			
 			this.setState({
 				map,
-				view
+				view,
 			 });
-			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Search"], esriURL);
+			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Expand"], esriURL);
 		}).then((data) => {
 			
 			const FeatureLayer = data[0],
@@ -103,7 +120,8 @@ export default class MapStore extends Reflux.Store {
 				SimpleLineSymbol = data[7],
 				MapImage = data[8],
 				Legend = data[9],
-				view = this.state.view;
+				Expand = data[10],
+				view = this.state.view;	
 			
 			var Rating = 4;
 
@@ -117,7 +135,7 @@ export default class MapStore extends Reflux.Store {
 					value: 5,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
+						width: 5,
 						color: "#00A300",
 						style: "solid"
 					}
@@ -126,7 +144,7 @@ export default class MapStore extends Reflux.Store {
 					value: 4,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
+						width: 5,
 						color: "#00A392",
 						style: "solid"
 					}
@@ -135,7 +153,7 @@ export default class MapStore extends Reflux.Store {
 					value: 3,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
+						width: 5,
 						color: "#FF7A00",
 						style: "solid"
 					}
@@ -144,8 +162,8 @@ export default class MapStore extends Reflux.Store {
 					value: 2,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
-						color: "#FFDF00",
+						width: 5,
+						color: '#f9a602',
 						style: "solid"
 					}
 				}, {
@@ -153,7 +171,7 @@ export default class MapStore extends Reflux.Store {
 					value: 1,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
+						width: 5,
 						color: "#FF0000",
 						style: "solid"
 					}
@@ -162,8 +180,8 @@ export default class MapStore extends Reflux.Store {
 					value: "",
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 3,
 						color: "#D2D3D1",
+						width: 5,
 						style: "solid"
 					}
 				  }],
@@ -186,17 +204,63 @@ export default class MapStore extends Reflux.Store {
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
 				//var featureLayer = map.layers.getItemAt(0);
-				var legend = new Legend({
+				
+				// Desktop
+				const legend = new Legend({
 				  view: view,
 				  layerInfos: [{
 					layer: featureLayer,
 					title: "Sidewalk Ratings"
 				  }]
 				});
-	  
-				// Add widget to the bottom right corner of the view
-				view.ui.add(legend, "bottom-left");
-			  });
+				
+				//mobile
+				const expandLegend = new Expand({
+					view: view,
+					content: new Legend({
+					  view: view,
+					  layerInfos: [{
+						layer: featureLayer,
+						title: "Sidewalk Ratings"
+					  }]
+					})
+				});
+
+				// Load
+				const isResponsiveSize = view.widthBreakpoint === "xsmall";
+				updateView(isResponsiveSize);
+
+				// Breakpoints
+
+				view.watch("widthBreakpoint", function(breakpoint) {
+					switch (breakpoint) {
+					  case "xsmall":
+						updateView(true);
+						break;
+					  case "small":
+					  	updateView(true);
+					  	break;
+					  case "medium":
+					  case "large":
+					  case "xlarge":
+						updateView(false);
+						break;
+					  default:
+					}
+				  });
+
+				  function updateView(isMobile) {
+					setLegendMobile(isMobile);
+				  }
+
+				  function setLegendMobile(isMobile) {
+					var toAdd = isMobile ? expandLegend : legend;
+					var toRemove = isMobile ? legend : expandLegend;
+			
+					view.ui.remove(toRemove);
+					view.ui.add(toAdd, "bottom-left");
+				  }
+			});
 
 			// radius to search in
 			const pxRadius = 5;
@@ -240,7 +304,6 @@ export default class MapStore extends Reflux.Store {
 							console.error("No sidewalk with a matching ID was found");
 							return;
 						}
-						//console.log(resultingFeatures)
 						//Add graphic to the map graphics layer.
 
 						this.viewSidewalkDetails(sidewalk, event.mapPoint.latitude, event.mapPoint.longitude);

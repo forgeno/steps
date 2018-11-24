@@ -17,7 +17,9 @@ export default class SummaryMapView extends Component {
 	
 	render() {
 		return (
-			<div id="mapContainer"/>
+			<div id="mapContainer">
+			<div id="BasemapToggle"/>
+			</div>
 		);
 	}
 }
