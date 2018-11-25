@@ -13,7 +13,8 @@ export default class MapStore extends Reflux.Store {
 			sidewalks: [],
 			sidewalkSelected: false,
 			longitude: downtownLongitude,
-			latitude: downtownLatitude
+			latitude: downtownLatitude,
+			listFilter: []
 		};
 		this.listenables = Actions;
 
@@ -41,7 +42,7 @@ export default class MapStore extends Reflux.Store {
 	/**
 	 * Calls esriLoader which helps the react-app to communicate with the ArcGIS API for javascript
 	 */
-
+	
     onLoadMapDetails() {
 		esriLoader.loadModules(['esri/Map', 'esri/views/MapView'], esriURL).then((data) => {
 			const Map = data[0],
@@ -63,18 +64,15 @@ export default class MapStore extends Reflux.Store {
 				map,
 				view
 			 });
+
+			
+			view.ui.add("filterGUI", "top-left")
 			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Search"], esriURL);
 		}).then((data) => {
 			
 			const FeatureLayer = data[0],
 				PopupTemplate = data[1],
 				Circle = data[2],
-				Graphic = data[3],
-				watchUtils = data[4],
-				UniqueValueRenderer = data[5],
-				SimpleFillSymbol = data[6],
-				SimpleLineSymbol = data[7],
-				MapImage = data[8],
 				Legend = data[9],
 				view = this.state.view;
 			
@@ -150,7 +148,11 @@ export default class MapStore extends Reflux.Store {
 				url: layerURL,
 				renderer: sidewalkColorMapRenderer
 			});
-	 
+			
+			this.setState({
+				sidewalkColorMapRenderer,
+				featureLayer
+			});
 			view.when(function() {
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
@@ -165,12 +167,58 @@ export default class MapStore extends Reflux.Store {
 	  
 				// Add widget to the bottom right corner of the view
 				view.ui.add(legend, "bottom-left");
+				
 			  });
 
+			function queryAllSidewalks() {
+				var sidewalkQuery = featureLayer.createQuery();
+				return featureLayer.queryFeatures(sidewalkQuery).then(function(response) {
+					let returnSidewalks = response.features;
+					return returnSidewalks
+				});
+				
+			}
+			queryAllSidewalks();
 			// radius to search in
 			const pxRadius = 5;
+			console.log(featureLayer)
 			this.state.map.add(featureLayer);
 
+			//Start of FilterMap code
+			
+			function addSelectText (stringList, selectObj){
+				stringList.forEach(function(element) {
+					var option = document.createElement("option");
+					option.text = element
+					selectObj.add(option);
+				});
+			}
+
+			
+
+			var rateTraitObj = document.getElementById("rateTrait")
+			var equalitySelectorObj = document.getElementById("equalitySelector");
+			var numberSelectorObj = document.getElementById("numberSelector");
+			var addFilterObj = document.getElementById("addFilter");
+			var applyFilterObj = document.getElementById("applyFilter");
+			var filterListObj = document.getElementById("filterList");
+
+			let rateTraitString = ["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
+			let equalityString = ["<",">","=","<=",">="]
+			let ratingString = ["5","4","3","2","1"]
+
+			addSelectText(rateTraitString, rateTraitObj)
+			addSelectText(equalityString, equalitySelectorObj)
+			addSelectText(ratingString, numberSelectorObj)
+			
+			// applyFilterObj.addEventListener("click", function () {
+			// 	const sidewalkArr = this.state.sidewalks
+			// 	console.log(sidewalkArr)
+			// 	//console.log(sidewalks)
+			// 	.then()
+			//   });
+
+			//End of filter map code
 			this.state.view.on("click", (event) => {
 				//let pxToMeters = view.extent.width / view.width;
 
@@ -229,6 +277,61 @@ export default class MapStore extends Reflux.Store {
 				});
 			});
 		});
+	}
+
+	onPushArray(strTrait, strEquality, strNumberSelect) {
+		const tempListFilter = this.state.listFilter;
+		tempListFilter.push(String(strTrait)+" "+String(strEquality)+" "+String(strNumberSelect));
+
+		this.setState({
+			listFilter: tempListFilter
+		})
+
+		//console.log(this.state.listFilter)
 		
 	}
+
+	onClearFilters(){
+		this.setState({
+			listFilter: []
+		})
+	}
+
+	onFilterMap(){
+		esriLoader.loadModules(["esri/tasks/support/Query"], esriURL).then((data) => {
+			let returnSidewalks = null
+			var query = this.state.featureLayer.createQuery();
+			for(let i=0; i < this.state.listFilter.length; i++){
+				query.where = this.state.listFilter[i];
+			}
+			query.outFields = ["*"];
+			let sidewalkQuery = this.state.featureLayer.createQuery();
+			this.state.featureLayer.queryFeatures(sidewalkQuery).then(function(response) {
+				returnSidewalks = response.features;
+				console.log(returnSidewalks)
+			});
+			this.state.featureLayer.queryFeatures(query).then(function(response){
+				//console.log(response.features)
+				const editMap = {
+					deleteFeatures: [response.features[0]]
+				}
+				this.state.featureLayer.applyEdits(editMap).then(function(editsResult) {
+					//console.log(editsResult.deleteFeatureResults)
+					//console.log(editsResult)
+					// Get the objectId of the newly added feature.
+					// Call selectFeature function to highlight the new feature.
+					//this.state.featureLayer.deleteFeatures()
+				//   }).catch(function(error) {
+				// 	console.log("===============================================");
+				// 	console.error("[ applyEdits ] FAILURE: ", error.code, error.name,
+				// 	  error.message);
+				// 	console.log("error = ", error);
+				  });
+			});
+		});
+	}
+	
 }
+
+
+

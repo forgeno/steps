@@ -4,3 +4,38 @@
 	min-height: 91vh;
 	cursor: pointer;
 }
+
+#filterGUI {
+	position: relative;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-bottom: 5px;
+	padding-right: 5px;
+    margin-top: 0px;
+	min-height: 20vh;
+	max-height: 25vh;
+	min-width: 115%;
+	max-width: 115%;
+	background-color: white;
+	
+    overflow-y: auto;
+	
+}
+#FilterGUIWrapper {
+	display: none;
+}
+
+.applyButton{
+	position: absolute;
+	right: 5px;
+}
+
+.cell-element{
+	padding-top: 10px;
+}
+
+.AddFilter{
+	margin-left: 3px;
+	width: 20%;
+}
+
