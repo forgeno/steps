@@ -9,9 +9,11 @@ import ImageUploadModal from "../pages/ImageUploadModal";
 import Notifications from "../pages/Notifications";
 import ImageGallery from "../pages/ImageGallery";
 import SidewalkUtilities from "../util/SidewalkUtilities";
+import RatingsModal from "../pages/RatingsModal";
+import {getRatingDescription} from "../../src/util/RatingUtil";
 
 // constants
-const COMMENT_TEXT = `Automation test comment ${Date.now()}`;
+const COMMENT_TEXT = `Automation test comment ${new Date().toISOString()}`;
 
 // pages
 const mapPage = new MapPage();
@@ -20,11 +22,14 @@ const baseModal = new BaseModal();
 const imageUploadModal = new ImageUploadModal();
 const notifications = new Notifications();
 const imageGallery = new ImageGallery();
+const ratingsModal = new RatingsModal();
 
 // variables
 const logger = RequestLogger({
     logResponseHeaders: true,
-    logResponseBody: true
+    logResponseBody: true,
+	logRequestBody: true,
+	stringifyRequestBody: true
 });
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
@@ -35,6 +40,7 @@ fixture `Tests the sidewalk drawer`
 		await mapPage.waitForLoad(t);
 		await mapPage.loadDefaultSidewalk(t);
 		await AdminUtilities.silentLogin(t);
+		await t.expect(drawer.drawer.visible).eql(true);
 	});
 
 test("viewing comments uploaded to a sidewalk", async (t) => {
@@ -139,14 +145,15 @@ test("viewing images on a sidewalk", async (t) => {
 	
 	// check to see all rows loaded
 	await t.click(drawer.previewImagesButton)
-		.expect(imageGallery.getRowCount()).eql(10);
+		.wait(6000)
+		.expect(imageGallery.getRowCount()).eql(15);
 	
 	// check the default selected image
 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
 	// test selecting a different image
 	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
-		.wait(1500);
+		.wait(3500);
 	await t.expect(await imageGallery.getSelectedRowIndex(t))
 		.eql(4);
 	
@@ -181,4 +188,58 @@ test.requestHooks(logger, mock)("deleting an image on a sidewalk", async (t) => 
 		.expect(baseModal.cancel.exists).eql(false);
 	
 	await t.expect(await SidewalkUtilities.getLoadedImagesCount(t)).eql(loadedImages - 1);
+});
+
+test("to make sure image view components do not exist if a sidewalk has no images", async (t) => {
+	
+	await SidewalkUtilities.forceNoImages(t);
+	await t.expect(drawer.lastUploadedImage.exists).eql(false)
+		.click(drawer.imagesHeader)
+		.expect(drawer.previewImagesButton.exists).eql(false)
+});
+
+test("posting a comment on a sidewalk that contains personal information", async (t) => {
+    await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "Lorem ipsum kung fu henry is a legend call him at 999 980-7819")
+		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true)
+		.selectText(drawer.commentInput)
+		.pressKey("delete")
+		.typeText(drawer.commentInput, "Lorem ipsum kung fu henry is a legend message him at kungfu@henry.com")
+		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true);
+});
+
+test.requestHooks(logger)("starting to submit a rating but cancelling", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.click(ratingsModal.cancel)
+		.expect(ratingsModal.cancel.exists).eql(false);
+	// make sure no request was made to rate the sidewalk
+	await t.expect(logger.contains(record => record.request.url.includes("/rate/"))).notOk();
+});
+
+test.requestHooks(logger)("submitting a rating to the sidewalk", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.expect(ratingsModal.accessibilityText.textContent).eql(getRatingDescription(5))
+		.expect(ratingsModal.connectivityText.textContent).eql(getRatingDescription(1))
+		.expect(ratingsModal.comfortText.textContent).eql(getRatingDescription(3))
+		.expect(ratingsModal.physicalSafetyText.textContent).eql(getRatingDescription(4))
+		.expect(ratingsModal.senseOfSecurityText.textContent).eql(getRatingDescription(2));
+	
+	await t.click(ratingsModal.confirm)
+		.expect(logger.contains(
+			record => (
+				record.request.url.includes("/rate/") &&
+				record.response.statusCode === 200)
+			)
+		).ok()
+		.expect(logger.contains(record => record.request.url.includes("/ratings/") && record.response.statusCode === 200)).ok();
 });

@@ -149,3 +149,44 @@ class TestIndividualOverallRatings(unittest.TestCase):
 		with connection.cursor() as cursor:
 			cursor.execute("DELETE FROM api_sidewalkrating")
 			cursor.execute("DELETE FROM api_sidewalk")
+
+class GetRatingTests(APITestCase):
+	def setUp(self):
+		self.sidewalk = Sidewalk.objects.create(address="aaa").__dict__
+		self.sidewalkNoRatings = Sidewalk.objects.create(address="aaa").__dict__
+		
+	def test_with_post(self):
+		response = self.client.post("/api/sidewalk/" + str(self.sidewalk["id"]) + "/ratings/", {}, format='json')
+		self.assertEqual(response.status_code, 405)
+	
+	def test_sidewalk_no_ratings(self):
+		response = self.client.get("/api/sidewalk/" + str(self.sidewalkNoRatings["id"]) + "/ratings/", format='json')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.data["overallRating"], 0)
+		self.assertEqual(response.data["accessibility"], 0)
+		self.assertEqual(response.data["connectivity"], 0)
+		self.assertEqual(response.data["comfort"], 0)
+		self.assertEqual(response.data["physicalSafety"], 0)
+		self.assertEqual(response.data["senseOfSecurity"], 0)
+		self.assertEqual(response.data["totalRatings"], 0)
+
+	def test_sidewalk_with_ratings(self):
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=4.7, physical_safety_rating=2.0, security_rating=4.5)
+		response = self.client.get("/api/sidewalk/" + str(self.sidewalk["id"]) + "/ratings/", format='json')
+		self.assertEqual(response.status_code, 200)
+
+		self.assertEqual(response.data["overallRating"], 2.34)
+		self.assertEqual(response.data["accessibility"], 1.0)
+		self.assertEqual(response.data["connectivity"], 2.7)
+		self.assertEqual(response.data["comfort"], 1.5)
+		self.assertEqual(response.data["physicalSafety"], 2)
+		self.assertEqual(response.data["senseOfSecurity"], 4.5)
+		self.assertEqual(response.data["totalRatings"], 2)
+
+	def tearDown(self):
+		with connection.cursor() as cursor:
+			cursor.execute("DELETE FROM api_sidewalkrating")
+			cursor.execute("DELETE FROM api_sidewalk")

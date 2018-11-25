@@ -5,6 +5,7 @@
 	cursor: pointer;
 }
 
+<<<<<<< HEAD
 #filterGUI {
 	position: relative;
 	padding-top: 2px;
@@ -52,3 +53,25 @@
 	vertical-align: middle;
 }
 
+=======
+.esri-legend.esri-widget{
+	max-width: 50%;
+	line-height: 10px;
+	opacity: 0.8;
+	border-radius: 2%;
+}
+
+.esri-legend.esri-widget:hover{
+	opacity: 1;
+}
+
+.esri-basemap-toggle {
+	position: absolute;
+	top: 60px;
+	right: 20px;
+}
+
+.esri-view-width-less-than-small .esri-zoom .esri-widget--button {
+	display: none;
+}
+>>>>>>> origin/sprint4

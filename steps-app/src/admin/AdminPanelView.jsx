@@ -3,10 +3,12 @@ import Reflux from "reflux";
 
 import CloseIcon from "@material-ui/icons/Close";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+import MasonryInfiniteScroller from "react-masonry-infinite";
+import Card from '@material-ui/core/Card';
 
-import InfiniteImageGallery from "../images/InfiniteImageGallery";
 import AdminStore from "./AdminStore";
 import AdminActions from "./AdminActions";
+import LoaderComponent from "../misc-components/LoaderComponent";
 
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
@@ -20,11 +22,16 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
         super(props);
         this.store = AdminStore;
         this.state = {
-        }
+			currentImageIndex: 0
+        };
     }
     
     componentDidMount() {
-		AdminActions.getUnapprovedImages(0, 5);
+		if (!this.state.isLoggedIn) {
+			this.props.history.push('/login');
+		} else {
+			AdminActions.getUnapprovedImages(0, 5);
+		}
     }
     
 	_dismissNotifications = () => {
@@ -32,16 +39,16 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 		AdminActions.dismissImageRejectionNotification();
 	};
 	
-	loadMoreImages = (startIndex, stopIndex) => {
+	loadMoreImages = () => {
 		this.setState({
 			isNextPageLoading: true
 		});
-        AdminActions.getUnapprovedImages(startIndex, stopIndex, () => {
+        AdminActions.getUnapprovedImages(this.state.pendingImages.length, this.state.pendingImages.length + 10, () => {
             setTimeout(() => {
 				this.setState({
 					isNextPageLoading: false
 				});
-			}, 50);
+			}, 500);
         });
     };
 
@@ -80,28 +87,87 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 		);
 	};
 	
+	/**
+	 * Handles an image being clicked
+	 * @param {number} index - the index of the image that was just clicked
+	 */
+	_onImageClicked = (index) => {
+		this.setState({
+			currentImageIndex: index
+		});
+	};
+	
+	/**
+	 * Gets whether the specified item is loaded
+	 * @param {number} index - the index of the item in the list of all loaded items
+	 * @return {boolean} - whether the specified item is loaded
+	 */
+	_isRowLoaded = (index) => {
+		return Boolean(this.state.pendingImages[index]);
+	};
+	
+	/**
+	 * Renders the specified item
+	 * @param {number} index - the index of the item in the list of loaded items
+	 * @param {*} key - the unique key of this item
+	 * @param {Object} style - the object's div style to render
+	 * @return {JSX} - the item to render
+	 */
+	_rowRenderer = ({index, key, style}) => {
+		let content;
+		if (this._isRowLoaded(index)) {
+			content = (
+				<div className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
+					<Card className="clickableItem">
+						{this.props.renderAboveImage && this.props.renderAboveImage(this.state.currentImageIndex === index, this.state.pendingImages[index])}
+						<img onClick={() => {this._onImageClicked(index)}} className="img-responsive fillAvailable" alt="uploaded" src={this.state.pendingImages[index].url} />
+					</Card>
+				</div>
+			);
+		} else {
+			content = <LoaderComponent />;
+		}
+		return (
+			<div key={key} style={style}>
+				{content}
+			</div>
+		);
+	};
+	
+	renderSelectedImage() {
+		if (this.state.pendingImages[this.state.currentImageIndex]) {
+			return (
+				<img className="backgroundImage"
+					alt="selected"
+					src={this.state.pendingImages[this.state.currentImageIndex].url} />
+			);
+		}
+		return <LoaderComponent />;
+	}
+	
 	render() {
         if (!this.state.pendingImages) {
 			return <h1>No images uploaded</h1>;
 		}
 		
-		const styles = {
-			paper: {
-				margin: "65px 0px 0px 0px"
-			}
-		};
+		// TODO: use react image gallery with html observer event to load more
 		return (   
-			<div>       
-				<InfiniteImageGallery
-					classes={styles}
-					loadedImages={this.state.pendingImages}
-					hasNextPage={this.state.hasMoreImages}
-					loadMoreData={this.loadMoreImages}
-					visible={true}
-					isNextPageLoading={this.state.isNextPageLoading}
-					renderAboveImage={this._renderResponseButtons}
+			<div>
+				{this.renderSelectedImage()}
+				<MasonryInfiniteScroller
+					hasMore={this.state.hasMoreImages}
+					loadMore={this.state.isNextPageLoading ? () => {} : this.loadMoreImages}
+					sizes={[{ columns: 3, gutter: 0 },
+					{ mq: '1024px', columns: 4, gutter: 0 }]}
 				>
-				</InfiniteImageGallery>
+					{
+						this.state.pendingImages.map((id, index) =>
+							this._rowRenderer({index: index, key: index, style: {height: "30vw", width: "30vw"}})
+						)
+					}
+				</MasonryInfiniteScroller>
+				{this.state.isNextPageLoading && <LoaderComponent />}
+				
 				<SuccessAlertComponent onClose={this._dismissNotifications}
 						 visible={this.state.successfullyRespondedToImage}
 						 message="Your response has been recorded."

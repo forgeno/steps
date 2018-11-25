@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Switch, Route, Router } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import './style/App.scss';
-import { withRouter } from 'react-router-dom';
-
 
 import MapDashboard from "./map/MapDashboard";
 import AboutPageView from "./misc-components/AboutPageView";

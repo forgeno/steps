@@ -50,7 +50,7 @@ export default class AdminStore extends Reflux.Store {
 				isDeletingComment: false,
 				successfullyDeletedComment: true
 			});
-			onFinish(true);
+			return onFinish(true);
 		}).catch((err) => {
 			this.setState({
 				isDeletingComment: false,
@@ -94,7 +94,6 @@ export default class AdminStore extends Reflux.Store {
 			this.setState({
 				isLoggedIn: false,
 				failedToLogIn: true
-
 			});
 			console.error(err)
 		});
@@ -181,7 +180,7 @@ export default class AdminStore extends Reflux.Store {
 			username: this.state.username,
 			password: this.state.password,
 			accepted: accepted,
-			imageId: String(imageId)
+			imageId: imageId
 		}).then((result) => {
 			const newImages = this.state.pendingImages.filter((image) => image.id !== imageId);
 			this.setState({
@@ -198,7 +197,7 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
-	onGetUnapprovedImages(startIndex, endIndex) {
+	onGetUnapprovedImages(startIndex, endIndex, onSuccess) {
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
 			password: this.state.password,
@@ -210,6 +209,7 @@ export default class AdminStore extends Reflux.Store {
 				hasMoreImages: result.hasMoreImages,
 				pendingImages: newImages
 			});
+			return onSuccess();
 		}).catch((error) => {
 			console.error(error);
 		})

@@ -22,3 +22,4 @@ __pycache__/
 local_settings.py
 environment/
 django_steps/api/migrations/
+screenshots/

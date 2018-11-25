@@ -9,7 +9,13 @@ const Actions = Reflux.createActions([
 	"dismissImageSuccessMessage",
 	"uploadRatings",
 	"removeLoadedComment",
-	"removeLoadedImage"
+	"removeLoadedImage",
+	"dismissCommentSuccessMessage",
+	"dismissCommentErrorMessage",
+	"loadComments",
+	"dismissRatingsSuccessMessage",
+	"dismissRatingsFailureMessage",
+	"getSidewalkRatings"
 ]);
 
 export default Actions;

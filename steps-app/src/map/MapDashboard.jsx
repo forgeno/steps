@@ -49,6 +49,14 @@ export default class MapDashboard extends Component {
 	};
 
 	/**
+	 * Updates the ratings of the currently selected sidewalk in the list of all sidewalks
+	 * @param {Object} sidewalk - details about the sidewalk
+	 */
+	_updateRatings = (sidewalk) => {
+		MapActions.updateSidewalkRatings(sidewalk);
+	};
+	
+	/**
 	 * Handles the user closing the drawer
 	 */
 	_onCloseDrawer = () => {
@@ -65,6 +73,7 @@ export default class MapDashboard extends Component {
 					onClose={this._onCloseDrawer}
 					selectedSidewalkDetails={this.state.selectedSidewalkDetails}
 					onOpenImages={this._viewImages}
+					updateRatings={this._updateRatings}
 				/>
 				<SidewalkUploadedImagesGallery onClose={this._closeImages} visible={this.state.viewingImages} />
 				<AlertsContainer />

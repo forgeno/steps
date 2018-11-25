@@ -14,7 +14,7 @@ class SidewalkListSerializer(serializers.ModelSerializer):
 	physicalSafety = serializers.FloatField()
 	class Meta:
 		model = Sidewalk
-		fields = ('id', 'accessibility', 'comfort', 'connectivity', 'senseOfSecurity', 'physicalSafety')
+		fields = ('id', 'address', 'accessibility', 'comfort', 'connectivity', 'senseOfSecurity', 'physicalSafety')
 
 class PedestrianSerializer(serializers.ModelSerializer):
 	class Meta:

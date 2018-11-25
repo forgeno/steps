@@ -15,13 +15,13 @@ from ..serializers import (SidewalkCommentSerializer, SidewalkImageSerializer,
 from .viewUtils import LoginUtil
 
 class SidewalkView(viewsets.ReadOnlyModelViewSet):
-	queryset = Sidewalk.objects.raw("""select s.id, IFNULL(agg.accessibility, 0) as accessibility,
-	 IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, 
-	 IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity
-	 from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, 
-	 avg(connectivity_rating) as connectivity, avg(physical_safety_rating) as physicalSafety, 
-	 avg(security_rating) as senseOfSecurity from api_sidewalkrating r group by r.sidewalk_id) 
-	 agg on agg.sidewalk_id = s.id""")
+	queryset = SidewalkRating.objects.raw("""select s.id, IFNULL(agg.accessibility, 0) as accessibility,
+		 IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, 
+		 IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity
+		 from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, 
+		 avg(connectivity_rating) as connectivity, avg(physical_safety_rating) as physicalSafety, 
+		 avg(security_rating) as senseOfSecurity from api_sidewalkrating r group by r.sidewalk_id) 
+		 agg on agg.sidewalk_id = s.id""")
 	serializer_class = SidewalkListSerializer
 	allowed_methods = ['GET', 'POST']
 	http_method_names = ['get', 'post']
@@ -314,6 +314,38 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 			connectivity_rating=connectivity, physical_safety_rating=physicalSafety, security_rating=security);
 		return Response(status=200)
 		
+	## Handles an incoming request to get details about ratings posted to a sidewalk
+	## @param {Request} - the incoming HTTP GET request to respond to
+	## @param {String} pk - the ID of the sidewalk
+	## @return {Response} - the response to the get request
+	@action(methods=['get'], detail=True, url_path='ratings')
+	def getRatings(self, request, pk):
+		if not Sidewalk.objects.filter(pk=pk).exists():
+			return Response(status=404)
+		
+		with connection.cursor() as cursor:
+			cursor.execute("""select IFNULL(avg(accessibility_rating), 0) as accessibility,
+			 IFNULL(avg(comfort_rating), 0) as comfort, IFNULL(avg(connectivity_rating), 0) as connectivity, 
+			 IFNULL(avg(physical_safety_rating), 0) as physicalSafety, IFNULL(avg(security_rating), 0) as senseOfSecurity,
+			 COUNT(*) as totalRatings
+			 from api_sidewalkrating
+			 where sidewalk_id=%s
+			 group by sidewalk_id""", [pk])
+			sidewalk = cursor.fetchone()
+		if not sidewalk:
+			sidewalk = [0, 0, 0, 0, 0, 0]
+
+		data = {
+			'accessibility': sidewalk[0],
+			'comfort': sidewalk[1],
+			'connectivity': sidewalk[2],
+			'physicalSafety': sidewalk[3],
+			'senseOfSecurity': sidewalk[4],
+			'totalRatings': sidewalk[5],
+			'overallRating': (sidewalk[0] + sidewalk[1] + sidewalk[2] + sidewalk[3] + sidewalk[4]) / 5
+		}
+		return Response(data)
+
 	## Handles an incoming request to delete an image
 	## @param {Request} - the incoming HTTP POST request to respond to
 	## @param {String} pk - the ID of the sidewalk
@@ -368,7 +400,15 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## @param {Request} request - the HTTP GET request to service
 	## @return {Response} - a list of all sidewalks and their average ratings
 	def list(self, request):
-		result = self.serializer_class(self.queryset, many=True).data
+		qs = SidewalkRating.objects.raw("""select s.id, s.address, IFNULL(agg.accessibility, 0) as accessibility,
+		 IFNULL(agg.comfort, 0) as comfort, IFNULL(agg.connectivity, 0) as connectivity, 
+		 IFNULL(agg.physicalSafety, 0) as physicalSafety, IFNULL(agg.senseOfSecurity, 0) as senseOfSecurity
+		 from api_sidewalk s left join (select sidewalk_id, avg(accessibility_rating) as accessibility, avg(comfort_rating) as comfort, 
+		 avg(connectivity_rating) as connectivity, avg(physical_safety_rating) as physicalSafety, 
+		 avg(security_rating) as senseOfSecurity from api_sidewalkrating r group by r.sidewalk_id) 
+		 agg on agg.sidewalk_id = s.id""")
+		result = SidewalkListSerializer(qs, many=True).data
+
 		for sidewalk in result:
 			sidewalk['overallRating'] = (sidewalk['accessibility'] + sidewalk['connectivity'] + sidewalk['comfort'] + sidewalk['physicalSafety'] + sidewalk['senseOfSecurity']) / 5
 		return Response(result)

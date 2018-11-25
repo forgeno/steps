@@ -1,6 +1,5 @@
 import sinon from "sinon";
 import {expect} from "chai";
-import { promises } from "fs";
 
 import SidewalkStore from "../../../sidewalk/SidewalkStore";
 import RestUtil from "../../../util/RestUtil";

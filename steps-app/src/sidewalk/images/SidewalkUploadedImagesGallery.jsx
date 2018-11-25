@@ -91,8 +91,7 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 		}
 		return (
 			<div>
-				<InfiniteImageGallery 
-					classes={{}}
+				<InfiniteImageGallery
 					loadedImages={this.state.loadedUserImages}
 					hasNextPage={this.state.hasNextImagesPage}
 					loadMoreData={this._loadMoreImages}

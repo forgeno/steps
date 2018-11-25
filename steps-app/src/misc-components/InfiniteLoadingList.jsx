@@ -2,7 +2,7 @@ import React from "react";
 import InfiniteLoader from "react-virtualized/dist/commonjs/InfiniteLoader";
 import List from "react-virtualized/dist/commonjs/List";
 
-export default class ImageDisplayList extends React.PureComponent {
+export default class InfiniteLoadingList extends React.PureComponent {
 	
 	constructor(props) {
 		super(props);
@@ -26,9 +26,9 @@ export default class ImageDisplayList extends React.PureComponent {
 					  height={1000}
 					  onRowsRendered={onRowsRendered}
 					  rowCount={loadedCount}
-					  rowHeight={200}
+					  rowHeight={this.props.height || 200}
 					  rowRenderer={this.props.rowRenderer}
-					  width={250}
+					  width={this.props.width || 250}
 					  style={{outline: "none"}}
 					/>
 			  )}

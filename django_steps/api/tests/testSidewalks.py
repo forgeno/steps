@@ -94,6 +94,7 @@ class SidewalkIntegrationTests(APITestCase):
 		self.assertEqual(f1["connectivity"], 0.7)
 		self.assertEqual(f1["physicalSafety"], 2.0)
 		self.assertEqual(f1["senseOfSecurity"], 4.5)
+		self.assertEqual(f1["address"], self.s1["address"])
 		
 		# tests second sidewalk's ratings (100 ratings)
 		self.assertEqual(f2["overallRating"], (self.totalAccess + self.totalComfort + self.totalConnect + self.totalSafety + self.totalSecurity) / 500)
@@ -102,6 +103,7 @@ class SidewalkIntegrationTests(APITestCase):
 		self.assertEqual(f2["connectivity"], self.totalConnect / 100)
 		self.assertEqual(f2["physicalSafety"], self.totalSafety / 100)
 		self.assertEqual(f2["senseOfSecurity"], self.totalSecurity / 100)
+		self.assertEqual(f2["address"], self.s2["address"])
 		
 		# tests third sidewalk's ratings (it has no ratings set)
 		self.assertEqual(f3["overallRating"], 0)
@@ -110,6 +112,7 @@ class SidewalkIntegrationTests(APITestCase):
 		self.assertEqual(f3["connectivity"], 0)
 		self.assertEqual(f3["physicalSafety"], 0)
 		self.assertEqual(f3["senseOfSecurity"], 0)
+		self.assertEqual(f3["address"], self.s3["address"])
 
 class SidewalkUnitTests(APITestCase):
 	def setUp(self):

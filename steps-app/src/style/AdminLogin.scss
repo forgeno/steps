@@ -1,21 +1,9 @@
-.credentialErrorDisplay {
-    color: #cc1212;
-}
-
-.loginContainer{
-    border-style: solid;
-    border-color: #cabfbf;
-    border-width: 1px;
-    box-shadow: 5px 6px 8px 4px #bbafaf;
+.loginContainer {
     margin-left: 33%;
     margin-top: 10%;
     margin-right: 35%;
-    padding: 20px;
-    padding-bottom: 80px; 
-    border-radius: 5px;
 }
 
-.adminTitleLogin{
-    color: #3e89a7;
+.adminTitleLogin {
+    color: $primary;
 }
-

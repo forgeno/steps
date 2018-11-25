@@ -32,6 +32,7 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingComment: false,
 			uploadCommentFailed: false,
 			uploadImageSucceeded: false,
+			hasNextCommentsPage: true
 		};
 	}
 
@@ -42,13 +43,13 @@ export default class SidewalkStore extends Reflux.Store {
 	onLoadSidewalkDetails(sidewalk) {
 		this.setState(this._getDefaultSidewalkState());
 		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
-			
-			const newSidewalk = Object.assign({}, sidewalk, data);
+			const newSidewalk = Object.assign({}, sidewalk, data),
+				hasNextCommentsPage = newSidewalk.comments.length === 25;
 			this.setState({
 				currentSidewalk: newSidewalk,
 				hasNextImagesPage: newSidewalk.lastImage,
 				loadedUserImages: [newSidewalk.lastImage],
-				accessibilityValue: newSidewalk.accessibility
+				hasNextCommentsPage: hasNextCommentsPage
 			});
 		}).catch((err) => {
 			console.error(err);
@@ -85,7 +86,7 @@ export default class SidewalkStore extends Reflux.Store {
 	/**
 	 * Loads user uploaded images from the database
 	 * @param {number} startIndex - the amount of images to skip before starting to return them
-	 * @param {number} startIndex - the index of the last item to load
+	 * @param {number} stopIndex - the index of the last item to load
 	 * @param {function} updateStateCallback - a callback function that will be invoked when the images are loaded
 	 */
 	onLoadUploadedImages(startIndex, stopIndex, updateStateCallback) {
@@ -109,7 +110,9 @@ export default class SidewalkStore extends Reflux.Store {
 	 */
 	onUploadComment(comment) {
 		this.setState({
-			uploadingComment: true
+			uploadingComment: true,
+			uploadCommentSucceeded: false,
+			uploadCommentFailed: false
 		});
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/comment/create`, {
 			text: comment
@@ -118,8 +121,7 @@ export default class SidewalkStore extends Reflux.Store {
 			currentSidewalkComments.unshift(res);
 			this.setState({
 				uploadingComment: false,
-				uploadCommentFailed: false,
-				commentHint: "Comment Successfully Uploaded!",
+				uploadCommentSucceeded: true,
 				currentSidewalk: Object.assign(this.state.currentSidewalk, { comments: currentSidewalkComments })
 			});
 		}).catch((err) => {
@@ -131,6 +133,24 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Dismisses the message notifying the user that their comment was successfully posted
+	 */
+	onDismissCommentSuccessMessage() {
+		this.setState({
+			uploadCommentSucceeded: false
+		});
+	}
+	
+	/**
+	 * Dismisses the message notifying the user that their comment was unable to be posted
+	 */
+	onDismissCommentErrorMessage() {
+		this.setState({
+			uploadCommentFailed: false
+		});
+	}
+	
 	/**
 	 * Dismisses the message notifying the user that an error happened when uploading an image
 	 */
@@ -150,28 +170,44 @@ export default class SidewalkStore extends Reflux.Store {
 	}
 
 	/**
-	 * Handles the user uploading the ratings
+	 * Submits the user's ratings of the current sidewalk
 	 */
-
-	onUploadRatings(accessibility, comfort, connectivity, physicalSafety, senseOfSecurity) {
-
+	onUploadRatings(accessibility, comfort, connectivity, physicalSafety, senseOfSecurity, onSuccess) {
+		this.setState({
+			isUploadingRatings: true,
+			successfullyUploadedRatings: false,
+			failedUploadingRatings: false
+		});
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/rate`, {
 			accessibility: parseFloat(accessibility),
 			comfort: parseFloat(comfort),
 			connectivity: parseFloat(connectivity),
 			senseOfSecurity: parseFloat(senseOfSecurity),
 			physicalSafety: parseFloat(physicalSafety)
-			
 		}).then((result) => {
 			this.setState({
-				accessibility: 3,
-				comfort: 3,
-				connectivity: 3,
-				physicalSafety: 3,
-				senseOfSecurity: 3
+				isUploadingRatings: false,
+				successfullyUploadedRatings: true
 			});
+			return onSuccess();
 		}).catch((error) => {
+			this.setState({
+				isUploadingRatings: false,
+				failedUploadingRatings: true
+			});
 			console.error(error);
+		});
+	}
+
+	onDismissRatingsSuccessMessage() {
+		this.setState({
+			successfullyUploadedRatings: false
+		});
+	}
+
+	onDismissRatingsFailureMessage() {
+		this.setState({
+			failedUploadingRatings: false
 		});
 	}
 
@@ -220,5 +256,42 @@ export default class SidewalkStore extends Reflux.Store {
 				return onNoImagesRemaining();
 			}
 		}
+	}
+	
+	/**
+	 * Loads comments from the database
+	 * @param {number} startIndex - the amount of images to skip before starting to return them
+	 * @param {number} endIndex - the index of the last item to load
+	 * @param {function} updateStateCallback - a callback function that will be invoked when the comments are loaded
+	 */
+	onLoadComments(startIndex, endIndex, updateStateCallback) {
+		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/comment`, {
+			startIndex: startIndex,
+			endIndex: endIndex
+		}).then((res) => {
+			const currentSidewalkComments = this.state.currentSidewalk.comments.slice().concat(res.comments);
+			this.setState({
+				hasNextCommentsPage: res.hasMoreComments,
+				currentSidewalk: Object.assign(this.state.currentSidewalk, { comments: currentSidewalkComments })
+			});
+			return updateStateCallback();
+		}).catch((err) => {
+			console.error(err);
+		});
+	}
+
+	/**
+	 * Loads rating information for the currently selected sidewalk
+	 * @param {function} successCallback - a callback function that will be invoked when the ratings are updated
+	 */
+	onGetSidewalkRatings(successCallback) {
+		RestUtil.sendGetRequest(`sidewalk/${this.state.currentSidewalk.id}/ratings`).then((res) => {
+			this.setState({
+				currentSidewalk: Object.assign(this.state.currentSidewalk, res)
+			});
+			return successCallback();
+		}).catch((err) => {
+			console.error(err);
+		});
 	}
 }

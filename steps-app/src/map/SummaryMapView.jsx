@@ -61,6 +61,7 @@ export default class SummaryMapView extends Component {
 
 	render() {
 		return (
+<<<<<<< HEAD
 			<div id = "main">
 				<div id="mapContainer"/>
 				<div id = "FilterGUIWrapper">
@@ -97,6 +98,10 @@ export default class SummaryMapView extends Component {
 					<div id = "filterList"/>
 				</div>
 				</div>
+=======
+			<div id="mapContainer">
+			<div id="BasemapToggle"/>
+>>>>>>> origin/sprint4
 			</div>
 		);
 	}

@@ -6,7 +6,7 @@ import { Selector } from 'testcafe';
 export default class Notifications {
 	
     constructor() {
-		this.text = Selector("#client-snackbar .alertMessage");
+		this.text = Selector("#client-snackbar .alertMessage", {timeout: 20000});
     }
 	
 }

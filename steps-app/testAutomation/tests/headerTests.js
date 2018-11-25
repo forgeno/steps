@@ -5,9 +5,13 @@ import Header from "../pages/Header";
 import BrowserUtilities from "../util/BrowserUtilities";
 import AdminUtilities from "../util/AdminUtilities";
 import StatisticsPage from "../pages/StatisticsPage";
+import LoginPage from "../pages/LoginPage";
+import AdminDashboardPage from "../pages/AdminDashboardPage";
 
 const header = new Header();
 const statsPage = new StatisticsPage();
+const loginPage = new LoginPage();
+const adminPage = new AdminDashboardPage();
 
 fixture `Tests navigation with the header`
     .page `${config.baseUrl}`;
@@ -30,16 +34,17 @@ test("that the admin page does not show up when the user is not logged in", asyn
 	}
 });
 
-// TODO: verify all of these pages actually load with correct content
 test("going to the login page", async (t) => {
 	await t.click(header.getLoginButton())
-		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/login`);
+		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/login`)
+		.expect(loginPage.title.visible).eql(true);
 });
 
 test("going to the admin panel", async (t) => {
 	await AdminUtilities.silentLogin(t);
 	await t.click(header.getAdminButton())
-		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/dashboard`);
+		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/dashboard`)
+		.expect(adminPage.page.visible).eql(true);
 });
 
 test("that the login page does not show up when the user is logged in", async (t) => {

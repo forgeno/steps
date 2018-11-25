@@ -5,8 +5,6 @@ import sinon from "sinon";
 
 import AdminLoginComponent from "../../../admin/AdminLogin";
 import AdminActions from "../../../admin/AdminActions";
-import AdminStore from "../../../admin/AdminStore";
-import { wrap } from "sinon/lib/sinon/util/core/deprecated";
 
 describe("<AdminLoginComponent>", function() {
     let sandbox = null;
@@ -15,7 +13,7 @@ describe("<AdminLoginComponent>", function() {
         sandbox = sinon.createSandbox();
     });
 
-    it("should call the reflux action when the text is entered or changed in the input of username", () => {
+    it("should update the username when the field is updated", () => {
         const wrapper = shallow(<AdminLoginComponent/>);
         const testObject = {
             target: {value: "test String"}
@@ -24,7 +22,7 @@ describe("<AdminLoginComponent>", function() {
         expect(wrapper.state("enteredName")).to.equal("test String");
     });
 
-    it("should call the reflux action when the text is entered or changed in the input of enteredPassword", () => {
+    it("should update the password when the field is updated", () => {
         const wrapper = shallow(<AdminLoginComponent/>);
         const testObject = {
             target: {value: "test String"}
@@ -40,8 +38,7 @@ describe("<AdminLoginComponent>", function() {
             enteredPassword: "aaaa"
         });
 
-        const output = wrapper.instance()._validateCredentials();
-        expect(output).to.equal("success");
+        expect(wrapper.instance()._validateCredentials()).to.be.true;
     });
 
     it("should return error if credentials are blank", () => {
@@ -51,8 +48,7 @@ describe("<AdminLoginComponent>", function() {
             enteredPassword: "hello"
         });
 
-        const output = wrapper.instance()._validateCredentials();
-        expect(output).to.equal("error");
+        expect(wrapper.instance()._validateCredentials()).to.be.false;
     });
 
     it("should check if check credentials function is being called from handle submit.", () => {
@@ -65,16 +61,16 @@ describe("<AdminLoginComponent>", function() {
 		});
 
 		wrapper.instance()._handleSubmit();
-		expect(adminLogin.called).to.be.true
+		expect(adminLogin.calledOnce).to.be.true
     });
 
     it("should direct to new page if valid credentials entered", () => {
         const history = [];
         const wrapper = shallow(<AdminLoginComponent history={history}/>);
-        
         wrapper.setState({
             isLoggedIn: true
         });
+		wrapper.instance().forceUpdate();
         expect(history).to.deep.equal(["/dashboard"]);
     });
 });

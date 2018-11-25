@@ -7,6 +7,7 @@
 @import "SidewalkDrawer.scss";
 @import "Alerts.scss";
 @import "AdminLogin.scss";
+@import "Statistics.scss";
 
 /* bootstrap button overrides */
 .btn-primary {
@@ -83,6 +84,45 @@ div.noOutlineDiv:focus {
 .wrapText {
 	word-break: break-word;
 }
+<<<<<<< HEAD
 .button{
 	display: inline-block;
 }
+=======
+
+.icon:hover {
+	color: $primary;
+	cursor: pointer;
+}
+
+.nextIcon {
+	float: right;
+	cursor: pointer;
+	margin-left: auto;
+	margin-right: 0;
+}
+
+.nextIcon:hover {
+	color: $primary;
+	cursor: pointer;
+}
+
+.modal-title {
+	padding: 20px 23px;
+}
+
+.formLabel {
+	font-size: 14px;
+	font-family: $fontFamily;
+	margin-right: 20px;
+	cursor: pointer;
+}
+
+.searchBar {
+	width: 25%;
+}
+
+.selectText {
+	color: $primary;
+}
+>>>>>>> origin/sprint4
