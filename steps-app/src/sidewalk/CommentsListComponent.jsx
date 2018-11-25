@@ -141,7 +141,8 @@ export default class CommentsListComponent extends Reflux.Component {
 		}
 		SidewalkActions.uploadComment(this.state.enteredComment);
 		this.setState({
-			enteredComment: ""
+			enteredComment: "",
+			commentValidation: this._validateCommentState("")
 		});
 	}
 	

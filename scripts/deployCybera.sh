@@ -1,5 +1,7 @@
 echo "Running persistant server"
 git fetch
 git pull origin master
-nohup python3 ../django_steps/manage.py runserver 0.0.0.0:8000
+rm -rf /var/www/html/steps
+cp -R django_steps /var/www/html/steps
+sudo service apache2 restart
 echo "Finished deploying server"
