@@ -292,6 +292,7 @@ export default class MapStore extends Reflux.Store {
 	}
 
 	onClearFilters(){
+		this.state.featureLayer.definitionExpression = ''
 		this.setState({
 			listFilter: []
 		})
@@ -300,34 +301,21 @@ export default class MapStore extends Reflux.Store {
 	onFilterMap(){
 		esriLoader.loadModules(["esri/tasks/support/Query"], esriURL).then((data) => {
 			let returnSidewalks = null
-			var query = this.state.featureLayer.createQuery();
+			let sidewalkSQLString = ''
+			
 			for(let i=0; i < this.state.listFilter.length; i++){
-				query.where = this.state.listFilter[i];
-			}
-			query.outFields = ["*"];
-			let sidewalkQuery = this.state.featureLayer.createQuery();
-			this.state.featureLayer.queryFeatures(sidewalkQuery).then(function(response) {
-				returnSidewalks = response.features;
-				console.log(returnSidewalks)
-			});
-			this.state.featureLayer.queryFeatures(query).then(function(response){
-				//console.log(response.features)
-				const editMap = {
-					deleteFeatures: [response.features[0]]
+				if(sidewalkSQLString == ''){
+					sidewalkSQLString = this.state.listFilter[i];
+				}else{
+					sidewalkSQLString = sidewalkSQLString+" and "+this.state.listFilter[i];
 				}
-				this.state.featureLayer.applyEdits(editMap).then(function(editsResult) {
-					//console.log(editsResult.deleteFeatureResults)
-					//console.log(editsResult)
-					// Get the objectId of the newly added feature.
-					// Call selectFeature function to highlight the new feature.
-					//this.state.featureLayer.deleteFeatures()
-				//   }).catch(function(error) {
-				// 	console.log("===============================================");
-				// 	console.error("[ applyEdits ] FAILURE: ", error.code, error.name,
-				// 	  error.message);
-				// 	console.log("error = ", error);
-				  });
-			});
+				
+			}
+			console.log(sidewalkSQLString)
+			this.state.featureLayer.definitionExpression = sidewalkSQLString
+			// this.state.featureLayer.queryFeatures(query).then(function(response){
+			// 	console.log(response)
+			// });
 		});
 	}
 	

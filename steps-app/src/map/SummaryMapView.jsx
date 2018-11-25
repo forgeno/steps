@@ -5,6 +5,12 @@ import Actions from "./MapActions";
 import Store from "./MapStore";
 import {Button} from "react-bootstrap";
 
+function removefilterItem(){
+	//var table = document.getElementById("filterTable");
+	console.log("adsadasds")
+	console.log("row" + this + " - column" + this)
+}
+
 export default class SummaryMapView extends Component {
 
 	constructor() {
@@ -32,12 +38,15 @@ export default class SummaryMapView extends Component {
 		var rowCount = table.rows.length;
 		var row = table.insertRow(rowCount);
 		var colCount = table.rows[0].cells.length;
+		//var cell4 = row.insertCell(0)
 		var cell1 = row.insertCell(0);
 		var cell2 = row.insertCell(0);
 		var cell3 = row.insertCell(0)
+		
 		cell1.innerHTML = strNumberSelect;
 		cell2.innerHTML = strEquality;
 		cell3.innerHTML = strTrait;
+		//cell4.innerHTML = '<Button class="removeBtn" bsStyle="danger" bsSize="sm" onclick=removefilterItem(this)>Remove</Button></td>'
 	}
 
 	handleClearFilterEvent = () => {
@@ -47,6 +56,8 @@ export default class SummaryMapView extends Component {
 		}
 		Actions.clearFilters();
 	}
+
+	
 
 	render() {
 		return (
@@ -66,13 +77,18 @@ export default class SummaryMapView extends Component {
 					<table class="table table-bordered table-responsive-md table-striped text-center" id="filterTable">
 							<thead>
 								<tr>
-									<th class="text-center">Trait</th>
-									<th class="text-center">Equality</th>
-									<th class="text-center">Rate</th>
+									<th>Trait</th>
+									<th>Equality</th>
+									<th>Rate</th>
+									{/* <th>Remove</th> */}
 								</tr>
 							</thead>
-						<tbody id="filterTbody">
-							<tr className="cellBox">
+						<tbody class="filterTbody">
+							<tr>
+							{/* <td>Security</td>
+							<td>asd</td>
+							<td>2</td>
+							<td><Button className="removeBtn" bsStyle="danger" bsSize="sm" onClick={this.removefilterItem}>Remove</Button></td> */}
 							</tr>
 						</tbody>
 					</table>
