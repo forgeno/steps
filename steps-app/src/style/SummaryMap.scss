@@ -5,18 +5,14 @@
 	cursor: pointer;
 }
 
-<<<<<<< HEAD
 #filterGUI {
 	position: relative;
-	padding-top: 2px;
-	padding-left: 2px;
-	padding-bottom: 2px;
-	padding-right: 2px;
-    margin-top: 0px;
+	padding: 2px;
+    // margin-left: 40%;
 	min-height: 25vh;
 	max-height: 25vh;
-	min-width: 120%;
-	max-width: 120%;
+	min-width: 50%;
+	max-width: 50%;
 	background-color: white;
 	
     overflow-y: auto;
@@ -48,12 +44,13 @@
 	border-color: #d43f3a;
 	border: 1px solid transparent;
 }
-
+.esri-component{
+	border-radius: 2%;
+}
 .table{
 	vertical-align: middle;
 }
 
-=======
 .esri-legend.esri-widget{
 	max-width: 50%;
 	line-height: 10px;
@@ -67,11 +64,10 @@
 
 .esri-basemap-toggle {
 	position: absolute;
-	top: 60px;
+	top: 20%;
 	right: 20px;
 }
 
 .esri-view-width-less-than-small .esri-zoom .esri-widget--button {
 	display: none;
 }
->>>>>>> origin/sprint4

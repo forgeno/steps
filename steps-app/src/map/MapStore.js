@@ -14,11 +14,9 @@ export default class MapStore extends Reflux.Store {
 			sidewalkSelected: false,
 			longitude: downtownLongitude,
 			latitude: downtownLatitude,
-<<<<<<< HEAD
-			listFilter: []
-=======
+			listFilter: [],
 			searchVisible: false
->>>>>>> origin/sprint4
+			
 		};
 		this.listenables = Actions;
 
@@ -110,15 +108,12 @@ export default class MapStore extends Reflux.Store {
 			this.setState({
 				map,
 				view,
+				search
 			 });
-<<<<<<< HEAD
 
-			
-			view.ui.add("filterGUI", "top-left")
-			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Search"], esriURL);
-=======
+			 
+
 			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Expand"], esriURL);
->>>>>>> origin/sprint4
 		}).then((data) => {
 			
 			const FeatureLayer = data[0],
@@ -202,17 +197,14 @@ export default class MapStore extends Reflux.Store {
 			});
 			
 			this.setState({
-<<<<<<< HEAD
 				sidewalkColorMapRenderer,
 				featureLayer
 			});
-			view.when(function() {
-=======
-				featureLayer: featureLayer
-			});
+			// view.when(function() {
+			// 	featureLayer: featureLayer
+			// });
 	 
 			view.when(() => {
->>>>>>> origin/sprint4
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
 				//var featureLayer = map.layers.getItemAt(0);
@@ -225,13 +217,6 @@ export default class MapStore extends Reflux.Store {
 					title: "Sidewalk Ratings"
 				  }]
 				});
-<<<<<<< HEAD
-	  
-				// Add widget to the bottom right corner of the view
-				view.ui.add(legend, "bottom-left");
-				
-			  });
-=======
 				
 				//mobile
 				const expandLegend = new Expand({
@@ -278,9 +263,9 @@ export default class MapStore extends Reflux.Store {
 			
 					view.ui.remove(toRemove);
 					view.ui.add(toAdd, "bottom-left");
+					view.ui.add("filterGUI", "bottom-left")
 				  }
 			});
->>>>>>> origin/sprint4
 
 			function queryAllSidewalks() {
 				var sidewalkQuery = featureLayer.createQuery();
@@ -305,16 +290,22 @@ export default class MapStore extends Reflux.Store {
 					selectObj.add(option);
 				});
 			}
-
 			
-
+			function showPopup(address, pt) {
+				view.popup.open({
+				  title:  + Math.round(pt.longitude * 100000)/100000 + "," + Math.round(pt.latitude * 100000)/100000,
+				  content: address,
+				  location: pt
+				});
+			  }
 			var rateTraitObj = document.getElementById("rateTrait")
 			var equalitySelectorObj = document.getElementById("equalitySelector");
 			var numberSelectorObj = document.getElementById("numberSelector");
 			var addFilterObj = document.getElementById("addFilter");
 			var applyFilterObj = document.getElementById("applyFilter");
 			var filterListObj = document.getElementById("filterList");
-
+			//["Overall Rating", "Security","Accessibility","Connectivity","Comfort","Safety"]
+			//["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
 			let rateTraitString = ["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
 			let equalityString = ["<",">","=","<=",">="]
 			let ratingString = ["5","4","3","2","1"]
@@ -360,15 +351,28 @@ export default class MapStore extends Reflux.Store {
 					if(results.features.length !== 0){
 
 						let resultingFeatures = results.features;
-						
+						//console.log("TEst",results)
+						this.state.search.clear();
+						if (this.state.search.activeSource) {
+							var geocoder = this.state.search.activeSource.locator; // World geocode service
+							geocoder.locationToAddress(event.mapPoint)
+							  .then(function(response) { // Show the address found
+								var address = response.address;
+								showPopup(address, event.mapPoint);
+							  }, function(err) { // Show no address found
+								showPopup("No address found.", event.mapPoint);
+							  });
+							}
 						// TODO: fix some sidewalks osm_id being " " (NaN)
 						let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
 						let ratingValue = parseInt(resultingFeatures[0].attributes.Rating)
 						const sidewalk = this.state.sidewalks.find((s) => s.id === sidewalkID);
+						//console.log(sidewalk)
 						if (!sidewalk) {
 							console.error("No sidewalk with a matching ID was found");
 							return;
 						}
+						
 						//Add graphic to the map graphics layer.
 
 						this.viewSidewalkDetails(sidewalk, event.mapPoint.latitude, event.mapPoint.longitude);
@@ -389,7 +393,6 @@ export default class MapStore extends Reflux.Store {
 		//console.log(this.state.listFilter)
 		
 	}
-<<<<<<< HEAD
 
 	onClearFilters(){
 		this.state.featureLayer.definitionExpression = ''
@@ -419,7 +422,6 @@ export default class MapStore extends Reflux.Store {
 		});
 	}
 	
-=======
 	
 	/**
 	 * Updates the ratings for the currently selected sidewalk
@@ -464,7 +466,6 @@ export default class MapStore extends Reflux.Store {
 			}
 		});
 	}
->>>>>>> origin/sprint4
 }
 
 

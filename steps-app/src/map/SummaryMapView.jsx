@@ -25,23 +25,43 @@ export default class SummaryMapView extends Component {
 	handleApplyFilterEvent = () => {
 		Actions.filterMap()
 	}
+
 	handleAddFilterEvent = () => {
-		var table = document.getElementById("filterTable");
-		var rateTraitObj = document.getElementById("rateTrait")
-		var equalitySelectorObj = document.getElementById("equalitySelector");
-		var numberSelectorObj = document.getElementById("numberSelector");
-		var strTrait = rateTraitObj.options[rateTraitObj.selectedIndex].text;
-		var strEquality = equalitySelectorObj.options[equalitySelectorObj.selectedIndex].text;
-		var strNumberSelect = numberSelectorObj.options[numberSelectorObj.selectedIndex].text;
+		let table = document.getElementById("filterTable");
+		let rateTraitObj = document.getElementById("rateTrait")
+		let equalitySelectorObj = document.getElementById("equalitySelector");
+		let numberSelectorObj = document.getElementById("numberSelector");
+		let strTrait = rateTraitObj.options[rateTraitObj.selectedIndex].text;
+		
+		// if(strTrait == "Overall Rating"){
+		// 	strTrait = "Rating"
+		// }
+		// else if(strTrait == "Security"){
+		// 	strTrait = "AvgAccessibility"
+		// }
+		// else if(strTrait == "Accessibility"){
+		// 	strTrait = "AvgAccessibility"
+		// }
+		// else if(strTrait == "Connectivity"){
+		// 	strTrait = "AvgConnectivity"
+		// }
+		// else if(strTrait == "Comfort"){
+		// 	strTrait = "AvgComfort"
+		// }
+		// else if(strTrait == "Safety"){
+		// 	strTrait = "AvgSafety"
+		// }
+		let strEquality = equalitySelectorObj.options[equalitySelectorObj.selectedIndex].text;
+		let strNumberSelect = numberSelectorObj.options[numberSelectorObj.selectedIndex].text;
 		Actions.pushArray(strTrait,strEquality,strNumberSelect);
 
-		var rowCount = table.rows.length;
-		var row = table.insertRow(rowCount);
-		var colCount = table.rows[0].cells.length;
+		let rowCount = table.rows.length;
+		let row = table.insertRow(rowCount);
+		let colCount = table.rows[0].cells.length;
 		//var cell4 = row.insertCell(0)
-		var cell1 = row.insertCell(0);
-		var cell2 = row.insertCell(0);
-		var cell3 = row.insertCell(0)
+		let cell1 = row.insertCell(0);
+		let cell2 = row.insertCell(0);
+		let cell3 = row.insertCell(0)
 		
 		cell1.innerHTML = strNumberSelect;
 		cell2.innerHTML = strEquality;
@@ -61,7 +81,6 @@ export default class SummaryMapView extends Component {
 
 	render() {
 		return (
-<<<<<<< HEAD
 			<div id = "main">
 				<div id="mapContainer"/>
 				<div id = "FilterGUIWrapper">
@@ -98,11 +117,11 @@ export default class SummaryMapView extends Component {
 					<div id = "filterList"/>
 				</div>
 				</div>
-=======
-			<div id="mapContainer">
+				
+			
 			<div id="BasemapToggle"/>
->>>>>>> origin/sprint4
 			</div>
+			
 		);
 	}
 }
