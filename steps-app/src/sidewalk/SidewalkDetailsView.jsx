@@ -103,7 +103,7 @@ class SidewalkDetailsView extends Component {
 		return (
 			<div>
 				<h3 className="streetNameSection">
-					{this.state.currentSidewalk.address}
+					{this.state.address}
 				</h3>
 				<hr />
 				{imageSection}

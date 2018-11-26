@@ -49,7 +49,8 @@ export default class SidewalkStore extends Reflux.Store {
 				currentSidewalk: newSidewalk,
 				hasNextImagesPage: newSidewalk.lastImage,
 				loadedUserImages: [newSidewalk.lastImage],
-				hasNextCommentsPage: hasNextCommentsPage
+				hasNextCommentsPage: hasNextCommentsPage,
+				address: sidewalk.address
 			});
 		}).catch((err) => {
 			console.error(err);

@@ -81,8 +81,6 @@ export default class MapStore extends Reflux.Store {
 
 			const map = new Map({
 				basemap: "dark-gray-vector"
-				// basemap: "satellite"
-				//layers: [featureLayer],
 			});
 
 			const view = new MapView({
@@ -200,14 +198,10 @@ export default class MapStore extends Reflux.Store {
 				sidewalkColorMapRenderer,
 				featureLayer
 			});
-			// view.when(function() {
-			// 	featureLayer: featureLayer
-			// });
 	 
 			view.when(() => {
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
-				//var featureLayer = map.layers.getItemAt(0);
 				
 				// Desktop
 				const legend = new Legend({
@@ -258,8 +252,8 @@ export default class MapStore extends Reflux.Store {
 				  }
 
 				  function setLegendMobile(isMobile) {
-					var toAdd = isMobile ? expandLegend : legend;
-					var toRemove = isMobile ? legend : expandLegend;
+					let toAdd = isMobile ? expandLegend : legend;
+					let toRemove = isMobile ? legend : expandLegend;
 			
 					view.ui.remove(toRemove);
 					view.ui.add(toAdd, "bottom-left");
@@ -268,7 +262,7 @@ export default class MapStore extends Reflux.Store {
 			});
 
 			function queryAllSidewalks() {
-				var sidewalkQuery = featureLayer.createQuery();
+				let sidewalkQuery = featureLayer.createQuery();
 				return featureLayer.queryFeatures(sidewalkQuery).then(function(response) {
 					let returnSidewalks = response.features;
 					return returnSidewalks
@@ -285,27 +279,15 @@ export default class MapStore extends Reflux.Store {
 			
 			function addSelectText (stringList, selectObj){
 				stringList.forEach(function(element) {
-					var option = document.createElement("option");
+					let option = document.createElement("option");
 					option.text = element
 					selectObj.add(option);
 				});
 			}
 			
-			function showPopup(address, pt) {
-				view.popup.open({
-				  title:  + Math.round(pt.longitude * 100000)/100000 + "," + Math.round(pt.latitude * 100000)/100000,
-				  content: address,
-				  location: pt
-				});
-			  }
-			var rateTraitObj = document.getElementById("rateTrait")
-			var equalitySelectorObj = document.getElementById("equalitySelector");
-			var numberSelectorObj = document.getElementById("numberSelector");
-			var addFilterObj = document.getElementById("addFilter");
-			var applyFilterObj = document.getElementById("applyFilter");
-			var filterListObj = document.getElementById("filterList");
-			//["Overall Rating", "Security","Accessibility","Connectivity","Comfort","Safety"]
-			//["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
+			let rateTraitObj = document.getElementById("rateTrait")
+			let equalitySelectorObj = document.getElementById("equalitySelector");
+			let numberSelectorObj = document.getElementById("numberSelector");
 			let rateTraitString = ["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
 			let equalityString = ["<",">","=","<=",">="]
 			let ratingString = ["5","4","3","2","1"]
@@ -313,19 +295,8 @@ export default class MapStore extends Reflux.Store {
 			addSelectText(rateTraitString, rateTraitObj)
 			addSelectText(equalityString, equalitySelectorObj)
 			addSelectText(ratingString, numberSelectorObj)
-			
-			// applyFilterObj.addEventListener("click", function () {
-			// 	const sidewalkArr = this.state.sidewalks
-			// 	console.log(sidewalkArr)
-			// 	//console.log(sidewalks)
-			// 	.then()
-			//   });
-
-			//End of filter map code
 			this.state.view.on("click", (event) => {
-				//let pxToMeters = view.extent.width / view.width;
-
-				var highlightSelect, highlightHover;
+				let sidewalkGPSAdress = '';
 				let pxToMeters = view.extent.width / view.width;
 
 				// this may be removed later 
@@ -345,29 +316,27 @@ export default class MapStore extends Reflux.Store {
 					radius: pxRadius * pxToMeters // meters by default
 				});
 
+				this.state.search.clear();
+				if (this.state.search.activeSource) {
+					var geocoder = this.state.search.activeSource.locator; // World geocode service
+					geocoder.locationToAddress(event.mapPoint)
+					  .then(function(response) { // Show the address found
+
+						sidewalkGPSAdress = response.address.split(',')[0];
+					  }, function(err) { // Show no address found
+						console.error("Error reverse GPS to address")
+					  });
+					}
+
 				let q = featureLayer.createQuery();
 				q.geometry = c;
 				featureLayer.queryFeatures(q).then((results) => {
 					if(results.features.length !== 0){
 
 						let resultingFeatures = results.features;
-						//console.log("TEst",results)
-						this.state.search.clear();
-						if (this.state.search.activeSource) {
-							var geocoder = this.state.search.activeSource.locator; // World geocode service
-							geocoder.locationToAddress(event.mapPoint)
-							  .then(function(response) { // Show the address found
-								var address = response.address;
-								showPopup(address, event.mapPoint);
-							  }, function(err) { // Show no address found
-								showPopup("No address found.", event.mapPoint);
-							  });
-							}
-						// TODO: fix some sidewalks osm_id being " " (NaN)
 						let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
-						let ratingValue = parseInt(resultingFeatures[0].attributes.Rating)
 						const sidewalk = this.state.sidewalks.find((s) => s.id === sidewalkID);
-						//console.log(sidewalk)
+						sidewalk.address = sidewalkGPSAdress;
 						if (!sidewalk) {
 							console.error("No sidewalk with a matching ID was found");
 							return;
@@ -389,9 +358,6 @@ export default class MapStore extends Reflux.Store {
 		this.setState({
 			listFilter: tempListFilter
 		})
-
-		//console.log(this.state.listFilter)
-		
 	}
 
 	onClearFilters(){
@@ -414,11 +380,7 @@ export default class MapStore extends Reflux.Store {
 				}
 				
 			}
-			console.log(sidewalkSQLString)
 			this.state.featureLayer.definitionExpression = sidewalkSQLString
-			// this.state.featureLayer.queryFeatures(query).then(function(response){
-			// 	console.log(response)
-			// });
 		});
 	}
 	
