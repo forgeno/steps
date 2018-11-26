@@ -377,8 +377,9 @@ export default class MapStore extends Reflux.Store {
 		esriLoader.loadModules(["esri/tasks/support/Query"], esriURL).then((data) => {
 			let returnSidewalks = null
 			let sidewalkSQLString = ''
-			
-			for(let i=0; i < this.state.listFilter.length; i++){
+			let i=0
+			let numberOfFilters = this.state.listFilter.length;
+			for(i; i < numberOfFilters; i++){
 				if(sidewalkSQLString == ''){
 					sidewalkSQLString = this.state.listFilter[i];
 				}else{
