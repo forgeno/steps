@@ -5,12 +5,6 @@ import Actions from "./MapActions";
 import Store from "./MapStore";
 import {Button} from "react-bootstrap";
 
-function removefilterItem(){
-	//var table = document.getElementById("filterTable");
-	console.log("adsadasds")
-	console.log("row" + this + " - column" + this)
-}
-
 export default class SummaryMapView extends Component {
 
 	constructor() {
@@ -27,38 +21,19 @@ export default class SummaryMapView extends Component {
 	}
 
 	handleAddFilterEvent = () => {
-		let table = document.getElementById("filterTable");
+		let filterTable = document.getElementById("filterTable");
 		let rateTraitObj = document.getElementById("rateTrait")
 		let equalitySelectorObj = document.getElementById("equalitySelector");
 		let numberSelectorObj = document.getElementById("numberSelector");
 		let strTrait = rateTraitObj.options[rateTraitObj.selectedIndex].text;
-		
-		// if(strTrait == "Overall Rating"){
-		// 	strTrait = "Rating"
-		// }
-		// else if(strTrait == "Security"){
-		// 	strTrait = "AvgAccessibility"
-		// }
-		// else if(strTrait == "Accessibility"){
-		// 	strTrait = "AvgAccessibility"
-		// }
-		// else if(strTrait == "Connectivity"){
-		// 	strTrait = "AvgConnectivity"
-		// }
-		// else if(strTrait == "Comfort"){
-		// 	strTrait = "AvgComfort"
-		// }
-		// else if(strTrait == "Safety"){
-		// 	strTrait = "AvgSafety"
-		// }
 		let strEquality = equalitySelectorObj.options[equalitySelectorObj.selectedIndex].text;
 		let strNumberSelect = numberSelectorObj.options[numberSelectorObj.selectedIndex].text;
 		Actions.pushArray(strTrait,strEquality,strNumberSelect);
 
-		let rowCount = table.rows.length;
-		let row = table.insertRow(rowCount);
-		let colCount = table.rows[0].cells.length;
-		//var cell4 = row.insertCell(0)
+		let rowCount = filterTable.rows.length;
+		let row = filterTable.insertRow(rowCount);
+		let colCount = filterTable.rows[0].cells.length;
+
 		let cell1 = row.insertCell(0);
 		let cell2 = row.insertCell(0);
 		let cell3 = row.insertCell(0)
@@ -66,13 +41,13 @@ export default class SummaryMapView extends Component {
 		cell1.innerHTML = strNumberSelect;
 		cell2.innerHTML = strEquality;
 		cell3.innerHTML = strTrait;
-		//cell4.innerHTML = '<Button class="removeBtn" bsStyle="danger" bsSize="sm" onclick=removefilterItem(this)>Remove</Button></td>'
+		
 	}
 
 	handleClearFilterEvent = () => {
-		var table = document.getElementById("filterTable");
-		for(let i = (table.rows.length-1); i > 0; i--){
-			table.deleteRow(i);
+		let filterTable = document.getElementById("filterTable");
+		for(let i = (filterTable.rows.length-1); i > 0; i--){
+			filterTable.deleteRow(i);
 		}
 		Actions.clearFilters();
 	}
@@ -90,8 +65,7 @@ export default class SummaryMapView extends Component {
 					<select id = "rateTrait"></select>
 					<select id = "equalitySelector"></select>
 					<select id = "numberSelector"></select>
-					{/* <button id = "addFilter">+</button> */}
-					{/* <button onClick="handleApplyfilterEvent()">Apply Filter</button> */}
+
 					<Button className="AddFilter" bsStyle="success" bsSize="xs" onClick={this.handleAddFilterEvent}>+</Button>
 					<br></br>	
 					<table class="table table-bordered table-responsive-md table-striped text-center" id="filterTable">
@@ -105,10 +79,7 @@ export default class SummaryMapView extends Component {
 							</thead>
 						<tbody class="filterTbody">
 							<tr>
-							{/* <td>Security</td>
-							<td>asd</td>
-							<td>2</td>
-							<td><Button className="removeBtn" bsStyle="danger" bsSize="sm" onClick={this.removefilterItem}>Remove</Button></td> */}
+							
 							</tr>
 						</tbody>
 					</table>
