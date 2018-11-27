@@ -73,7 +73,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## @return {List<Object>} - a list consisting of each activity, and the relative occurrences each activity represents as a percentage (0 to 1)
 	def _getMobilityTypeDistribution(self, pk):
 		# TODO: limit to just the given sidewalk with primary key
-		# TODO: write unit tests when this is implemented
+		# TODO: write unit tests when this is implemented (can't be done until pedestrian data is in correct format)
 		with connection.cursor() as cursor:
 			cursor.execute("SELECT activity_title as activityTitle, COUNT(*) FROM api_pedestrian GROUP BY activity_title")
 			rows = cursor.fetchall()
@@ -104,31 +104,72 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 		}
 		return Response(response);
 	
-	## TODO: Check Why this is not returning a table
-	def _getCSV(self):
-		# TODO: write tests when this is fixed
-		with connection.cursor as cursor:
-			cursor.execute("""SELECT s.id, s.address, sc.comment_id, sc.text, sc.posted_time_comment, sc.is_deleted_comment, 
-			sr.rating_id, sr.accessibility_rating, sr.connectivity_rating, sr.comfort_rating, sr.physical_safety_rating, 
-			sr.security_rating, sr.is_deleted_rating, si.image_id, si.image_url, si.posted_time_image, si.is_pending, 
-			si.is_deleted_image
-			FROM (
-				(SELECT id, address FROM api_sidewalk) as s
-				FULL OUTER JOIN
-				(SELECT id as comment_id, text, posted_time as posted_time_comment, is_deleted as is_deleted_comment 
-				FROM api_sidewalkcomment) as sc on sc.sidewalk_id = s.id
-				FULL OUTER JOIN
-				(SELECT id as rating_id, accessibility_rating, connectivity_rating, comfort_rating, physical_safety_rating, 
-				security_rating, is_deleted as is_deleted_rating 
-				FROM api_sidewalkrating) as sr ON 
-				ISNULL(s.id, sc.sidewalk_id) = sr.sidewalk_id
-				FULL OUTER JOIN
-				(SELECT id as image_id, image_url, posted_time as posted_time_image, is_pending, is_deleted as is_deleted_image 
-				FROM api_sidewalkimage) as si ON 
-				ISNULL(s.id, sc.sidewalk_id, sr.sidewalk_id) = si.sidewalk_id)""")
-			rows = cursor.fetchall()
+	## Gets a complete summary of all sidewalks
+	## @return {Object} - a complete summary of all sidewalks
+	def _getAllSidewalksSummary(self):
+		with connection.cursor() as cursor:
+			cursor.execute("""select id as sid
+			 from api_sidewalk""")
+			sidewalks = cursor.fetchall()
+		
+			cursor.execute("""select IFNULL(avg(accessibility_rating), 0) as accessibility,
+			 IFNULL(avg(comfort_rating), 0) as comfort, IFNULL(avg(connectivity_rating), 0) as connectivity, 
+			 IFNULL(avg(physical_safety_rating), 0) as physicalSafety, IFNULL(avg(security_rating), 0) as senseOfSecurity,
+			 COUNT(*) as totalRatings, sidewalk_id as sid
+			 from api_sidewalkrating
+			 group by sidewalk_id""")
+			ratings = cursor.fetchall()
 			
-		return rows
+			cursor.execute("""select COUNT(*) as totalComments, sidewalk_id as sid
+			 from api_sidewalkcomment
+			 where is_deleted = false
+			 group by sidewalk_id""")
+			comments = cursor.fetchall()
+
+			cursor.execute("""select COUNT(*) as totalImages, sidewalk_id as sid
+			 from api_sidewalkimage
+			 where is_deleted = false and is_pending = false
+			 group by sidewalk_id""")
+			images = cursor.fetchall()
+		
+		allSidewalksData = []
+		for sidewalk in sidewalks:
+			sidewalkData = {"id": sidewalk[0]}
+			for rating in ratings:
+				if rating[6] == sidewalk[0]:
+					sidewalkData["accessibility"] = rating[0]
+					sidewalkData["comfort"] = rating[1]
+					sidewalkData["connectivity"] = rating[2]
+					sidewalkData["physicalSafety"] = rating[3]
+					sidewalkData["senseOfSecurity"] = rating[4]
+					sidewalkData["ratings"] = rating[5]
+					sidewalkData['overallRating'] = (rating[0] + rating[1] + rating[2] + rating[3] + rating[4]) / 5
+					break
+			if "accessibility" not in sidewalkData:
+				sidewalkData["accessibility"] = 0
+				sidewalkData["comfort"] = 0
+				sidewalkData["connectivity"] = 0
+				sidewalkData["physicalSafety"] = 0
+				sidewalkData["senseOfSecurity"] = 0
+				sidewalkData["ratings"] = 0
+				sidewalkData['overallRating'] = 0
+			
+			for comment in comments:
+				if comment[1] == sidewalk[0]:
+					sidewalkData["comments"] = comment[0]
+					break
+			if "comments" not in sidewalkData:
+				sidewalkData["comments"] = 0
+			
+			for image in images:
+				if image[1] == sidewalk[0]:
+					sidewalkData["images"] = image[0]
+					break
+			if "images" not in sidewalkData:
+				sidewalkData["images"] = 0
+			allSidewalksData.append(sidewalkData)
+		
+		return {"sidewalks": allSidewalksData}
 		
 	## Returns the total number of sidewalks, ratings and comments in sidewalk database
 	## @return {list} - a list of counts in the form of [sidewalk count, rating count, comment count, image count]
@@ -547,36 +588,6 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	## Gets the CSV data of the sidewalk database.
 	## @param {Request} - the incoming HTTP POST request to respond to
 	## @return {Response} - the response to the post request
-	@action(methods=['post'], detail=False, url_path='completeCSV')
-	def completeCSV(self, request):
-		try:
-			username = request.data["username"]
-			password = request.data["password"]
-		except:
-			return Response(status=400)
-
-		## TODO: Check why __getCSV method being called does not return a table	
-		# csvData = self.__getCSV
-
-		# response = { 
-		# 	"summary": str(csvData)
-		# }
-		response = 2
-		return Response(response)
-
-	# TODO: Need to get the longitude and latitude from ArcGIS after Implementation
-	@action(methods=['get'], detail=True, url_path='addressLocation')
-	def latLonImage(self, request, pk):
-		try:
-			address = request.data["address"]
-		except KeyError:
-			return Response(status=400)
-
-		query = Sidewalk.objects.raw("SELECT id FROM sidewalk WHERE address = %s", [address])
-		data_val = SidewalkSerializer(query, many=True).data
-		response = {
-			'latitude': data_val,
-			'longitude': data_val
-		}
-		response = 2
-		return Response(response)
+	@action(methods=['get'], detail=False, url_path='completeSummary')
+	def completeSummary(self, request):
+		return Response(self._getAllSidewalksSummary())
