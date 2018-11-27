@@ -2,7 +2,7 @@ import React from "react";
 import { Component } from "reflux";
 
 import Slider from '@material-ui/lab/Slider';
-import {Button} from "react-bootstrap";
+import {Button, Tooltip, OverlayTrigger} from "react-bootstrap";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -13,6 +13,7 @@ import Actions from "./SidewalkActions";
 import LoaderComponent from "../misc-components/LoaderComponent";
 import {getRatingDescription} from "../util/RatingUtil";
 import { FONT_FAMILY } from "../constants/ThemeConstants";
+import {ACCESSIBILITY, CONNECTIVITY, COMFORT, SAFETY, SECURITY} from "../constants/RatingsDescriptionConstants";
 
 const styles = theme => ({
 	root: {
@@ -92,11 +93,22 @@ class SidewalkRatingsModal extends Component {
 			}
 		);
 	}
-	
-	renderSlider(classes, value, onChange, name) {
+
+	renderSlider(classes, value, onChange, name, tooltipDescription) {
+		const tooltip = (
+			<Tooltip 
+				id={name}>
+				{tooltipDescription}
+			</Tooltip>
+		);
+
 		return (
 			<div>
-				<h5>{name}</h5>
+				<OverlayTrigger placement="top" overlay={tooltip}>
+					<h5 className="clickableItem ratingsHeader">
+						{name}
+					</h5>
+				</OverlayTrigger>
 				<div className="ratingSlider">
 					<div className={classes.root}>
 						<Slider
@@ -120,11 +132,11 @@ class SidewalkRatingsModal extends Component {
 		const { classes } = this.props;
 		return (
 			<div>
-				{this.renderSlider(classes, this.state.accessibilityValue, this.changeAccessibility, "Accessibility")}
-				{this.renderSlider(classes, this.state.connectivityValue, this.ChangeConnectivity, "Connectivity")}
-				{this.renderSlider(classes, this.state.comfortValue, this.changeComfort, "Comfort")}
-				{this.renderSlider(classes, this.state.safetyValue, this.changeSafety, "Physical Safety")}
-				{this.renderSlider(classes, this.state.securityValue, this.changeSecurity, "Sense of Security")}
+				{this.renderSlider(classes, this.state.accessibilityValue, this.changeAccessibility, "Accessibility", ACCESSIBILITY)}
+				{this.renderSlider(classes, this.state.connectivityValue, this.ChangeConnectivity, "Connectivity", CONNECTIVITY)}
+				{this.renderSlider(classes, this.state.comfortValue, this.changeComfort, "Comfort", COMFORT)}
+				{this.renderSlider(classes, this.state.safetyValue, this.changeSafety, "Physical Safety", SAFETY)}
+				{this.renderSlider(classes, this.state.securityValue, this.changeSecurity, "Sense of Security", SECURITY)}
 			</div>
 		);
 	}
