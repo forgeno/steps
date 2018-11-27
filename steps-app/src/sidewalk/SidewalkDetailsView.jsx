@@ -213,8 +213,10 @@ class SidewalkDetailsView extends Component {
 						anchor="right"
 						variant="temporary"
 						ModalProps={{ onBackdropClick: this._handleClose }}
-						>
-					<CloseIcon onClick={this._handleClose} className="closeButton" />
+						>	
+					<div className="closeButton">
+					<CloseIcon onClick={this._handleClose}  />
+					</div>	
 					{this.renderDrawerDetails()}
 				</Drawer>
 			</div>
