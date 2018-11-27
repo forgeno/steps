@@ -1,9 +1,9 @@
 import React from "react";
 import Reflux from "reflux";
 
-import Store from "../admin/AdminStore";
-import Actions from "../admin/AdminActions";
-import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
+import Store from "../../admin/AdminStore";
+import Actions from "../../admin/AdminActions";
+import SuccessAlertComponent from "../../misc-components/SuccessAlertComponent";
 
 /**
  * This component renders the error message that is displayed when a comment delete attempt succeeds

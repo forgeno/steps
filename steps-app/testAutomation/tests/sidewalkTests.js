@@ -30,6 +30,7 @@ const logger = RequestLogger({
 });
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
+const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -190,4 +191,24 @@ test.requestHooks(logger)("submitting a rating to the sidewalk", async (t) => {
 			)
 		).ok()
 		.expect(logger.contains(record => record.request.url.includes("/ratings/") && record.response.statusCode === 200)).ok();
+});
+
+test.requestHooks(logger, submitRatingMock)("attempting to submit a rating but failing", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm)
+		.expect(logger.contains(
+			record => (
+				record.request.url.includes("/rate/") &&
+				record.response.statusCode === 500)
+			)
+		).ok();
+	await t.expect(ratingsModal.cancel.visible).eql(true);
 });

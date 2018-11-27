@@ -4,15 +4,15 @@ import { Button, FormGroup, FormControl, Alert } from "react-bootstrap";
 import Filter from "bad-words";
 import swearsList from "bad-words/lib/lang";
 
-import SidewalkStore from "./SidewalkStore";
-import SidewalkActions from "./SidewalkActions";
+import SidewalkStore from "../SidewalkStore";
+import SidewalkActions from "../SidewalkActions";
 import SidewalkCommentComponent from "./SidewalkCommentComponent";
 import CommentDeletionModal from "./CommentDeletionModal";
-import LoaderComponent from "../misc-components/LoaderComponent";
+import LoaderComponent from "../../misc-components/LoaderComponent";
 
-import {COMMENTS_PER_PAGE, COMMENT_ERROR_STATE, COMMENT_PROFANITY_MESSAGE, EMPTY_COMMENT_MESSAGE, PHONE_REGEX, SECONDARY_PHONE_REGEX} from "../constants/CommentConstants";
+import {COMMENTS_PER_PAGE, COMMENT_ERROR_STATE, COMMENT_PROFANITY_MESSAGE, EMPTY_COMMENT_MESSAGE, PHONE_REGEX, SECONDARY_PHONE_REGEX} from "../../constants/CommentConstants";
 
-const filter = new Filter({ replaceRegex: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im, placeHolder: "*"});
+const filter = new Filter({ replaceRegex: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/im, placeHolder: "*"});
 filter.addWords('@');
 
 /**
@@ -47,26 +47,18 @@ export default class CommentsListComponent extends Reflux.Component {
 	 */
 	_validateCommentState = (comment) => {
 		const length = comment.length;
-		if (filter.isProfane(comment)) {
+
+		if (comment.match(PHONE_REGEX)) {
 			return {
 				state: COMMENT_ERROR_STATE,
-				message: COMMENT_PROFANITY_MESSAGE
+				message: `This comment contains a phone number: ${comment.match(PHONE_REGEX)[0]}`
 			};
-		} else {
-			if (comment.match(PHONE_REGEX)) {
-				return {
-					state: COMMENT_ERROR_STATE,
-					message: `This comment contains a phone number: ${comment.match(PHONE_REGEX)[0]}`
-				};
-			} else if (comment.match(SECONDARY_PHONE_REGEX)) {
-				return {
-					state: COMMENT_ERROR_STATE,
-					message: `This comment contains a phone number: ${comment.match(SECONDARY_PHONE_REGEX)[0]}`
-				};
-			}
-		}
-
-		if (length === 0) {
+		} else if (comment.match(SECONDARY_PHONE_REGEX)) {
+			return {
+				state: COMMENT_ERROR_STATE,
+				message: `This comment contains a phone number: ${comment.match(SECONDARY_PHONE_REGEX)[0]}`
+			};
+		} else if (length === 0) {
 			return {
 				state: COMMENT_ERROR_STATE,
 				message: EMPTY_COMMENT_MESSAGE
@@ -84,7 +76,7 @@ export default class CommentsListComponent extends Reflux.Component {
 	}
 
 	/**
-	 * Performs extra validation of the specified comment to make sure it does not have swears
+	 * Performs extra validation of the specified comment to make sure it does not have swears or personal information
 	 * Separated from _validateCommentState() due to performance reasons
 	 * @param {String} comment - the comment to validate
 	 * @return {Object} - details about whether the input text is valid or not
@@ -93,7 +85,7 @@ export default class CommentsListComponent extends Reflux.Component {
 	 *		message: a reason why the comment can not be posted, if state is error
 	 * }
 	 */
-	_validateSubstringSwears = (comment) => {
+	_performDetailedCommentValidation = (comment) => {
 		for (const swear of swearsList.words) {
 			if (swear === "hell" || swear.includes("as")) {
 				continue;
@@ -105,6 +97,14 @@ export default class CommentsListComponent extends Reflux.Component {
 				};
 			}
 		}
+		
+		if (filter.isProfane(comment)) {
+			return {
+				state: COMMENT_ERROR_STATE,
+				message: COMMENT_PROFANITY_MESSAGE
+			};
+		}
+		
 		return {
 			state: "success",
 			message: ""
@@ -112,7 +112,7 @@ export default class CommentsListComponent extends Reflux.Component {
 	};
 	
 	_onCommentBlur = () => {
-		const validation = this._validateSubstringSwears(this.state.enteredComment);
+		const validation = this._performDetailedCommentValidation(this.state.enteredComment);
 		if (validation.state === COMMENT_ERROR_STATE) {
 			this.setState({
 				commentValidation: validation
@@ -134,7 +134,7 @@ export default class CommentsListComponent extends Reflux.Component {
 	 * Handles the user submitting their entered comment text
 	 */
 	_handleSubmit = () => {
-		const validateComment = this._validateSubstringSwears(this.state.enteredComment);
+		const validateComment = this._performDetailedCommentValidation(this.state.enteredComment);
 		if (validateComment.state === COMMENT_ERROR_STATE) {
 			this.setState({commentValidation: validateComment});
 			return;
@@ -210,6 +210,9 @@ export default class CommentsListComponent extends Reflux.Component {
 	 * loads the next comments page
 	 */
 	_visitNextPage = () => {
+		if (this.state.isLoadingComments) {
+			return;
+		}
 		if (this._getCommentsOnPage(this.state.currentPage + 1).length === 0) {
 			this._loadMoreRows(this.state.currentSidewalk.comments.length, this.state.currentSidewalk.comments.length + 25);
 		}
@@ -235,7 +238,6 @@ export default class CommentsListComponent extends Reflux.Component {
 			return null;
 		}
 
-		const comments = this.state.currentSidewalk.comments;
 		return (
 			<div className="comments">
 				{
@@ -279,7 +281,7 @@ export default class CommentsListComponent extends Reflux.Component {
 					this.state.currentPage > 0 && <span className="icon glyphicon glyphicon-arrow-left" onClick={this._visitPreviousPage} />
 				}
 				{
-					(this.state.hasNextCommentsPage || this._getCommentsOnPage(this.state.currentPage + 1).length > 0) && <span className="nextIcon glyphicon glyphicon-arrow-right" onClick={this._visitNextPage} />
+					((this.state.hasNextCommentsPage && !this.state.isLoadingComments) || this._getCommentsOnPage(this.state.currentPage + 1).length > 0) && <span className="nextIcon glyphicon glyphicon-arrow-right" onClick={this._visitNextPage} />
 				}
 				<div className="commentDisplaySection">
 					{

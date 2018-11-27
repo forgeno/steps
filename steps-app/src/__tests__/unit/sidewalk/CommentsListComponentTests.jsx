@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import swearsList from "bad-words/lib/lang";
 
-import CommentsListComponent from "../../../sidewalk/CommentsListComponent";
+import CommentsListComponent from "../../../sidewalk/comments/CommentsListComponent";
 import SidewalkActions from "../../../sidewalk/SidewalkActions";
 import SidewalkStore from "../../../sidewalk/SidewalkStore";
 
@@ -63,7 +63,7 @@ describe("<CommentsListComponent />", function() {
 		expect(uploadCommentSpy.calledOnce).to.be.true
 	});
 
-	it("Should disable submit button when a swear is detected", () => {
+	it("Should disable submit button when personal information is detected", () => {
 		const wrapper = shallow(<CommentsListComponent/>);
 		wrapper.setState({
 			currentSidewalk: {
@@ -71,7 +71,7 @@ describe("<CommentsListComponent />", function() {
 				comments: []
 			}
 		});
-		wrapper.instance()._handleChange({target: {value: "bad word is bum"}});
+		wrapper.instance()._handleChange({target: {value: "799-999-9999 is a very non suspicious phone number please call it"}});
 		expect(wrapper.find("Button").prop("disabled")).to.be.true;
 	});
 
@@ -96,7 +96,7 @@ describe("<CommentsListComponent />", function() {
 
 	it("tests the comment validation returning an error if an email address is detected", () => {
 		const wrapper = shallow(<CommentsListComponent/>);
-		const output = wrapper.instance()._validateCommentState("hey i love pizza, email me at johnpizzaco@gmail.com");
+		const output = wrapper.instance()._performDetailedCommentValidation("hey i love pizza, email me at johnpizzaco@gmail.com");
 		expect(output.state).to.equal("error");
 		expect(output.message).to.have.string("personal info");
 	});
@@ -104,7 +104,7 @@ describe("<CommentsListComponent />", function() {
 	it("tests the detailed comment validation for swear substrings with a word that should be blocked", () => {
 		const wrapper = shallow(<CommentsListComponent/>);
 		swearsList.words = ["buffoon"];
-		const output = wrapper.instance()._validateSubstringSwears("buffoonn");
+		const output = wrapper.instance()._performDetailedCommentValidation("buffoonn");
 		expect(output.state).to.equal("error");
 		expect(output.message).to.have.string("profanity");
 	});
@@ -112,7 +112,7 @@ describe("<CommentsListComponent />", function() {
 	it("tests the detailed comment validation for swear substrings with a word that should not be blocked", () => {
 		const wrapper = shallow(<CommentsListComponent/>);
 		swearsList.words = ["buffoon"];
-		const output = wrapper.instance()._validateSubstringSwears("hello");
+		const output = wrapper.instance()._performDetailedCommentValidation("hello");
 		expect(output.state).to.equal("success");
 		expect(output.message).to.be.equal("");
 	});
@@ -188,7 +188,7 @@ describe("<CommentsListComponent />", function() {
 			message: "",
 			state: "success"
 		};
-		sandbox.stub(wrapper.instance(), "_validateSubstringSwears").returns(obj);
+		sandbox.stub(wrapper.instance(), "_performDetailedCommentValidation").returns(obj);
 		wrapper.update();
 		wrapper.instance()._onCommentBlur();
 		expect(wrapper.state("commentValidation")).to.not.equal(obj);
@@ -200,7 +200,7 @@ describe("<CommentsListComponent />", function() {
 			message: "",
 			state: "error"
 		};
-		sandbox.stub(wrapper.instance(), "_validateSubstringSwears").returns(obj);
+		sandbox.stub(wrapper.instance(), "_performDetailedCommentValidation").returns(obj);
 		wrapper.update();
 		wrapper.instance()._onCommentBlur();
 		expect(wrapper.state("commentValidation")).to.equal(obj);
@@ -213,7 +213,7 @@ describe("<CommentsListComponent />", function() {
 			message: "error",
 			state: "error"
 		};
-		sandbox.stub(wrapper.instance(), "_validateSubstringSwears").returns(validation);
+		sandbox.stub(wrapper.instance(), "_performDetailedCommentValidation").returns(validation);
 		wrapper.update();
 		wrapper.instance()._handleSubmit();
 		expect(wrapper.state("commentValidation")).to.be.equal(validation);

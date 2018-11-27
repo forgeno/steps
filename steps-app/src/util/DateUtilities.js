@@ -1,15 +1,6 @@
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+import moment from "moment";
 
-/**
- * Gets the time component of the specified date in HH:MM format
- * @param {Date} date - the date to format
- * @return {String} - the outputted time of the date in HH:MM format
- */
-const getTimeDisplay = (date) => {
-	const hours = ("0" + date.getHours()).slice(-2);
-	const minutes = ("0" + date.getMinutes()).slice(-2);
-	return hours + ":" + minutes;
-};
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 /**
  * Provides utility functions for working with dates
@@ -22,15 +13,15 @@ export default class DateUtilities {
 	 * @return {String} - the formatted date to display
 	 */
 	static formatDateForDisplay(date) {
-		return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear() + " - " + getTimeDisplay(date);
+		return moment(date).format("MMMM DD, YYYY - h:mm A")
 	}
 
-	/**
-	 * Gets the name of the month matching the specified month number
-	 * @param {number} monthNumber - the month number to get the name of (1 - 12)
-	 * @return {String} - the name of the month matching the specified month number
-	 */
-	static getMonthName(monthNumber) {
-		return months[monthNumber - 1];
+	/**	
+	 * Gets the name of the month matching the specified month number	
+	 * @param {number} monthNumber - the month number to get the name of (1 - 12)	
+	 * @return {String} - the name of the month matching the specified month number	
+	 */	
+	static getMonthName(monthNumber) {	
+		return months[monthNumber - 1];	
 	}
 }

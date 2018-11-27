@@ -1,11 +1,11 @@
 import React from "react";
 import Reflux from "reflux";
 
-import LoaderComponent from "../misc-components/LoaderComponent";
-import ConfirmationModal from "../misc-components/ConfirmationModal";
+import LoaderComponent from "../../misc-components/LoaderComponent";
+import ConfirmationModal from "../../misc-components/ConfirmationModal";
 
-import Store from "../admin/AdminStore";
-import Actions from "../admin/AdminActions";
+import Store from "../../admin/AdminStore";
+import Actions from "../../admin/AdminActions";
 
 /**
  * This component renders a modal that allows an administrator to delete a user's comment on a sidewalk

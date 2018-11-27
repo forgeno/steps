@@ -106,6 +106,7 @@ test("posting a comment on a sidewalk that contains personal information", async
 		.selectText(drawer.commentInput)
 		.pressKey("delete")
 		.typeText(drawer.commentInput, "Lorem ipsum kung fu henry is a legend message him at kungfu@henry.com")
+		.click(drawer.drawer)
 		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true);
 });
 
@@ -126,6 +127,7 @@ test.requestHooks(logger)("attempting to post a comment on a sidewalk with weird
 test("attempting to post a comment on a sidewalk that contains swears", async (t) => {
     await t.click(drawer.commentsHeader)
 		.typeText(drawer.commentInput, "Hell")
+		.click(drawer.drawer)
 		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true);
 });
 
