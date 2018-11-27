@@ -272,7 +272,6 @@ export default class MapStore extends Reflux.Store {
 			queryAllSidewalks();
 			// radius to search in
 			const pxRadius = 5;
-			console.log(featureLayer)
 			this.state.map.add(featureLayer);
 
 			//Start of FilterMap code
@@ -371,8 +370,9 @@ export default class MapStore extends Reflux.Store {
 		esriLoader.loadModules(["esri/tasks/support/Query"], esriURL).then((data) => {
 			let returnSidewalks = null
 			let sidewalkSQLString = ''
-			
-			for(let i=0; i < this.state.listFilter.length; i++){
+			let i=0
+			let numberOfFilters = this.state.listFilter.length;
+			for(i; i < numberOfFilters; i++){
 				if(sidewalkSQLString == ''){
 					sidewalkSQLString = this.state.listFilter[i];
 				}else{

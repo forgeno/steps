@@ -21,7 +21,7 @@ export default class SummaryMapView extends Component {
 	}
 
 	handleAddFilterEvent = () => {
-		let table = document.getElementById("filterTable");
+		let filterTable = document.getElementById("filterTable");
 		let rateTraitObj = document.getElementById("rateTrait")
 		let equalitySelectorObj = document.getElementById("equalitySelector");
 		let numberSelectorObj = document.getElementById("numberSelector");
@@ -30,9 +30,10 @@ export default class SummaryMapView extends Component {
 		let strNumberSelect = numberSelectorObj.options[numberSelectorObj.selectedIndex].text;
 		Actions.pushArray(strTrait,strEquality,strNumberSelect);
 
-		let rowCount = table.rows.length;
-		let row = table.insertRow(rowCount);
-		let colCount = table.rows[0].cells.length;
+		let rowCount = filterTable.rows.length;
+		let row = filterTable.insertRow(rowCount);
+		let colCount = filterTable.rows[0].cells.length;
+
 		let cell1 = row.insertCell(0);
 		let cell2 = row.insertCell(0);
 		let cell3 = row.insertCell(0)
@@ -43,9 +44,9 @@ export default class SummaryMapView extends Component {
 	}
 
 	handleClearFilterEvent = () => {
-		var table = document.getElementById("filterTable");
-		for(let i = (table.rows.length-1); i > 0; i--){
-			table.deleteRow(i);
+		let filterTable = document.getElementById("filterTable");
+		for(let i = (filterTable.rows.length-1); i > 0; i--){
+			filterTable.deleteRow(i);
 		}
 		Actions.clearFilters();
 	}

@@ -1,2 +1,2 @@
-export const DATABASE_BASE_URL = "http://199.116.235.159:8000",
+export const DATABASE_BASE_URL = "https://199.116.235.159:8443",
 	MAX_UPLOAD_SIZE = 3145728;
