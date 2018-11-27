@@ -211,7 +211,7 @@ class SidewalkView(viewsets.ReadOnlyModelViewSet):
 	def _getUnapprovedImages(self, startIndex, endIndex):
 		skip = startIndex
 		limit = (endIndex - skip) + 1
-		qs = SidewalkImage.objects.raw("select i.id, i.image_url, i.posted_time from api_sidewalkimage i where i.is_pending = true and i.is_deleted = false order by i.posted_time DESC limit %s offset %s", [limit + 1, skip]);
+		qs = SidewalkImage.objects.raw("select i.id, i.image_url, i.posted_time, i.sidewalk_id from api_sidewalkimage i where i.is_pending = true and i.is_deleted = false order by i.posted_time DESC limit %s offset %s", [limit + 1, skip]);
 		data = SidewalkImageSerializer(qs, many=True).data
 		hasMoreImages = len(data) > limit
 		if hasMoreImages:

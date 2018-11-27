@@ -26,7 +26,7 @@ class SidewalkImageSerializer(serializers.ModelSerializer):
 	date = serializers.DateTimeField(source='posted_time')
 	class Meta:
 		model = SidewalkImage
-		fields = ('id', 'url', 'date')
+		fields = ('id', 'url', 'date', 'sidewalk')
 
 class SidewalkCommentSerializer(serializers.ModelSerializer):
 	date = serializers.DateTimeField(source='posted_time')
