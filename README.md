@@ -10,6 +10,6 @@ The site is currently hosted using Cybera, and can be accessed [here](http://199
 2. git commit -a -m "build for deploy"
 3. git push origin master
 4. ssh onto the instance
-5. cd steps (on the instance)
+5. cd steps2/steps (on the instance)
 6. git pull origin master (on the instance)
-
+7. sh scripts/deployCybera.sh (on the instance)
