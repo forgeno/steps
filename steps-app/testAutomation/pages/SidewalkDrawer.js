@@ -3,9 +3,11 @@ import { Selector } from 'testcafe';
 export default class SidewalkDrawer {
 	
     constructor() {
+		// drawer
 		this.drawer = Selector(".sidewalkDrawer", {timeout: 40000});
 		this.addressName = Selector(".streetNameSection");
 		this.sectionHeaders = Selector(".sidewalkDrawer *[data-sidewalk-header]", {timeout: 40000});
+		this.drawerCloseButton = Selector(".closeButton");
 		
 		// comments
 		this.commentsHeader = this.sectionHeaders.withText("Comments", {timeout: 30000});
