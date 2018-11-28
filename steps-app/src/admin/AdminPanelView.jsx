@@ -4,13 +4,14 @@ import Reflux from "reflux";
 import {CSVLink, CSVDownload} from 'react-csv';
 import CloseIcon from "@material-ui/icons/Close";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
-import MasonryInfiniteScroller from "react-masonry-infinite";
-import Card from '@material-ui/core/Card';
+
 import { Button } from "react-bootstrap"
 import AdminStore from "./AdminStore";
 import AdminActions from "./AdminActions";
-import LoaderComponent from "../misc-components/LoaderComponent";
 
+// import InfiniteCarousel from "../misc-components/InfiniteCarousel";
+import {Carousel, Image} from "react-bootstrap";
+import InfiniteImagePreviewer from "../misc-components/InfiniteImagePreviewer";
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 import SpamUtil from "../util/SpamUtil";
@@ -24,7 +25,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
         super(props);
         this.store = AdminStore;
         this.state = {
-			currentImageIndex: 0
+			direction: null
 		};
 	}
     
@@ -43,30 +44,40 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 		AdminActions.dismissImageApprovalNotification();
 		AdminActions.dismissImageRejectionNotification();
 	};
-	
-	loadMoreImages = () => {
+
+	loadNextPage = () => {
 		this.setState({
 			isNextPageLoading: true
-		});
-        AdminActions.getUnapprovedImages(this.state.pendingImages.length, this.state.pendingImages.length + 10, () => {
-            setTimeout(() => {
-				this.setState({
-					isNextPageLoading: false
-				});
-			}, 500);
-        });
-	};
+		})
+	}
 	
+	loadMoreImages = () => {
+
+		const index = this.state.currentImageIndex,
+			currentPendingLength = this.state.pendingImages.length,
+		loadImagesThreshold = (index/currentPendingLength) > 0.5;
+
+		if( this.state.hasMoreImages && ((loadImagesThreshold || (currentPendingLength <= 4)))) {
+			AdminActions.getUnapprovedImages(this.state.pendingImages.length, this.state.pendingImages.length + 10
+		)}
+		return;
+	};
+
 	getCSVData = () => {
 		AdminActions.downloadCSV();
 	}
+
+	loadImagesByPreview = () => {
+		AdminActions.getUnapprovedImages(this.state.pendingImages.length, this.state.pendingImages.length + 10);
+	};
 
 	/**
 	 * Handles the user approving an image
 	 * @param {Object} image - the image to approve
 	 */
     _onAcceptImage = (image) => {
-        AdminActions.handlePendingImages(true, image.id);
+		AdminActions.handlePendingImages(true, image.id, image.sidewalk.id);
+		this.loadMoreImages();
     }
 
 	/**
@@ -74,7 +85,8 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 	 * @param {Object} image - the image to reject
 	 */
     _onRejectImage = (image) => {
-        AdminActions.handlePendingImages(false, image.id);
+		AdminActions.handlePendingImages(false, image.id, image.sidewalk.id);
+		this.loadMoreImages();
     }
 
 	/**
@@ -83,107 +95,89 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 	 * @param {Object} image - details about the image object
 	 * @return - null if the image is not selected, or the buttons if the image is selected
 	 */
-	_renderResponseButtons = (selected, image) => {
-		if (!selected || !this.state.isLoggedIn) {
+	_renderResponseButtons = (image) => {
+		if (!this.state.isLoggedIn) {
 			return null;
 		}
-		
+
 		return (
 			<div>
-				<CloseIcon className="closeButton" onClick={() => {this._onRejectImage(image)}} />
-				<CheckCircleIcon className="acceptButton" onClick={() => {this._onAcceptImage(image)}} />
+				<CloseIcon className="adminReject" onClick={() => {this._onRejectImage(image)}} />
+				<CheckCircleIcon className="adminAccept" onClick={() => {this._onAcceptImage(image)}} />
 			</div>
 		);
 	};
-	
-	/**
-	 * Handles an image being clicked
-	 * @param {number} index - the index of the image that was just clicked
-	 */
-	_onImageClicked = (index) => {
-		this.setState({
-			currentImageIndex: index
-		});
-	};
-	
-	/**
-	 * Gets whether the specified item is loaded
-	 * @param {number} index - the index of the item in the list of all loaded items
-	 * @return {boolean} - whether the specified item is loaded
-	 */
-	_isRowLoaded = (index) => {
-		return Boolean(this.state.pendingImages[index]);
-	};
-	
-	/**
-	 * Renders the specified item
-	 * @param {number} index - the index of the item in the list of loaded items
-	 * @param {*} key - the unique key of this item
-	 * @param {Object} style - the object's div style to render
-	 * @return {JSX} - the item to render
-	 */
-	_rowRenderer = ({index, key, style}) => {
-		let content;
-		if (this._isRowLoaded(index)) {
-			content = (
-				<div className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
-					<Card className="clickableItem">
-						{this.props.renderAboveImage && this.props.renderAboveImage(this.state.currentImageIndex === index, this.state.pendingImages[index])}
-						<img onClick={() => {this._onImageClicked(index)}} className="img-responsive fillAvailable" alt="uploaded" src={this.state.pendingImages[index].url} />
-					</Card>
-				</div>
-			);
-		} else {
-			content = <LoaderComponent />;
-		}
-		return (
-			<div key={key} style={style}>
-				{content}
-			</div>
-		);
-	};
-	
-	renderSelectedImage() {
-		if (this.state.pendingImages[this.state.currentImageIndex]) {
-			return (
-				<img className="backgroundImage"
-					alt="selected"
-					src={this.state.pendingImages[this.state.currentImageIndex].url} />
-			);
-		}
-		return <LoaderComponent />;
+
+
+	setImageIndex = (selectedIndex) => {
+		AdminActions.adminImageClicked(selectedIndex);
 	}
-	
+
+	handleOnClick = (selectedIndex, event) => {
+		this.setState({
+			currentImageIndex: selectedIndex,
+			direction: event.direction,
+		});
+        this.loadMoreImages();
+        this.setImageIndex(selectedIndex);
+    }
+
+	shouldDisableCarouselArrows(index, length) {
+		if (index === 0) {
+			return "disableLeftCarouselArrow";
+		} else if (index === length - 1) {
+			return "disableRightCarouselArrow";
+		} else {
+			return "";
+		}
+	}
+
+
 	render() {
+
         if (!this.state.pendingImages || this.state.pendingImages.length === 0) {
 			return <h1>No images uploaded</h1>;
 		}
 
 		
-		// TODO: use react image gallery with html observer event to load more
+		const pendingImages = this.state.pendingImages,
+			index = this.state.currentImageIndex,
+			image = pendingImages[index];
+
 		return (   
 			<div>
-				{this.renderSelectedImage()}
 				{this.state.hasCSVData && <CSVLink data={this.state.csvFormatted}>
 					<Button bsStyle = "primary" className = "csvButton">
 						EXPORT CSV
 					</Button>
 				</CSVLink>}
-
-				<MasonryInfiniteScroller
-					hasMore={this.state.hasMoreImages}
-					loadMore={this.state.isNextPageLoading ? () => {} : this.loadMoreImages}
-					sizes={[{ columns: 3, gutter: 0 },
-					{ mq: '1024px', columns: 4, gutter: 0 }]}
-				>
-					{
-						this.state.pendingImages.map((id, index) =>
-							this._rowRenderer({index: index, key: index, style: {height: "30vw", width: "30vw"}})
-						)
-					}
-				</MasonryInfiniteScroller>
-				{this.state.isNextPageLoading && <LoaderComponent />}
-				
+				{this._renderResponseButtons(image)}
+				<div className={this.shouldDisableCarouselArrows(index, pendingImages.length)}>
+					<Carousel
+						indicators={false}
+						activeIndex={this.state.currentImageIndex}
+						direction={this.state.direction}
+						interval={null}
+						onSelect={this.handleOnClick}
+					>
+						{pendingImages.map((image, id) => {
+							return (
+							<Carousel.Item key={String(id)}>
+								<Image src={image.url}/>
+							</Carousel.Item>);               
+						})}
+					</Carousel>
+            	</div>
+				<InfiniteImagePreviewer
+					loadedImages={pendingImages}
+					loadMoreImages={this.loadMoreImages}
+					currentIndex={index}
+					setImageIndex={this.setImageIndex}
+					hasMoreImages={this.state.hasMoreImages}
+					loadMoreByArrow={this.loadImagesByPreview}
+					isNextPageLoading={this.loadNextPage}
+				/>
+			
 				<SuccessAlertComponent onClose={this._dismissNotifications}
 						 visible={this.state.successfullyRespondedToImage}
 						 message="Your response has been recorded."
@@ -191,7 +185,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 				<ErrorAlertComponent onClose={this._dismissNotifications}
 						 visible={this.state.failedToRespondToImage}
 						 message="An error occurred while recording your response."
-				/>
+				/> 
 			</div>
 
 		);

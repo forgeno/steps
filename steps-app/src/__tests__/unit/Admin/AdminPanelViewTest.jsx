@@ -45,6 +45,38 @@ describe("Test the AdminPanelView component", () => {
         expect(handlePendingImageStub.calledOnce).to.be.true;
 		expect(handlePendingImageStub.getCall(0).args[0]).to.be.false;
     });
+
+    it("should call the appropriate functions when handleOnClick is called", () => {
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>),
+            loadMoreImagesStub = sandbox.stub(AdminPanelViewWrapper.instance(), "loadMoreImages"),
+            adminImageClickedStub = sandbox.stub(AdminActions, "adminImageClicked");
+
+        AdminPanelViewWrapper.instance().handleOnClick(0, {direction: "right"});
+        expect(loadMoreImagesStub.called).to.be.true;
+        expect(adminImageClickedStub.called).to.be.true;
+    });
+
+    it("should disable the left carousel with CSS if the first image is displayed" , () => {
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
+        const carouselCSS = AdminPanelViewWrapper.instance().shouldDisableCarouselArrows(0, 0);
+        expect(carouselCSS).to.equal("disableLeftCarouselArrow");
+    });
+
+    it("should disable the right carousel with css if the last image is displayed", () => {
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
+        const pendingImagesMock = [{}, {}, {}, {}],
+            pendingImagesLength = pendingImagesMock.length;
+        const carouselCSS = AdminPanelViewWrapper.instance().shouldDisableCarouselArrows(3, pendingImagesLength);
+        expect(carouselCSS).to.equal("disableRightCarouselArrow");
+    });
+
+    it("should not disable any carousel arrows when the current index is not the first or last image", () => {
+        const AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
+        const pendingImagesMock = [{}, {}, {}, {}],
+            pendingImagesLength = pendingImagesMock.length;
+        const carouselCSS = AdminPanelViewWrapper.instance().shouldDisableCarouselArrows(1, pendingImagesLength);
+        expect(carouselCSS).to.equal("");
+    });
     
     afterEach(() => {
         sandbox.restore();

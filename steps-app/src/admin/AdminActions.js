@@ -15,6 +15,7 @@ const Actions = Reflux.createActions([
 	"handlePendingImages",
 	"dismissImageApprovalNotification",
 	"dismissImageRejectionNotification",
+	"adminImageClicked",
 	"downloadCSV"
 ]);
 

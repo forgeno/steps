@@ -19,6 +19,8 @@ export default class AdminStore extends Reflux.Store {
 			password: "",
 			credentialError: false,
 			pendingImages: [],
+			currentImageIndex: 0,
+			isNextPageLoading: false,
 			sidewalkCSVInfo: [],
 			hasCSVData: false
 		};
@@ -178,7 +180,7 @@ export default class AdminStore extends Reflux.Store {
 	}
 	
 	// TODO: remove hardcoded sidewalkId value
-	onHandlePendingImages(accepted, imageId, sidewalkId = "2") {
+	onHandlePendingImages(accepted, imageId, sidewalkId) {
 		this.setState({
 			respondingToImage: true,
 			successfullyRespondedToImage: false,
@@ -206,6 +208,9 @@ export default class AdminStore extends Reflux.Store {
 	}
 
 	onGetUnapprovedImages(startIndex, endIndex, onSuccess) {
+		this.setState({
+			isNextPageLoading: true
+		})
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
 			password: this.state.password,
@@ -215,7 +220,8 @@ export default class AdminStore extends Reflux.Store {
 			const newImages = this.state.pendingImages.slice().concat(result.images);
 			this.setState({
 				hasMoreImages: result.hasMoreImages,
-				pendingImages: newImages
+				pendingImages: newImages,
+				isNextPageLoading: false
 			});
 			return onSuccess();
 		}).catch((error) => {
@@ -232,6 +238,12 @@ export default class AdminStore extends Reflux.Store {
 	onDismissImageRejectionNotification() {
 		this.setState({
 			failedToRespondToImage: false,
+		});
+	}
+
+	onAdminImageClicked(imageIndex) {
+		this.setState({
+			currentImageIndex: imageIndex
 		});
 	}
 

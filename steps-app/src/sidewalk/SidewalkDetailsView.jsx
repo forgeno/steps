@@ -22,6 +22,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import { withStyles } from '@material-ui/core/styles';
 import { FONT_FAMILY } from "../constants/ThemeConstants";
 import { Button } from "react-bootstrap";
+import SpamUtil from "../util/SpamUtil";
 
 const styles = theme => ({
 	root: {
@@ -150,7 +151,20 @@ class SidewalkDetailsView extends Component {
 	}
 
 	_openRatingsModal = () => {
-		this.setState({ ratingsModalOpen: true });
+		if(!SpamUtil.getCookie("timer")){
+			SpamUtil.deleteLocalStorage("NumberSidewalk");
+		}
+		if(SpamUtil.getCookie(this.state.currentSidewalk.id)) {
+			this.setState({ ratingsModalOpen: false });
+			SidewalkActions.suspendedSidewalk();
+		}
+		else if (SpamUtil.getCookie("timer") == "true" && Number(SpamUtil.getLocalStorage("NumberSidewalk")) + 1 > 3){
+			this.setState({ ratingsModalOpen: false });
+			SidewalkActions.rateSuspendThirty();
+		}
+		else {
+			this.setState({ ratingsModalOpen: true });
+		}
 	};
 
 	/**

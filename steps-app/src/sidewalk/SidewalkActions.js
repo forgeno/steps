@@ -16,6 +16,10 @@ const Actions = Reflux.createActions([
 	"dismissRatingsSuccessMessage",
 	"dismissRatingsFailureMessage",
 	"getSidewalkRatings",
+	"suspendedSidewalk",
+	"rateSuspendThirty",
+	"dismissSuspendSidewalk",
+	"dismissRateSuspendThirty",
 	"downloadSidewalkCSV"
 ]);
 

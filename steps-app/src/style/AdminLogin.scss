@@ -5,11 +5,6 @@
     // box-shadow: 1px 5px 40px 5px #f3dc0b, 1px 5px 20px 2px #27250f;
 }
 
-// .LoginCSS{
-//     height: 100%;
-//     background-image: linear-gradient(to bottom right, #B91372, #6B0F1A);
-// }
-
 .adminTitleLogin {
     color: $primary;
 }
@@ -23,3 +18,26 @@
     color: #791616;
 }
 
+.adminButton {
+    margin: auto;
+}
+
+.adminAcceptButton {
+    margin-left: 50%;
+    margin-right: 50%;
+}
+
+.adminAcceptButton:hover {
+    color: green;
+    cursor: pointer;
+}
+
+.adminCloseButton {
+    margin-left: 50%;
+    margin-right: 50%;
+}
+
+.adminCloseButton:hover {
+    color: red;
+    cursor: pointer;
+}
