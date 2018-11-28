@@ -8,7 +8,7 @@ $commentsWidth: 95%;
 .sidewalkDrawer {
 	width: 50vw;
 	max-width: 600px;
-	overflow-y: scroll;
+	overflow-y: auto;
 
 	.drawerImageSection {
 		width: 40vw;

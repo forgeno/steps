@@ -9,7 +9,7 @@ export default class ImageSelectorComponent extends React.Component {
 
 	render() {
 		return (
-			<div className="row">
+			<div className="rowImgSelector">
 				<FormControl
 				   readOnly
 				   type="text"

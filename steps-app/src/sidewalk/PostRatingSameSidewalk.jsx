@@ -6,7 +6,8 @@ import Actions from "./SidewalkActions";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 
 /**
- * This component renders the error message that is displayed when a rating post attempt fails
+ * This component renders the error message that is displayed when the user posts too many ratings to the same sidewalk
+ * in a short amount of time
  */
 export default class PostRatingSameSidewalk extends Reflux.Component {
 
@@ -25,8 +26,8 @@ export default class PostRatingSameSidewalk extends Reflux.Component {
 	render() {
 		return (
 			<ErrorAlertComponent onClose={this._handleClose}
-								 visible={this.state.sameSidewalk}
-								 message="Cannot rate same sidewalk within 1 hour."
+								 visible={this.state.sameSidewalkRatingError}
+								 message="You can only rate the same sidewalk once per hour."
 			/>
 		);
 	}

@@ -2,6 +2,8 @@ import Reflux from "reflux";
 
 import Actions from "./AdminActions";
 import RestUtil from "../util/RestUtil";
+import {LOCAL_STORAGE_NAME, SUSPENSION_COOKIE} from "../constants/AdminConstants";
+import SpamUtil from "../util/SpamUtil";
 
 /**
  * This store keeps track of the state of components that deal with administrator actions
@@ -19,10 +21,7 @@ export default class AdminStore extends Reflux.Store {
 			password: "",
 			credentialError: false,
 			pendingImages: [],
-			currentImageIndex: 0,
-			isNextPageLoading: false,
-			sidewalkCSVInfo: [],
-			hasCSVData: false
+			isNextPageLoading: false
 		};
         this.listenables = Actions;
 
@@ -99,6 +98,11 @@ export default class AdminStore extends Reflux.Store {
 				isLoggedIn: false,
 				failedToLogIn: true
 			});
+			if (err.statusCode === 401) {
+				if (SpamUtil.getCookie(SUSPENSION_COOKIE) !== true) {
+					SpamUtil.setLocalStorage(LOCAL_STORAGE_NAME)
+				}
+			}
 			console.error(err)
 		});
 	}
@@ -179,7 +183,6 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 	
-	// TODO: remove hardcoded sidewalkId value
 	onHandlePendingImages(accepted, imageId, sidewalkId) {
 		this.setState({
 			respondingToImage: true,
@@ -207,7 +210,7 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
-	onGetUnapprovedImages(startIndex, endIndex, onSuccess) {
+	onGetUnapprovedImages(startIndex, endIndex) {
 		this.setState({
 			isNextPageLoading: true
 		})
@@ -223,8 +226,10 @@ export default class AdminStore extends Reflux.Store {
 				pendingImages: newImages,
 				isNextPageLoading: false
 			});
-			return onSuccess();
 		}).catch((error) => {
+			this.setState({
+				isNextPageLoading: false
+			});
 			console.error(error);
 		})
 	}
@@ -247,21 +252,4 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
-	onDownloadCSV() {
-		RestUtil.sendGetRequest(`sidewalk/completeSummary`).then((allSidewalkObjects) => {
-			const allSidewalkArray = [];
-			allSidewalkArray.push(['SidewalkId', 'AccessibilityRating', 'Comfort', 'Connectivity', 'SenseOfSecurity', 'PhysicalSafety', 'OverallRating', 'TotalRatings', 'TotalComments', 'TotalImages']);
-			allSidewalkObjects.sidewalks.forEach((sidewalk) => {
-				let data = [sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images];
-				allSidewalkArray.push(data);
-			});
-			this.setState({
-				sidewalkCSVInfo: allSidewalkObjects,
-				csvFormatted: allSidewalkArray,
-				hasCSVData: true
-			});
-		}).catch((err) => {
-			console.error(err);
-		});
-	}
 }

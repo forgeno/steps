@@ -9,7 +9,7 @@ import SidewalkImageDetailsComponent from "./images/SidewalkImageDetailsComponen
 import PedestrianDataComponent from "./PedestrianDataComponent";
 import SidewalkRatingsModal from "./SidewalkRatingsModal";
 import {getRatingDescription} from "../util/RatingUtil";
-import {CSVLink, CSVDownload} from 'react-csv';
+import {CSVLink} from 'react-csv';
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
@@ -130,10 +130,10 @@ class SidewalkDetailsView extends Component {
 				<hr />
 				<h5>
 					{velocityText}
-					<div class="text-center">
+					<div>
 						{this.state.isLoggedIn && this.state.sidewalkHasCSVData && <CSVLink data={this.state.sidewalkCsvFormatted}>
-							<Button bsStyle = "primary" className = "sidewalkCsvButton">
-								EXPORT SIDEWALK CSV
+							<Button bsStyle="primary" className="sidewalkCsvButton">
+								Export CSV
 							</Button>
 						</CSVLink>}
 					</div>
@@ -151,18 +151,16 @@ class SidewalkDetailsView extends Component {
 	}
 
 	_openRatingsModal = () => {
-		if(!SpamUtil.getCookie("timer")){
+		if (!SpamUtil.getCookie("timer")){
 			SpamUtil.deleteLocalStorage("NumberSidewalk");
 		}
-		if(SpamUtil.getCookie(this.state.currentSidewalk.id)) {
+		if (SpamUtil.getCookie(this.state.currentSidewalk.id)) {
 			this.setState({ ratingsModalOpen: false });
 			SidewalkActions.suspendedSidewalk();
-		}
-		else if (SpamUtil.getCookie("timer") == "true" && Number(SpamUtil.getLocalStorage("NumberSidewalk")) + 1 > 3){
+		} else if (SpamUtil.getCookie("timer") === "true" && Number(SpamUtil.getLocalStorage("NumberSidewalk")) + 1 > 3){
 			this.setState({ ratingsModalOpen: false });
 			SidewalkActions.rateSuspendThirty();
-		}
-		else {
+		} else {
 			this.setState({ ratingsModalOpen: true });
 		}
 	};

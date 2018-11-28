@@ -90,7 +90,7 @@ tr {
 }
 
 .filtersHeader {
-	@extend .row;
+	@extend .rowImgSelector;
 }
 
 .closeFilters:hover {

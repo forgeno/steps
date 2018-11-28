@@ -25,7 +25,7 @@ export default class AboutPageView extends React.Component {
 			<div className="padding25">
 				{this.renderCategory("About Us", 
 					`Steps is a research platform by Space and Culture Research Group, aimed at developing a participatory approach to assess walkability.
-					Steps web-app is a tool by Space and Culture and [NAME OF CMPUT TEAM OR YOU CAN BE PART OF OUR S&C TEAM :) ] for collecting perceptions and feedback on walkability. 
+					Steps web-app is a tool by Space and Culture and Sid Six for collecting perceptions and feedback on walkability. 
 					Edmonton residents and visitors can use this map to share their thoughts about the 
 					pedestrian network or explore the data collected to date. This information will help identify gaps in pedestrian infrastructure and build the case for improvements.
 					`)}

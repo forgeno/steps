@@ -159,7 +159,6 @@ export default class MapFilterModal extends Component {
 	}
 	
 	render() {
-		const {classes} = this.props;
 		return (
 			<div className="FilterGUIWrapper">
 				<div id="filterGUI" style={this._getModalStyle()}>

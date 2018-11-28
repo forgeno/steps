@@ -73,7 +73,7 @@ class NavbarComponent extends Reflux.Component {
 							this.state.isLoggedIn && <Link to="/dashboard"><Button color="inherit" className={classes.button}>  Dashboard</Button></Link>
 						}
 						{
-							this.state.isLoggedIn && <Link to="/login"><Button color="inherit" onClick = {this._changeLogIn} className={classes.button}>  LOGOUT</Button></Link>
+							this.state.isLoggedIn && <Button color="inherit" onClick={this._changeLogIn} className={classes.button}>Logout</Button>
 						}
 					</Toolbar>
 				</AppBar>
