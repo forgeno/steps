@@ -8,40 +8,32 @@
 #filterGUI {
 	position: relative;
 	padding: 2px;
-	min-height: 25vh;
-	max-height: 25vh;
-	min-width: 55%;
-	max-width: 60%;
+	height: 31vh;
+	width: 30vw;
 	background-color: white;
-    overflow-y: auto;
-	
+    overflow-y: auto;	
 }
-#FilterGUIWrapper {
+
+#filterGUIMinimized {
+	position: relative;
+}
+
+.FilterGUIWrapper {
 	display: none;
 }
 
-.applyButton{
+.applyButton {
 	position: absolute;
 	right: 0%;
 }
 
-.AddFilter{
-	margin-left: 3px;
-	width: 20%;
+.addFilter {
+	height: 50%;
+	margin: auto;
+	margin-bottom: 16px;
+	margin-left: 20px;
 }
 
-#filterTable{
-	font-size: 12px;
-}
-
-.removeBtn{
-	padding: 1px;
-	border-radius: 5px;
-	color: #fff;
-    background-color: #d9534f;
-	border-color: #d43f3a;
-	border: 1px solid transparent;
-}
 .esri-component{
 	border-radius: 2%;
 	opacity: 0.8;
@@ -75,6 +67,32 @@
 .esri-view-width-less-than-small .esri-zoom .esri-widget--button {
 	display: none;
 }
-tr{
-	font-size: 10px;
+
+tr {
+	font-size: 12px;
+}
+
+.filterWrapper {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.filterSelectGroup {
+	padding-left: 10px;
+}
+
+.filterTitle {
+	padding-left: 10px;
+}
+
+.filterTable {
+	cursor: default;
+}
+
+.filtersHeader {
+	@extend .row;
+}
+
+.closeFilters:hover {
+	color: red;
 }
