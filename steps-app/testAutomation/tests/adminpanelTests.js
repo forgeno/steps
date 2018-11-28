@@ -19,7 +19,7 @@ const TEST_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Go
 
 const response = {
     images: [
-        {id: 1,url: TEST_IMAGE}, 
+        {id: 1,url: TEST_IMAGE, sidewalk: {id: 2}}, 
         {id: 2, url: TEST_IMAGE}, 
         {id: 3, url: TEST_IMAGE}, 
         {id: 4, url: TEST_IMAGE}, 
@@ -30,7 +30,7 @@ const response = {
 
 const mock = RequestMock().onRequestTo(/adminAccount\/login\//).respond(),
     mockgetUnapprovedImages = RequestMock().onRequestTo(/sidewalk\/unapprovedImages\//).respond(response),
-    mockHandleApproveOrRejectImages = RequestMock().onRequestTo(/sidewalk\/2\/image\/response\//);
+    mockHandleApproveOrRejectImages = RequestMock().onRequestTo(/sidewalk\/2\/image\/respond\//).respond();
 
 
 fixture `Tests admin panel carousels`
@@ -41,13 +41,15 @@ fixture `Tests admin panel carousels`
         .click(loginPage.submit);
         await AdminUtilities.silentLogin(t);
         await AdminUtilities.generateAdminDummyImages(t);
+
 	});
 
 
-test.requestHooks(logger)("make sure the carousel interacts properly", async (t) => {
+test.requestHooks(logger, mockgetUnapprovedImages)("login as admin and check if admin tools are visible", async (t) => {
     await t.expect(adminPage.previewContainer.visible).eql(true);
+    await t.expect(adminPage.csvButton.visible).eql(true);
 
-    await t.expect(adminPage.itemActive.visible).eql(true);
+    await t.expect(adminPage.carousel.visible).eql(true);
     await t.expect(adminPage.leftCarouselArrowDisabled.visible).eql(true);
     
     await t.click(adminPage.rightCarouselArrow).wait(2000);
@@ -57,17 +59,26 @@ test.requestHooks(logger)("make sure the carousel interacts properly", async (t)
     await t.expect(adminPage.leftCarouselArrow.visible).eql(false);
 });
 
-test.requestHooks(logger,mockgetUnapprovedImages)("make sure the image previewer works properly", async (t) => {
+test.requestHooks(logger, mockHandleApproveOrRejectImages)("should be able to reject an image", async (t) => {
+    await AdminUtilities.generateAdminDummyImages(t);
     await t.expect(adminPage.previewContainer.visible).eql(true);
-    await t.expect(adminPage.previewRightArrow.visible).eql(true);
 
-    await t.click(adminPage.previewRightArrow).wait(2000);
-    await t.expect(adminPage.previewLeftArrow.visible).eql(true);
+    await t.click(adminPage.rejectButton).wait(2000);
+    await t.expect(adminPage.recordedResponse.textContent).contains("Your response has been recorded")
 });
 
-test.requestHooks(logger, mockgetUnapprovedImages)("test rejecting an image", async (t) => {
+test.requestHooks(logger, mockHandleApproveOrRejectImages)("should be able to successfully accept an image", async (t) => {
+    await AdminUtilities.generateAdminDummyImages(t);
     await t.expect(adminPage.previewContainer.visible).eql(true);
-    await t.expect(adminPage.previewRightArrow.visible).eql(true);
-    await t.click(adminPage.rejectButton).wait(2000);
 
+    await t.click(adminPage.acceptButton).wait(2000);
+    await t.expect(adminPage.recordedResponse.textContent).contains("Your response has been recorded")
+});
+
+test.requestHooks(logger, mockHandleApproveOrRejectImages)("should show error message when handling image due to api returning incorrect info", async (t) => {
+    await AdminUtilities.generateAdminDummyErrorImages(t);
+    await t.expect(adminPage.previewContainer.visible).eql(true);
+
+    await t.click(adminPage.acceptButton).wait(2000);
+    await t.expect(adminPage.failedResponse.textContent).contains("An error occurred while recording your response.")
 });

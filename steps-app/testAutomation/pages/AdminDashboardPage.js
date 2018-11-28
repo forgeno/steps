@@ -13,5 +13,10 @@ export default class AdminDashboardPage {
     this.previewRightArrow = Selector(".arrowRight");
     this.previewLeftArrow = Selector(".arrowLeft");
     this.rejectButton = Selector(".adminReject");
+    this.acceptButton = Selector(".adminAccept");
+    this.csvButton = Selector(".csvButton");
+    this.carousel = Selector(".carousel");
+    this.recordedResponse = Selector(".successAlert")
+    this.failedResponse = Selector(".errorAlert")
     }
 }

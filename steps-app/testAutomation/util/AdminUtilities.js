@@ -18,15 +18,26 @@ export default class AdminUtilities {
 	}
 
 	static async generateAdminDummyImages(t) {
-		await t.eval((numImages) => {
+		await t.eval(() => {
 			const TEST_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/375px-Google_Images_2015_logo.svg.png";
-
+			const pendingImagesMock  = DEV_ADMIN_STORE.state.pendingImages;
 			const images = [];
 			for (let i = 0; i < 5; ++i) {
-				images.push({url: TEST_IMAGE, id: -99999 + i});
+				images.push({url: TEST_IMAGE, id: -99999 + i, sidewalk: {id: "2", type: "Sidewalk"}});
 			}
-			window.DEV_ADMIN_STORE.setState({
-				pendingImages: [],
+			DEV_ADMIN_STORE.setState({
+				pendingImages: images,
+				hasMoreImages: false});
+		});
+	}
+
+	static async generateAdminDummyErrorImages(t) {
+		await t.eval(() => {
+			const TEST_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Google_Images_2015_logo.svg/375px-Google_Images_2015_logo.svg.png";
+			const images = [];
+			images.push({url: TEST_IMAGE, id: 9001, sidewalk: {}});
+			DEV_ADMIN_STORE.setState({
+				pendingImages: images,
 				hasMoreImages: false});
 		});
 	}
