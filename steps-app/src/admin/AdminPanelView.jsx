@@ -12,6 +12,7 @@ import LoaderComponent from "../misc-components/LoaderComponent";
 
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
+import SpamUtil from "../util/SpamUtil";
 
 /**
  * This component renders the gallery of all uploaded images that have yet to be approved or rejected
@@ -27,9 +28,10 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
     }
     
     componentDidMount() {
-		if (!this.state.isLoggedIn) {
+		if(!this.state.isLoggedIn){
 			this.props.history.push('/login');
-		} else {
+		}
+		else {
 			AdminActions.getUnapprovedImages(0, 5);
 		}
     }

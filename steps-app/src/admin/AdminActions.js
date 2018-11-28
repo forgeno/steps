@@ -5,6 +5,7 @@ const Actions = Reflux.createActions([
 	"dismissCommentSuccessMessage",
 	"dismissCommentErrorMessage",
 	"checkCredentials",
+	"logoutAdmin",
 	"deleteImage",
 	"dismissImageSuccessMessage",
 	"dismissImageErrorMessage",

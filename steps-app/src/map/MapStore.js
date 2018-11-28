@@ -358,3 +358,4 @@ export default class MapStore extends Reflux.Store {
 		});
 	}
 }
+

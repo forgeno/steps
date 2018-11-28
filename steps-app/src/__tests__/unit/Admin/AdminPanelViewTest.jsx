@@ -15,7 +15,7 @@ describe("Test the AdminPanelView component", () => {
 
     it("should call getUnapprovedImages when component mounts", () => {
         const getUnapprovedImagesStub = sandbox.stub(AdminActions, "getUnapprovedImages"),
-			AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
+		AdminPanelViewWrapper = shallow(<AdminPanelView history={[]}/>);
 		AdminPanelViewWrapper.setState({
 			isLoggedIn: true
 		});

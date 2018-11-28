@@ -99,6 +99,12 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
+	onLogoutAdmin(){
+		this.setState({
+			isLoggedIn: false
+		});
+	}
+
 	/**
 	 * Handles attempting to delete an image
 	 * @param {String} sidewalkId - the ID of the sidewalk the image is linked to

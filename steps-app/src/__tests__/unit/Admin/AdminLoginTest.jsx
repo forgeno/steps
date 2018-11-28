@@ -5,6 +5,7 @@ import sinon from "sinon";
 
 import AdminLoginComponent from "../../../admin/AdminLogin";
 import AdminActions from "../../../admin/AdminActions";
+import SpamUtil from "../../../util/SpamUtil";
 
 describe("<AdminLoginComponent>", function() {
     let sandbox = null;
@@ -37,7 +38,6 @@ describe("<AdminLoginComponent>", function() {
             enteredName: "bbbb",
             enteredPassword: "aaaa"
         });
-
         expect(wrapper.instance()._validateCredentials()).to.be.true;
     });
 
@@ -51,17 +51,16 @@ describe("<AdminLoginComponent>", function() {
         expect(wrapper.instance()._validateCredentials()).to.be.false;
     });
 
-    it("should check if check credentials function is being called from handle submit.", () => {
-        const adminLogin = sandbox.stub(AdminActions, "checkCredentials"),
-		wrapper = shallow(<AdminLoginComponent/>);
+    it("should return false if cookie suspended is true", () => {
+        const wrapper = shallow(<AdminLoginComponent/>);
+        wrapper.setState({
+            enteredName: "aaa",
+            enteredPassword: "bbb"
+        });
+    
+        sandbox.stub(SpamUtil, "getCookie").returns(true);
+        expect(wrapper.instance()._validateCredentials()).to.be.false;
 
-		wrapper.setState({
-            enteredName: "hello",
-            enteredPassword: "pass"
-		});
-
-		wrapper.instance()._handleSubmit();
-		expect(adminLogin.calledOnce).to.be.true
     });
 
     it("should direct to new page if valid credentials entered", () => {
@@ -72,5 +71,42 @@ describe("<AdminLoginComponent>", function() {
         });
 		wrapper.instance().forceUpdate();
         expect(history).to.deep.equal(["/dashboard"]);
+    });
+
+    it("Should check if credentials function is being called from handle Submit.", () => {
+        const adminLogin = sandbox.stub(AdminActions, "checkCredentials"),
+        wrapper = shallow(<AdminLoginComponent/>);
+
+        sandbox.stub(wrapper.instance(), "_displayAttempts");
+
+        wrapper.setState({
+            enteredName: "hello",
+            enteredPassword: "pass"
+        });
+
+        sandbox.stub(SpamUtil, "getLocalStorage").returns(1);
+
+        wrapper.instance()._handleSubmit();
+		expect(adminLogin.calledOnce).to.be.true
+    });
+
+    it("Should check if multiple Login attempts is porhibited and appropriate cookie is set", () => {
+        const cookie = sandbox.stub(SpamUtil, "setCookie"),
+        wrapper = shallow(<AdminLoginComponent/>);
+
+        sandbox.stub(wrapper.instance(), "_displayAttempts");
+
+        wrapper.setState({
+            enteredName: "hello",
+            enteredPassword: "pass"
+        });
+
+        sandbox.stub(SpamUtil, "getLocalStorage").returns(7);
+        wrapper.instance()._handleSubmit();
+        expect(cookie.calledOnce).to.be.true;
+    });
+    
+    afterEach(() => {
+        sandbox.restore();
     });
 });
