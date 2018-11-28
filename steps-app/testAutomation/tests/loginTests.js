@@ -1,4 +1,4 @@
-import {RequestLogger, RequestMock} from "testcafe";
+import {RequestLogger, RequestMock, Selector} from "testcafe";
 
 import config from "../config";
 import BrowserUtilities from "../util/BrowserUtilities";
@@ -42,4 +42,31 @@ test("that the login button is disabled with an empty username or password", asy
 		.expect(loginPage.submit.hasAttribute("disabled")).eql(true)
 		.typeText(loginPage.password, "ioawkoieoiawoiea")
 		.expect(loginPage.submit.hasAttribute("disabled")).eql(false);
+});
+
+test("that login gets disabled when the user attempts to login incorrectly more than 3 times", async (t) => {
+	
+	await t.typeText(loginPage.username, "lorem iiii")
+			.typeText(loginPage.password, "aVery strong pa$$w0rd")
+			.click(loginPage.submit)
+
+	await t.expect(notifications.loginAttemptText.textContent).contains("You have 3 Login Attempts");
+
+	await t.typeText(loginPage.username, "lorem iiii")
+	.typeText(loginPage.password, "aVery strong pa$$w0rd")
+	.click(loginPage.submit)
+
+	await t.expect(notifications.loginAttemptText.textContent).contains("You have 2 Login Attempts");
+
+	await t.typeText(loginPage.username, "lorem iiii")
+	.typeText(loginPage.password, "aVery strong pa$$w0rd")
+	.click(loginPage.submit)
+
+	await t.expect(notifications.loginAttemptText.textContent).contains("You have 1 Login Attempts");
+
+	await t.typeText(loginPage.username, "lorem iiii")
+	.typeText(loginPage.password, "aVery strong pa$$w0rd")
+	.click(loginPage.submit)
+	
+	await t.expect(notifications.text.textContent).contains("You cannot Login for 1 minute");
 });

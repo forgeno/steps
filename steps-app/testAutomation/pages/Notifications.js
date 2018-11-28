@@ -6,8 +6,9 @@ import { Selector } from 'testcafe';
 export default class Notifications {
 	
     constructor() {
-		this.text = Selector("#client-snackbar .alertMessage", {timeout: 20000});
+    this.text = Selector("#client-snackbar .alertMessage", {timeout: 20000});
+    this.loginAttemptText = Selector("#res")
     }
-	
+
 }
 
