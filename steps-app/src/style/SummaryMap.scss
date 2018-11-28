@@ -5,8 +5,58 @@
 	cursor: pointer;
 }
 
+#filterGUI {
+	position: relative;
+	padding: 2px;
+	min-height: 25vh;
+	max-height: 25vh;
+	min-width: 55%;
+	max-width: 60%;
+	background-color: white;
+    overflow-y: auto;
+	
+}
+#FilterGUIWrapper {
+	display: none;
+}
+
+.applyButton{
+	position: absolute;
+	right: 0%;
+}
+
+.AddFilter{
+	margin-left: 3px;
+	width: 20%;
+}
+
+#filterTable{
+	font-size: 12px;
+}
+
+.removeBtn{
+	padding: 1px;
+	border-radius: 5px;
+	color: #fff;
+    background-color: #d9534f;
+	border-color: #d43f3a;
+	border: 1px solid transparent;
+}
+.esri-component{
+	border-radius: 2%;
+	opacity: 0.8;
+}
+
+.esri-component:hover{
+	opacity: 1;
+}
+
+.table{
+	vertical-align: middle;
+}
+
 .esri-legend.esri-widget{
-	max-width: 50%;
+	max-width: 25%;
 	line-height: 10px;
 	opacity: 0.8;
 	border-radius: 2%;
@@ -18,10 +68,13 @@
 
 .esri-basemap-toggle {
 	position: absolute;
-	top: 60px;
+	top: 20%;
 	right: 20px;
 }
 
 .esri-view-width-less-than-small .esri-zoom .esri-widget--button {
 	display: none;
+}
+tr{
+	font-size: 10px;
 }
