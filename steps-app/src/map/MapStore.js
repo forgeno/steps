@@ -295,7 +295,7 @@ export default class MapStore extends Reflux.Store {
 			let rateTraitObj = document.getElementById("rateTrait")
 			let equalitySelectorObj = document.getElementById("equalitySelector");
 			let numberSelectorObj = document.getElementById("numberSelector");
-			let rateTraitString = ["Rating", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
+			let rateTraitString = ["AvgOverall", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
 			let equalityString = ["<",">","=","<=",">="]
 			let ratingString = ["5","4","3","2","1"]
 

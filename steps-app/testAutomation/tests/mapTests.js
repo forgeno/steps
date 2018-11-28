@@ -23,34 +23,38 @@ fixture `Tests the map dashboard page`
 
 // Tests
 
-test("Tests filter sidewalk GUI/Logic", async t => {
-	const filterTable = Selector("#filterTable")
-	const applyBtn = Selector(".AddFilter")
-	
-	const traitSelector =  Selector()
-	const EqualitySelector =  Selector()
-	const numberSelector =  Selector()
 
-	const filterTableRowNum = filterTable.find("tr")
-	const filterTableColNum = filterTable.find("td")
-	let rowNum = await filterTableRowNum.count
-	let colNum = await filterTableColNum.count
-	let element = null;
-	//const tableRowsCount = await filterTable[1].rowIndex;
-	console.log(rowNum,colNum)
-	await t.click(applyBtn);
-	rowNum = await filterTableRowNum.count
-	colNum = await filterTableColNum.count
-	console.log(rowNum,colNum)
-    await t
-	for (let rows = 1; rows < rowNum; rows++) {
-		for(let col = 0; col < colNum; col++){
-	const filterTableRowNum = filterTable.find("tr")
-			element = filterTableRowNum.nth(rows).length
-			
-			console.log(element)
-		}
-	}
+
+test("Interacting with filterUI", async (t) => {
+	const clearButton = Selector('button').withText('Clear')
+	const applyFilter = Selector('button').withText('Apply Filter')
+	const filterTable = Selector("#filterTable")
+	const addFilter = Selector(".AddFilter")
+
+	let filterTableRowNum = filterTable.find("tr")
+	let oldRows = await filterTableRowNum.count
+	
+	await t.click(addFilter)
+
+	let newrowNum = await filterTableRowNum.count
+	await t.expect((oldRows+1)).eql(newrowNum,"Filter is not being added correctly")
+	console.log(oldRows,newrowNum)
+	await t.click(applyFilter)
+
+	await t.click(Selector('#rateTrait'))
+	await t.click(Selector('option').withText('AvgSecurity'))
+	await t.click(Selector('#equalitySelector'))
+	await t.click(Selector('option').withText('>'))
+	await t.click(Selector('#numberSelector'))
+	await t.click(Selector('option').withText('1'))
+	await t.click(addFilter)
+	newrowNum = await filterTableRowNum.count
+	console.log(oldRows,newrowNum)
+	await t.expect((oldRows+2)).eql(newrowNum,"Filter is not being added correctly")
+	await t.click(applyFilter)
+	await t.click(clearButton)
+	newrowNum = await filterTableRowNum.count
+	await t.expect((newrowNum)).eql(1,"Filter is not being cleared correctly")
 });
 
 test("opening the drawer when clicking on a sidewalk", async (t) => {
