@@ -1,11 +1,12 @@
 import React from "react";
 import Reflux from "reflux";
 
+import {CSVLink, CSVDownload} from 'react-csv';
 import CloseIcon from "@material-ui/icons/Close";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import MasonryInfiniteScroller from "react-masonry-infinite";
 import Card from '@material-ui/core/Card';
-
+import { Button } from "react-bootstrap"
 import AdminStore from "./AdminStore";
 import AdminActions from "./AdminActions";
 import LoaderComponent from "../misc-components/LoaderComponent";
@@ -24,8 +25,8 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
         this.store = AdminStore;
         this.state = {
 			currentImageIndex: 0
-        };
-    }
+		};
+	}
     
     componentDidMount() {
 		if(!this.state.isLoggedIn){
@@ -33,7 +34,9 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 		}
 		else {
 			AdminActions.getUnapprovedImages(0, 5);
+			this.getCSVData();
 		}
+		
     }
     
 	_dismissNotifications = () => {
@@ -52,7 +55,11 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 				});
 			}, 500);
         });
-    };
+	};
+	
+	getCSVData = () => {
+		AdminActions.downloadCSV();
+	}
 
 	/**
 	 * Handles the user approving an image
@@ -148,14 +155,21 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 	}
 	
 	render() {
-        if (!this.state.pendingImages) {
+        if (!this.state.pendingImages || this.state.pendingImages.length === 0) {
 			return <h1>No images uploaded</h1>;
 		}
+
 		
 		// TODO: use react image gallery with html observer event to load more
 		return (   
 			<div>
 				{this.renderSelectedImage()}
+				{this.state.hasCSVData && <CSVLink data={this.state.csvFormatted}>
+					<Button bsStyle = "primary" className = "csvButton">
+						EXPORT CSV
+					</Button>
+				</CSVLink>}
+
 				<MasonryInfiniteScroller
 					hasMore={this.state.hasMoreImages}
 					loadMore={this.state.isNextPageLoading ? () => {} : this.loadMoreImages}
@@ -179,6 +193,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 						 message="An error occurred while recording your response."
 				/>
 			</div>
+
 		);
     }
 }

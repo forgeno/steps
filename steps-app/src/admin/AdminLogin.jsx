@@ -33,7 +33,7 @@ export default class AdminLogin extends Component {
 	componentWillUpdate() {
 		if (this.state.isLoggedIn){
 			this.props.history.push('/dashboard');
-		}
+        }
 	}
 	
     /**
