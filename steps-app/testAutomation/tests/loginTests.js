@@ -50,23 +50,24 @@ test("that login gets disabled when the user attempts to login incorrectly more 
 			.typeText(loginPage.password, "aVery strong pa$$w0rd")
 			.click(loginPage.submit)
 
-	await t.expect(notifications.loginAttemptText.textContent).contains("You have 3 Login Attempts");
+	await t.expect(notifications.text.textContent).contains("You have entered an incorrect username or password.");
 
 	await t.typeText(loginPage.username, "lorem iiii")
 	.typeText(loginPage.password, "aVery strong pa$$w0rd")
 	.click(loginPage.submit)
 
-	await t.expect(notifications.loginAttemptText.textContent).contains("You have 2 Login Attempts");
+	await t.expect(notifications.text.textContent).contains("You have entered an incorrect username or password.");
 
 	await t.typeText(loginPage.username, "lorem iiii")
 	.typeText(loginPage.password, "aVery strong pa$$w0rd")
 	.click(loginPage.submit)
 
-	await t.expect(notifications.loginAttemptText.textContent).contains("You have 1 Login Attempts");
+	await t.expect(notifications.text.textContent).contains("You have entered an incorrect username or password.");
 
 	await t.typeText(loginPage.username, "lorem iiii")
 	.typeText(loginPage.password, "aVery strong pa$$w0rd")
 	.click(loginPage.submit)
 	
-	await t.expect(notifications.text.textContent).contains("You cannot Login for 1 minute");
+	await t.expect(loginPage.submit.hasAttribute("disabled")).eql(true);
+	// await t.expect(notifications.text.textContent).contains("You cannot Login for 1 minute");
 });
