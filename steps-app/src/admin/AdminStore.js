@@ -18,7 +18,9 @@ export default class AdminStore extends Reflux.Store {
 			username: "",
 			password: "",
 			credentialError: false,
-			pendingImages: []
+			pendingImages: [],
+			sidewalkCSVInfo: [],
+			hasCSVData: false
 		};
         this.listenables = Actions;
 
@@ -230,6 +232,24 @@ export default class AdminStore extends Reflux.Store {
 	onDismissImageRejectionNotification() {
 		this.setState({
 			failedToRespondToImage: false,
+		});
+	}
+
+	onDownloadCSV() {
+		RestUtil.sendGetRequest(`sidewalk/completeSummary`).then((allSidewalkObjects) => {
+			const allSidewalkArray = [];
+			allSidewalkArray.push(['SidewalkId', 'AccessibilityRating', 'Comfort', 'Connectivity', 'SenseOfSecurity', 'PhysicalSafety', 'OverallRating', 'TotalRatings', 'TotalComments', 'TotalImages']);
+			allSidewalkObjects.sidewalks.forEach((sidewalk) => {
+				let data = [sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images];
+				allSidewalkArray.push(data);
+			});
+			this.setState({
+				sidewalkCSVInfo: allSidewalkObjects,
+				csvFormatted: allSidewalkArray,
+				hasCSVData: true
+			});
+		}).catch((err) => {
+			console.error(err);
 		});
 	}
 }

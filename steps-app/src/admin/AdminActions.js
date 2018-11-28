@@ -14,7 +14,8 @@ const Actions = Reflux.createActions([
 	"getUnapprovedImages",
 	"handlePendingImages",
 	"dismissImageApprovalNotification",
-	"dismissImageRejectionNotification"
+	"dismissImageRejectionNotification",
+	"downloadCSV"
 ]);
 
 export default Actions;

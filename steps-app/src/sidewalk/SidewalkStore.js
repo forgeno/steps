@@ -32,7 +32,8 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingComment: false,
 			uploadCommentFailed: false,
 			uploadImageSucceeded: false,
-			hasNextCommentsPage: false
+			hasNextCommentsPage: true,
+			sidewalkHasCSVData: false
 		};
 	}
 
@@ -290,6 +291,29 @@ export default class SidewalkStore extends Reflux.Store {
 				currentSidewalk: Object.assign(this.state.currentSidewalk, res)
 			});
 			return successCallback();
+		}).catch((err) => {
+			console.error(err);
+		});
+	}
+
+	onDownloadSidewalkCSV(sidewalkId) {
+		RestUtil.sendGetRequest(`sidewalk/completeSummary`).then((allSidewalkObjects) => {
+			const singleSidewalkData = [];
+			singleSidewalkData.push(['SidewalkId', 'AccessibilityRating', 'Comfort', 'Connectivity', 'SenseOfSecurity', 'PhysicalSafety', 'OverallRating', 'TotalRatings', 'TotalComments', 'TotalImages']);
+			allSidewalkObjects.sidewalks.forEach((sidewalk) => {
+				if (sidewalk.id == sidewalkId) 
+				{
+					console.log("im in HERE", sidewalk.id, sidewalk.ratings);
+					let data = [sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images];
+					singleSidewalkData.push(data);
+				}
+				
+			});
+			this.setState({
+				sidewalkCSVInfo: allSidewalkObjects,
+				sidewalkCsvFormatted: singleSidewalkData,
+				sidewalkHasCSVData: true
+			});
 		}).catch((err) => {
 			console.error(err);
 		});

@@ -1,12 +1,15 @@
 import React from "react";
 import { Component } from "reflux";
-import Store from "./SidewalkStore";
-import Actions from "./SidewalkActions";
+import SidewalkStore from "./SidewalkStore";
+import AdminStore from "../admin/AdminStore";
+
+import SidewalkActions from "./SidewalkActions";
 import CommentsListComponent from "./comments/CommentsListComponent";
 import SidewalkImageDetailsComponent from "./images/SidewalkImageDetailsComponent";
 import PedestrianDataComponent from "./PedestrianDataComponent";
 import SidewalkRatingsModal from "./SidewalkRatingsModal";
 import {getRatingDescription} from "../util/RatingUtil";
+import {CSVLink, CSVDownload} from 'react-csv';
 
 import Drawer from "@material-ui/core/Drawer";
 import CloseIcon from "@material-ui/icons/Close";
@@ -42,15 +45,24 @@ class SidewalkDetailsView extends Component {
 		this.state = {
 			ratingsModalOpen: false
 		};
-		this.store = Store;
+		this.stores = [SidewalkStore, AdminStore];
 		this.selfRef = React.createRef();
 
 	}
 
 	componentDidUpdate(prevProps) {
 		if (this.props.visible && !prevProps.visible && this.props.selectedSidewalkDetails) {
-			Actions.loadSidewalkDetails(this.props.selectedSidewalkDetails);
+			SidewalkActions.loadSidewalkDetails(this.props.selectedSidewalkDetails);
 		}
+	}
+
+	componentDidMount() {
+		
+	}
+
+	getCSVData = () => {
+		SidewalkActions.downloadSidewalkCSV(this.state.currentSidewalk.id);
+		
 	}
 
 	/**
@@ -117,6 +129,13 @@ class SidewalkDetailsView extends Component {
 				<hr />
 				<h5>
 					{velocityText}
+					<div class="text-center">
+						{this.state.isLoggedIn && this.state.sidewalkHasCSVData && <CSVLink data={this.state.sidewalkCsvFormatted}>
+							<Button bsStyle = "primary" className = "sidewalkCsvButton">
+								EXPORT SIDEWALK CSV
+							</Button>
+						</CSVLink>}
+					</div>
 				</h5>
 			</div>
 		);
@@ -140,7 +159,7 @@ class SidewalkDetailsView extends Component {
 	 */
 	_closeRatingsModal = (postedRating) => {
 		if (postedRating) {
-			Actions.getSidewalkRatings(() => {this.props.updateRatings(this.state.currentSidewalk);});
+			SidewalkActions.getSidewalkRatings(() => {this.props.updateRatings(this.state.currentSidewalk);});
 		}
 		this.setState({ ratingsModalOpen: false });
 	};
@@ -195,6 +214,9 @@ class SidewalkDetailsView extends Component {
 			return null;
 		}
 
+		if (!this.state.sidewalkHasCSVData) {
+			this.getCSVData();
+		}
 		return (
 			<div className="sidewalkDrawer">
 				{this.renderExpansionPanel("Summary", this.renderSummaryDetails(), true)}

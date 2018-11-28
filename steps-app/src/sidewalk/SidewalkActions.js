@@ -15,7 +15,8 @@ const Actions = Reflux.createActions([
 	"loadComments",
 	"dismissRatingsSuccessMessage",
 	"dismissRatingsFailureMessage",
-	"getSidewalkRatings"
+	"getSidewalkRatings",
+	"downloadSidewalkCSV"
 ]);
 
 export default Actions;

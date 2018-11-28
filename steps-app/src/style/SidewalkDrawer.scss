@@ -9,7 +9,7 @@ $commentsWidth: 95%;
 .sidewalkDrawer {
 	width: 50vw;
 	max-width: 600px;
-	overflow: scroll;
+	overflow-y: scroll;
 
 	
 	
@@ -56,6 +56,10 @@ $commentsWidth: 95%;
 	padding-top: 5px;
 	padding-left: 10px;
 	width: 25vw;
+}
+
+.sidewalkCsvButton {
+	margin-top: 5%;
 }
 
 .tooltip {
