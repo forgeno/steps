@@ -191,6 +191,7 @@ export default class SidewalkStore extends Reflux.Store {
 				isUploadingRatings: false,
 				successfullyUploadedRatings: true
 			});
+			this.synchronizeSidewalk()
 			return onSuccess();
 		}).catch((error) => {
 			this.setState({
@@ -297,6 +298,47 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	synchronizeSidewalk() {
+		var query = window.featureLayer.createQuery();
+
+		query.outFields = ["*"];
+		
+		window.featureLayer.queryFeatures(query).then(response  => {
+			if(response.features.length !== 0){
+
+				for (const matchingSidewalk of response.features) {
+					
+					if (this.state.currentSidewalk.id == parseInt(matchingSidewalk.attributes.osm_id))
+					{
+						// only update if the values do not match
+						if (Math.round(this.state.currentSidewalk.overallRating) != matchingSidewalk.attributes.AvgOverall) 
+						{
+							let editFeature = matchingSidewalk
+
+							editFeature.attributes.AvgOverall = Math.round(this.state.currentSidewalk.overallRating);
+							editFeature.attributes.AvgAccessibility = this.state.currentSidewalk.accessibility
+							editFeature.attributes.AvgComfort = this.state.currentSidewalk.comfort
+							editFeature.attributes.AvgConnectivity = this.state.currentSidewalk.connectivity
+							editFeature.attributes.AvgSecurity = this.state.currentSidewalk.senseOfSecurity
+							editFeature.attributes.AvgSafety = this.state.currentSidewalk.physicalSafety
+							
+							//Working code
+							let edits = {
+								updateFeatures: [editFeature]
+							};
+
+							window.featureLayer.applyEdits(edits)
+						}
+						
+					}
+				}
+			
+			}
+		}).catch((err) => {
+			console.error("Failed query part", err);
+		});
+	}
+		
 	onDownloadSidewalkCSV(sidewalkId) {
 		RestUtil.sendGetRequest(`sidewalk/completeSummary`).then((allSidewalkObjects) => {
 			const singleSidewalkData = [];

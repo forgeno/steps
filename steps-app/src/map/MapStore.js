@@ -1,6 +1,5 @@
 import Reflux from "reflux";
 import esriLoader from "esri-loader";
-
 import Actions from "./MapActions";
 import {esriURL, layerURL, downtownLongitude, downtownLatitude} from "../constants/ArcGISConstants";
 import RestUtil from "../util/RestUtil";
@@ -31,6 +30,8 @@ export default class MapStore extends Reflux.Store {
 	 * @param {number} latitude - the latitude of the sidewalk's center position
 	 * @param {number} longitude - the longitude of the sidewalk's center position
 	 */
+
+	
 	viewSidewalkDetails(sidewalk, latitude, longitude) {
 		if (!this.state.view) {
 			console.error("The view was not loaded");
@@ -50,7 +51,7 @@ export default class MapStore extends Reflux.Store {
 			selectedSidewalkDetails: sidewalk
 		});
 	}
-	
+
 	onLoadAllSidewalks() {
 		RestUtil.sendGetRequest("sidewalk").then((res) => {
 			this.setState({
@@ -123,63 +124,67 @@ export default class MapStore extends Reflux.Store {
 			
 			var Rating = 4;
 
-			// TODO: Confirm if it is impossible to pass a variable in the field parameter instead
 			const sidewalkColorMapRenderer = {
 				type: "unique-value",  // autocasts as new UniqueValueRenderer()
-				field: "Rating",
+				field: "AvgOverall",
 				defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
-				uniqueValueInfos: [{
-					// All features with value of "North" will be blue
+				uniqueValueInfos: [
+				
+				// this is to cover rounding issues
+				{
 					value: 5,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 5,
+						width: 4,
 						color: "#00A300",
 						style: "solid"
 					}
 				}, {
-					// All features with value of "East" will be green
 					value: 4,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 5,
+						width: 4,
 						color: "#00A392",
 						style: "solid"
 					}
 				}, {
-					// All features with value of "East" will be green
 					value: 3,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 5,
+						width: 4,
 						color: "#FF7A00",
 						style: "solid"
 					}
 				}, {
-					// All features with value of "East" will be green
 					value: 2,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 5,
+						width: 4,
 						color: '#f9a602',
 						style: "solid"
 					}
 				}, {
-					// All features with value of "East" will be green
 					value: 1,
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 5,
+						width: 4,
 						color: "#FF0000",
 						style: "solid"
 					}
 				}, {
-					// All features with value of "East" will be green
+					value: 0,
+					symbol: {
+						type: "simple-line",  // autocasts as new SimpleLineSymbol()
+						width: 4,
+						color: "#D2D3D1",
+						style: "solid"
+					}
+				}, {
 					value: "",
 					symbol: {
 						type: "simple-line",  // autocasts as new SimpleLineSymbol()
 						color: "#D2D3D1",
-						width: 5,
+						width: 4,
 						style: "solid"
 					}
 				  }],
@@ -191,19 +196,21 @@ export default class MapStore extends Reflux.Store {
 
 			const featureLayer = new FeatureLayer({
 				url: layerURL,
-				renderer: sidewalkColorMapRenderer
+				renderer: sidewalkColorMapRenderer,
+				definitionExpression: ""
 			});
 			
 			this.setState({
 				sidewalkColorMapRenderer,
 				featureLayer
 			});
+			
+			// set the feature layer in window so we can access this when rating a sidewalk
+			window.featureLayer = featureLayer;
 	 
 			view.when(() => {
 				// get the first layer in the collection of operational layers in the WebMap
 				// when the resources in the MapView have loaded.
-				
-				// Desktop
 				const legend = new Legend({
 				  view: view,
 				  layerInfos: [{
@@ -273,6 +280,7 @@ export default class MapStore extends Reflux.Store {
 			// radius to search in
 			const pxRadius = 5;
 			this.state.map.add(featureLayer);
+		
 
 			//Start of FilterMap code
 			
@@ -307,7 +315,7 @@ export default class MapStore extends Reflux.Store {
 				}
 				featureLayer.popupTemplate = {
 					title: "Street ID: {osm_id}",
-					content: "Average Rating: {Rating}"
+					content: "Average Rating: {AvgOverall}"
 				}  
 						
 				let c = new Circle({
@@ -329,6 +337,7 @@ export default class MapStore extends Reflux.Store {
 
 				let q = featureLayer.createQuery();
 				q.geometry = c;
+				
 				featureLayer.queryFeatures(q).then((results) => {
 					if(results.features.length !== 0){
 
@@ -337,6 +346,9 @@ export default class MapStore extends Reflux.Store {
 						const sidewalk = this.state.sidewalks.find((s) => s.id === sidewalkID);
 						sidewalk.address = sidewalkGPSAdress;
 						//console.log(sidewalk.address)
+						let ratingValue = parseInt(resultingFeatures[0].attributes.avgOverall)
+						
+						
 						if (!sidewalk) {
 							console.error("No sidewalk with a matching ID was found");
 							return;
