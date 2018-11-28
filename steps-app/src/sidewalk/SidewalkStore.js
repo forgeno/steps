@@ -2,6 +2,7 @@ import Reflux from "reflux";
 
 import Actions from "./SidewalkActions";
 import RestUtil from "../util/RestUtil";
+import SpamUtil from "../util/SpamUtil";
 
 /**
  * This store keeps track of the state of components that deal with sidewalks
@@ -32,6 +33,9 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingComment: false,
 			uploadCommentFailed: false,
 			uploadImageSucceeded: false,
+			ratingStatus: true,
+			sameSidewalk: false,
+			thirtySuspend: false,
 			hasNextCommentsPage: true,
 			sidewalkHasCSVData: false
 		};
@@ -198,6 +202,30 @@ export default class SidewalkStore extends Reflux.Store {
 				failedUploadingRatings: true
 			});
 			console.error(error);
+		});
+	}
+
+	onSuspendedSidewalk() {
+		this.setState({
+			sameSidewalk: true
+		});
+	}
+
+	onDismissSuspendSidewalk() {
+		this.setState({
+			sameSidewalk: false
+		});
+	}
+
+	onRateSuspendThirty() {
+		this.setState({
+			thirtySuspend: true
+		});
+	}
+
+	onDismissRateSuspendThirty() {
+		this.setState ({
+			thirtySuspend: false
 		});
 	}
 

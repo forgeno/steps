@@ -13,6 +13,7 @@ import Actions from "./SidewalkActions";
 import LoaderComponent from "../misc-components/LoaderComponent";
 import {getRatingDescription} from "../util/RatingUtil";
 import { FONT_FAMILY } from "../constants/ThemeConstants";
+import SpamUtil from "../util/SpamUtil";
 import {ACCESSIBILITY, CONNECTIVITY, COMFORT, SAFETY, SECURITY} from "../constants/RatingsDescriptionConstants";
 
 const styles = theme => ({
@@ -75,6 +76,12 @@ class SidewalkRatingsModal extends Component {
 	 * Handles changes when submit rating button is clicked
 	 */
 	_handleSubmitRating = () => {
+		SpamUtil.setLocalStorage("NumberSidewalk");
+		if(Number(SpamUtil.getLocalStorage("NumberSidewalk"))===1){
+			SpamUtil.setCookie("timer", "true", 0.5, "");
+		}
+		SpamUtil.setCookie(this.state.currentSidewalk.id, "true", 60, "");
+		
 		Actions.uploadRatings(
 			this.state.accessibilityValue,
 			this.state.comfortValue,
@@ -94,6 +101,10 @@ class SidewalkRatingsModal extends Component {
 		);
 	}
 
+	_submitStatus = () => {
+		return this.state.ratingStatus
+	}
+	
 	renderSlider(classes, value, onChange, name, tooltipDescription) {
 		const tooltip = (
 			<Tooltip 
@@ -143,7 +154,6 @@ class SidewalkRatingsModal extends Component {
 	
 	render() {
 		const { classes } = this.props;
-		
 		return (
 			<Dialog
 				open={this.props.open}
@@ -159,7 +169,7 @@ class SidewalkRatingsModal extends Component {
 						<Button onClick={this.props.onClose}>
 							Cancel
 						</Button>
-						<Button bsStyle="primary" onClick={this._handleSubmitRating} disabled={this.state.isUploadingRatings}>
+						<Button bsStyle="primary" type="submit" onClick={this._handleSubmitRating} disabled={!this._submitStatus()}>
 							Submit
 						</Button>
 					</DialogActions>

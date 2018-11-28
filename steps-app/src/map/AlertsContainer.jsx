@@ -10,6 +10,8 @@ import CommentPostSuccessComponent from "../sidewalk/comments/CommentPostSuccess
 import CommentPostErrorComponent from "../sidewalk/comments/CommentPostErrorComponent";
 import PostRatingSuccessComponent from "../sidewalk/PostRatingSuccessComponent";
 import PostRatingErrorComponent from "../sidewalk/PostRatingErrorComponent";
+import PostRatingSameSidewalk from "../sidewalk/PostRatingSameSidewalk";
+import PostRatingThirtyComponent from "../sidewalk/PostRatingThirtyComponent";
 
 /**
  * Renders any alerts that the user may see
@@ -29,6 +31,8 @@ export default class AlertsContainer extends React.Component {
 				<CommentPostSuccessComponent />
 				<PostRatingSuccessComponent />
 				<PostRatingErrorComponent />
+				<PostRatingSameSidewalk/>
+				<PostRatingThirtyComponent/>
 			</div>
 		)
 	}
