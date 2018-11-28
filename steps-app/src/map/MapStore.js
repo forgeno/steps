@@ -336,6 +336,7 @@ export default class MapStore extends Reflux.Store {
 						let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
 						const sidewalk = this.state.sidewalks.find((s) => s.id === sidewalkID);
 						sidewalk.address = sidewalkGPSAdress;
+						//console.log(sidewalk.address)
 						if (!sidewalk) {
 							console.error("No sidewalk with a matching ID was found");
 							return;
