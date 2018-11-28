@@ -38,7 +38,6 @@ test("Interacting with filterUI", async (t) => {
 
 	let newrowNum = await filterTableRowNum.count
 	await t.expect((oldRows+1)).eql(newrowNum,"Filter is not being added correctly")
-	console.log(oldRows,newrowNum)
 	await t.click(applyFilter)
 
 	await t.click(Selector('#rateTrait'))
@@ -49,7 +48,6 @@ test("Interacting with filterUI", async (t) => {
 	await t.click(Selector('option').withText('1'))
 	await t.click(addFilter)
 	newrowNum = await filterTableRowNum.count
-	console.log(oldRows,newrowNum)
 	await t.expect((oldRows+2)).eql(newrowNum,"Filter is not being added correctly")
 	await t.click(applyFilter)
 	await t.click(clearButton)
