@@ -134,15 +134,11 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 
 
 	render() {
-
-        if (!this.state.pendingImages || this.state.pendingImages.length === 0) {
-			return <h1>No images uploaded</h1>;
-		}
-
 		
 		const pendingImages = this.state.pendingImages,
 			index = this.state.currentImageIndex,
-			image = pendingImages[index];
+			image = pendingImages[index],
+			showAdminImages = !(pendingImages.length === 0);
 
 		return (   
 			<div>
@@ -151,8 +147,9 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 						EXPORT CSV
 					</Button>
 				</CSVLink>}
-				{this._renderResponseButtons(image)}
-				<div className={this.shouldDisableCarouselArrows(index, pendingImages.length)}>
+				{!showAdminImages && <h1> No Images Uploaded</h1>}
+				{showAdminImages && this._renderResponseButtons(image)}
+				{showAdminImages && <div className={this.shouldDisableCarouselArrows(index, pendingImages.length)}>
 					<Carousel
 						indicators={false}
 						activeIndex={this.state.currentImageIndex}
@@ -167,8 +164,8 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 							</Carousel.Item>);               
 						})}
 					</Carousel>
-            	</div>
-				<InfiniteImagePreviewer
+            	</div>}
+				{showAdminImages &&<InfiniteImagePreviewer
 					loadedImages={pendingImages}
 					loadMoreImages={this.loadMoreImages}
 					currentIndex={index}
@@ -176,7 +173,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 					hasMoreImages={this.state.hasMoreImages}
 					loadMoreByArrow={this.loadImagesByPreview}
 					isNextPageLoading={this.loadNextPage}
-				/>
+				/>}
 			
 				<SuccessAlertComponent onClose={this._dismissNotifications}
 						 visible={this.state.successfullyRespondedToImage}
