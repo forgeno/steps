@@ -62,3 +62,101 @@ input[type="file"].uploadImageInput {
 .fillAvailable {
 	height: fill-available;
 }
+
+.carousel {
+	max-width: 70vw;
+	// max-height: 70vw;
+	margin: auto;
+}
+
+.adminPreviewContainer {
+	display: flex;
+	flex-direction: row;
+}
+
+.imagePreviewer {
+	display: flex;
+	flex-direction: row;
+	border-style: solid;
+	border-color: lightgray;
+	width: 100vw;
+	max-height: 50vh;
+	margin-top: 2%;
+}
+
+.firstRow {
+	margin-left: 2%;
+}
+
+.highlightImage {
+	outline-color: red;
+}
+
+.previewArrow {
+	margin-top: 9%;
+}
+
+.previewArrow:hover {
+	cursor: pointer;
+}
+
+.adminAccept:hover {
+	cursor: pointer;
+	color: green;
+}
+
+.adminReject:hover {
+	cursor: pointer;
+	color: red;
+}
+
+// arrow CSS reference: https://css-tricks.com/the-shapes-of-css/ 
+.arrowRight {
+	width: 0;
+	height: 0;
+	border-top: 15px solid transparent;
+	border-left: 25px solid black;
+	border-bottom: 15px solid transparent;
+	margin-left: 10px;
+}
+
+.arrowRight:hover {
+	opacity: 0.7;
+}
+
+.previewThumbnail {
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.arrowLeft {
+	width: 0;
+	height: 0;
+	border-top: 15px solid transparent;
+	border-right: 25px solid black;
+	border-bottom: 15px solid transparent;
+	margin-right: 10px;
+}
+
+.arrowLeft:hover {
+	opacity: 0.7;
+}
+
+.imagesFadeout {
+	color: #ffffff;
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s 2s, opacity 1s linear;
+}
+
+.disableLeftCarouselArrow {
+	.left {
+		display: None
+	}
+}
+
+.disableRightCarouselArrow {
+	.right {
+		display: None
+	}
+}

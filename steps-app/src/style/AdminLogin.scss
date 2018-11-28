@@ -18,3 +18,26 @@
     color: #791616;
 }
 
+.adminButton {
+    margin: auto;
+}
+
+.adminAcceptButton {
+    margin-left: 50%;
+    margin-right: 50%;
+}
+
+.adminAcceptButton:hover {
+    color: green;
+    cursor: pointer;
+}
+
+.adminCloseButton {
+    margin-left: 50%;
+    margin-right: 50%;
+}
+
+.adminCloseButton:hover {
+    color: red;
+    cursor: pointer;
+}

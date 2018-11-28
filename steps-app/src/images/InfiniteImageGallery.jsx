@@ -66,7 +66,7 @@ export default class InfiniteImageGallery extends React.Component {
 		let content;
 		if (this._isRowLoaded({index})) {
 			content = (
-				<div className={this.state.currentImageIndex === index ? "infiniteImageRowSelected" : "infiniteImageRowUnselected"}>
+				<div className={this.state.currentImageIndex === index ? "infiniteImageRowUnSelected" : "infiniteImageRowUnselected"}>
 					<Card className="clickableItem">
 						{this.props.renderAboveImage && this.props.renderAboveImage(this.state.currentImageIndex === index, this.props.loadedImages[index])}
 						<img onClick={() => {this._onImageClicked(index)}} className="img-responsive fillAvailable" alt="uploaded" src={this.props.loadedImages[index].url} />
