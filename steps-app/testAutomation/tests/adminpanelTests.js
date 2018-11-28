@@ -46,22 +46,14 @@ fixture `Tests admin panel carousels`
 
 
 test.requestHooks(logger, mockgetUnapprovedImages)("login as admin and check if admin tools are visible", async (t) => {
-    await t.expect(adminPage.previewContainer.visible).eql(true);
-    await t.expect(adminPage.csvButton.visible).eql(true);
-
     await t.expect(adminPage.carousel.visible).eql(true);
-    await t.expect(adminPage.leftCarouselArrowDisabled.visible).eql(true);
-    
-    await t.click(adminPage.rightCarouselArrow).wait(2000);
-    await t.expect(adminPage.leftCarouselArrow.visible).eql(true);
-
-    await t.click(adminPage.leftCarouselArrow).wait(2000);
-    await t.expect(adminPage.leftCarouselArrow.visible).eql(false);
+    await t.expect(adminPage.acceptButton.visible).eql(true);
+    await t.expect(adminPage.rejectButton.visible).eql(true);
 });
 
 test.requestHooks(logger, mockHandleApproveOrRejectImages)("should be able to reject an image", async (t) => {
     await AdminUtilities.generateAdminDummyImages(t);
-    await t.expect(adminPage.previewContainer.visible).eql(true);
+    await t.expect(adminPage.carousel.visible).eql(true);
 
     await t.click(adminPage.rejectButton).wait(2000);
     await t.expect(adminPage.recordedResponse.textContent).contains("Your response has been recorded")
@@ -69,15 +61,15 @@ test.requestHooks(logger, mockHandleApproveOrRejectImages)("should be able to re
 
 test.requestHooks(logger, mockHandleApproveOrRejectImages)("should be able to successfully accept an image", async (t) => {
     await AdminUtilities.generateAdminDummyImages(t);
-    await t.expect(adminPage.previewContainer.visible).eql(true);
+    await t.expect(adminPage.carousel.visible).eql(true);
 
     await t.click(adminPage.acceptButton).wait(2000);
     await t.expect(adminPage.recordedResponse.textContent).contains("Your response has been recorded")
 });
 
-test.requestHooks(logger, mockHandleApproveOrRejectImages)("should show error message when handling image due to api returning incorrect info", async (t) => {
+test.requestHooks(logger, mockHandleApproveOrRejectImages)("should show error message when handling image due to api returning incorrect response", async (t) => {
     await AdminUtilities.generateAdminDummyErrorImages(t);
-    await t.expect(adminPage.previewContainer.visible).eql(true);
+    await t.expect(adminPage.carousel.visible).eql(true);;
 
     await t.click(adminPage.acceptButton).wait(2000);
     await t.expect(adminPage.failedResponse.textContent).contains("An error occurred while recording your response.")
