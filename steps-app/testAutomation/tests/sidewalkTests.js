@@ -12,9 +12,6 @@ import SidewalkUtilities from "../util/SidewalkUtilities";
 import RatingsModal from "../pages/RatingsModal";
 import {getRatingDescription} from "../../src/util/RatingUtil";
 
-// constants
-const COMMENT_TEXT = `Automation test comment ${new Date().toISOString()}`;
-
 // pages
 const mapPage = new MapPage();
 const drawer = new SidewalkDrawer();
@@ -33,6 +30,7 @@ const logger = RequestLogger({
 });
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
+const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -42,63 +40,6 @@ fixture `Tests the sidewalk drawer`
 		await AdminUtilities.silentLogin(t);
 		await t.expect(drawer.drawer.visible).eql(true);
 	});
-
-test("viewing comments uploaded to a sidewalk", async (t) => {
-	await t.click(drawer.commentsHeader);
-	await t.eval(() => {
-		const sidewalk = DEV_SIDEWALK_STORE.state.currentSidewalk;
-		sidewalk.comments = [{
-			text: "first comment",
-			date: "2012-12-13T15:00:00Z",
-			id: "fakeCommentId1"
-		}, {
-			text: "second comment",
-			date: "2012-11-13T15:00:00Z",
-			id: "fakeCommentId2"
-		}];
-		DEV_SIDEWALK_STORE.setState({currentSidewalk: sidewalk});
-	});
-	
-    await t.expect(drawer.getCommentWithText("first comment").visible).eql(true)
-		.expect(drawer.getCommentWithText("second comment").visible).eql(true)
-		.expect(drawer.getCommentsCount()).eql(2)
-		.expect(drawer.getCommentDateByText("first comment").textContent).contains("December 13, 2012 - ")
-		.expect(drawer.getCommentDateByText("second comment").textContent).contains("November 13, 2012 - ");
-});
-
-test("attempting to post a long comment on a sidewalk", async (t) => {
-	await t.click(drawer.commentsHeader)
-		.typeText(drawer.commentInput, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz")
-		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true)
-});
-
-test("posting a comment on a sidewalk", async (t) => {
-    await t.click(drawer.commentsHeader)
-		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true)
-		.typeText(drawer.commentInput, COMMENT_TEXT)
-		.click(drawer.submitComment)
-		.expect(drawer.getCommentWithText(COMMENT_TEXT).textContent).eql(COMMENT_TEXT);
-});
-
-test("attempting to delete a comment but cancelling", async (t) => {
-    await t.click(drawer.commentsHeader)
-		.click(drawer.getDeleteCommentButton(COMMENT_TEXT))
-		.click(baseModal.cancel)
-		.expect(baseModal.cancel.exists).eql(false)
-		.wait(1000)
-		.expect(drawer.getCommentWithText(COMMENT_TEXT).textContent).eql(COMMENT_TEXT);
-	await t.expect(logger.contains(record => record.request.url.includes("/comment/delete/"))).notOk();
-});
-
-test.requestHooks(logger)("deleting a comment on a sidewalk", async (t) => {
-    await t.click(drawer.commentsHeader)
-		.click(drawer.getDeleteCommentButton(COMMENT_TEXT))
-		.click(baseModal.confirm)
-		.expect(baseModal.cancel.exists).eql(false)
-		.expect(drawer.getCommentWithText(COMMENT_TEXT).count).eql(0);
-		
-	await t.expect(logger.contains(record => record.request.url.includes("/comment/delete/") && record.response.statusCode === 200)).ok();
-});
 
 test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
 	const selectFile = async () => {
@@ -137,6 +78,24 @@ test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
 		.expect(notifications.text.visible).eql(true)
 		.expect(notifications.text.textContent).contains("uploaded")
 		.expect(imageUploadModal.modal.exists).eql(false);
+});
+
+test("processing a .gif/.jpg/.bmp being attempted to upload to a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader)
+		.click(drawer.uploadImagesButton)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageB.bmp")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageG.gif")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageJ.jpg")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false);
+});
+
+test("attempting to upload a large image to a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader)
+		.click(drawer.uploadImagesButton)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/largeTestImage.jpg")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
 });
 
 test("viewing images on a sidewalk", async (t) => {
@@ -198,16 +157,6 @@ test("to make sure image view components do not exist if a sidewalk has no image
 		.expect(drawer.previewImagesButton.exists).eql(false)
 });
 
-test("posting a comment on a sidewalk that contains personal information", async (t) => {
-    await t.click(drawer.commentsHeader)
-		.typeText(drawer.commentInput, "Lorem ipsum kung fu henry is a legend call him at 999 980-7819")
-		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true)
-		.selectText(drawer.commentInput)
-		.pressKey("delete")
-		.typeText(drawer.commentInput, "Lorem ipsum kung fu henry is a legend message him at kungfu@henry.com")
-		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true);
-});
-
 test.requestHooks(logger)("starting to submit a rating but cancelling", async (t) => {
 	await t.click(drawer.ratingsHeader)
 		.click(drawer.submitRatingButton)
@@ -242,4 +191,24 @@ test.requestHooks(logger)("submitting a rating to the sidewalk", async (t) => {
 			)
 		).ok()
 		.expect(logger.contains(record => record.request.url.includes("/ratings/") && record.response.statusCode === 200)).ok();
+});
+
+test.requestHooks(logger, submitRatingMock)("attempting to submit a rating but failing", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm)
+		.expect(logger.contains(
+			record => (
+				record.request.url.includes("/rate/") &&
+				record.response.statusCode === 500)
+			)
+		).ok();
+	await t.expect(ratingsModal.cancel.visible).eql(true);
 });

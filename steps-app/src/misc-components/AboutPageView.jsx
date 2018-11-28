@@ -23,27 +23,15 @@ export default class AboutPageView extends React.Component {
 	render() {
 		return (
 			<div className="padding25">
-				{this.renderCategory("What is this website about?", 
-					`This website was made for the purpose of allowing the citizens of Edmonton to discuss 
-					their experiences on sidewalks across the city with other people. As a user of this site, you are able to select any
-					sidewalk in the city from the map displayed on the home page. By selecting a sidewalk, you will be
-					shown what other people think about that particular sidewalk, through ratings, images, and comments.
-					You can leave your own ratings and comments on the sidewalk, as well as upload any image that you
-					feel is relevant to the sidewalk.`)}
-				{this.renderCategory("Who will use the results?", `
-				The results will primarily be used by two parties. The first one is government officials, so they can see
-				what sidewalks in the city are in need of improvement the most. STEPS researchers will also use the data collected
-				from this website so that they can analyze it to get a bigger picture of the overall state of sidewalks
-				in Edmonton.
-				`)}
-				{this.renderCategory("How can I get involved?", `
-				All you need to do to be involved with the STEPS application is to leave your feelings and thoughts
-				about particular sidewalks. You can rate any sidewalk you want, comment on it, or even upload an image to it.
-				`)}
-				{this.renderCategory("Privacy Policy", `
-				All of the data collected on this site will be used purely for research purposes. We will never sell any of the
-				data we collect to third parties, and nothing that you upload to the site will be directly linked back to you.
-				All of your interactions with the site will be anonymous.
+				{this.renderCategory("About Us", 
+					`Steps is a research platform by Space and Culture Research Group, aimed at developing a participatory approach to assess walkability.
+					Steps web-app is a tool by Space and Culture and [NAME OF CMPUT TEAM OR YOU CAN BE PART OF OUR S&C TEAM :) ] for collecting perceptions and feedback on walkability. 
+					Edmonton residents and visitors can use this map to share their thoughts about the 
+					pedestrian network or explore the data collected to date. This information will help identify gaps in pedestrian infrastructure and build the case for improvements.
+					`)}
+				{this.renderCategory("Instructions", `
+					Click on any sidewalk to add data. You can upload pictures, make comments and rate different aspects of walkability. Your information will be stored in the segment that you selected.
+					The information collected by this app in entirely anonymous. Pictures and comments will be subject to admin approval.
 				`)}
 			</div>
 		);

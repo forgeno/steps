@@ -10,25 +10,30 @@ import Store from "./AdminStore";
 
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
+import SpamUtil from "../util/SpamUtil";
+import RestUtil from "../util/RestUtil";
 
 /**
  * This component renders the page for admin Login
  */
 export default class AdminLogin extends Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.store = Store;
 		this.state = {
             enteredName: "",
-            enteredPassword: ""
+			enteredPassword: "",
+			cookieExpireTime: 1,
+			nameOfStorage: 'LoginAttempts',
+			cookieName: 'Suspended'
         };
-    }
-    
+	}
+	
 	componentWillUpdate() {
 		if (this.state.isLoggedIn){
-            this.props.history.push('/dashboard');
-        }
+			this.props.history.push('/dashboard');
+		}
 	}
 	
     /**
@@ -49,21 +54,59 @@ export default class AdminLogin extends Component {
 		});
 	}
 
-	/**
-	 * Gets whether the submit button is enabled or not
-	 * @return {boolean} - whether the submit button is enabled or not
-	 */
-    _validateCredentials = () => {
-		return this.state.enteredName.length > 0 && this.state.enteredPassword.length > 0;
+	_validateCredentials = () => {
+		if(this.state.enteredName.length > 0 && this.state.enteredPassword.length > 0){
+			if(SpamUtil.getCookie(this.state.cookieName)){
+				return false
+			}
+			else{
+				return true
+			}
+		}
+		else {
+			return false
+		}
     }
 
-    _handleSubmit = () => {
-        AdminActions.checkCredentials(this.state.enteredName, md5(this.state.enteredPassword));
+	/**
+	 * Checks if the credentials entered by the user are correct
+	 * If not enter correct credential first time storage is implemented
+	 * If user enters Credentials incorrectly 4 times then they are suspended. Cookie is created during this time.
+	 */
+	_handleSubmit = () => {
+		if(SpamUtil.getCookie(this.state.cookieName)!= true){
+			SpamUtil.setLocalStorage(this.state.nameOfStorage)
+		}
+
+		this._displayAttempts();
+		
+		if(Number(SpamUtil.getLocalStorage(this.state.nameOfStorage)) < 4){
+			AdminActions.checkCredentials(this.state.enteredName, md5(this.state.enteredPassword));
+		}
+		else {
+			SpamUtil.setCookie(this.state.cookieName, "true", this.state.cookieExpireTime, "login");
+			SpamUtil.deleteLocalStorage(this.state.nameOfStorage)
+		}
+
 		this.setState({
             enteredName: "",
             enteredPassword: ""
-        });
-    }
+		});
+	}
+
+	/**
+	 * Displaying the number of attempts user has left before being suspended
+	 */
+	_displayAttempts = () => {
+		let AttemptsLeft = 4 - Number(SpamUtil.getLocalStorage(this.state.nameOfStorage));
+		if(AttemptsLeft > 0){
+			document.getElementById("res").innerHTML = "You have " + AttemptsLeft + " Login Attempts."
+		}
+		else {
+			document.getElementById("res").innerHTML = ""
+		}
+	}
+
     /**
 	 * Handles the component being closed
 	 */
@@ -71,13 +114,17 @@ export default class AdminLogin extends Component {
         AdminActions.dismissLoginSuccess();
         AdminActions.dismissLoginError();
 	};
+	  
+
 
     render(){
         return (
+			<div className="LoginCSS">
             <div className="loginContainer" data-admin-login={true}>
 				<Card>
 					<CardContent>
 						<h3 className="adminTitleLogin">Admin Login</h3>
+						<div id = "res"></div>
 						<form>
 							<FormGroup 
 								controlId="username" 
@@ -112,7 +159,11 @@ export default class AdminLogin extends Component {
                 <ErrorAlertComponent onClose={this._handleClose}
 								 visible={this.state.failedToLogIn}
 								 message="You have entered an incorrect username or password."/>
+				<ErrorAlertComponent onClose={this._handleClose}
+								 visible={SpamUtil.getCookie("Suspended")}
+								 message="You cannot Login for 1 minute."/>
             </div>
+			</div>
         )
     }
 }

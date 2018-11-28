@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { shallow } from "enzyme";
 import sinon from "sinon";
 
-import SidewalkCommentComponent from "../../../sidewalk/SidewalkCommentComponent";
+import SidewalkCommentComponent from "../../../sidewalk/comments/SidewalkCommentComponent";
 import CloseIcon from "@material-ui/icons/Close";
 
 const COMMENT_DETAILS = {

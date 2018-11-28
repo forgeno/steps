@@ -2,12 +2,12 @@ import React from "react";
 
 import UploadedImageErrorComponent from "../sidewalk/images/UploadedImageErrorComponent";
 import UploadedImageSuccessComponent from "../sidewalk/images/UploadedImageSuccessComponent";
-import CommentDeleteSuccessComponent from "../sidewalk/CommentDeleteSuccessComponent";
-import CommentDeleteErrorComponent from "../sidewalk/CommentDeleteErrorComponent";
+import CommentDeleteSuccessComponent from "../sidewalk/comments/CommentDeleteSuccessComponent";
+import CommentDeleteErrorComponent from "../sidewalk/comments/CommentDeleteErrorComponent";
 import ImageDeleteErrorComponent from "../sidewalk/images/ImageDeleteErrorComponent";
 import ImageDeleteSuccessComponent from "../sidewalk/images/ImageDeleteSuccessComponent";
-import CommentPostSuccessComponent from "../sidewalk/CommentPostSuccessComponent";
-import CommentPostErrorComponent from "../sidewalk/CommentPostErrorComponent";
+import CommentPostSuccessComponent from "../sidewalk/comments/CommentPostSuccessComponent";
+import CommentPostErrorComponent from "../sidewalk/comments/CommentPostErrorComponent";
 import PostRatingSuccessComponent from "../sidewalk/PostRatingSuccessComponent";
 import PostRatingErrorComponent from "../sidewalk/PostRatingErrorComponent";
 

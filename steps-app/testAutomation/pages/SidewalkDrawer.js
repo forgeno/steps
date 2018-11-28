@@ -12,6 +12,8 @@ export default class SidewalkDrawer {
 		this.commentInput = Selector(".comments .commentBox textarea");
 		this.submitComment = Selector(".comments button");
 		this.comments = Selector(".commentDisplaySection h5");
+		this.nextIcon = Selector(".nextIcon");
+		this.prevIcon = Selector(".glyphicon-arrow-left");
 		
 		// images
 		this.imagesHeader = this.sectionHeaders.withText("Images", {timeout: 30000});
@@ -29,7 +31,7 @@ export default class SidewalkDrawer {
 	 * @return {Selector?} - the comment with the specified text if it exists, null otherwise
 	 */
 	getCommentWithText(text) {
-		return this.comments.withText(text);
+		return this.comments.withExactText(text);
 	}
 	
 	/**

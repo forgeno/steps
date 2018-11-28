@@ -32,7 +32,7 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadingComment: false,
 			uploadCommentFailed: false,
 			uploadImageSucceeded: false,
-			hasNextCommentsPage: true
+			hasNextCommentsPage: false
 		};
 	}
 

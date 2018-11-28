@@ -2,7 +2,7 @@ import React from "react";
 import { Component } from "reflux";
 import Store from "./SidewalkStore";
 import Actions from "./SidewalkActions";
-import CommentsListComponent from "./CommentsListComponent";
+import CommentsListComponent from "./comments/CommentsListComponent";
 import SidewalkImageDetailsComponent from "./images/SidewalkImageDetailsComponent";
 import PedestrianDataComponent from "./PedestrianDataComponent";
 import SidewalkRatingsModal from "./SidewalkRatingsModal";
@@ -100,16 +100,23 @@ class SidewalkDetailsView extends Component {
 			imageSection = <h4>There are no uploaded images for this sidewalk.</h4>;
 		}
 
+		let velocityText;
+		if (this.state.currentSidewalk.averageVelocity > 0) {
+			velocityText = `The average pedestrian velocity on this sidewalk is ${this.state.currentSidewalk.averageVelocity} metres per second.;`;
+		} else {
+			velocityText = "No data has been recorded for the average pedestrian velocity of this sidewalk.";
+		}
+		
 		return (
 			<div>
 				<h3 className="streetNameSection">
 					{this.state.address}
 				</h3>
 				<hr />
-				{imageSection}
+					{imageSection}
 				<hr />
 				<h5>
-					The average pedestrian velocity on this sidewalk is {this.state.currentSidewalk.averageVelocity} metres per second.
+					{velocityText}
 				</h5>
 			</div>
 		);
@@ -206,8 +213,10 @@ class SidewalkDetailsView extends Component {
 						anchor="right"
 						variant="temporary"
 						ModalProps={{ onBackdropClick: this._handleClose }}
-						>
-					<CloseIcon onClick={this._handleClose} className="closeButton" />
+						>	
+					<div className="closeButton">
+					<CloseIcon onClick={this._handleClose}  />
+					</div>	
 					{this.renderDrawerDetails()}
 				</Drawer>
 			</div>

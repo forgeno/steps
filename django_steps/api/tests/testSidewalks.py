@@ -336,3 +336,125 @@ class TestContributionsByMonth(unittest.TestCase):
 			cursor.execute("DELETE FROM api_sidewalkrating")
 			cursor.execute("DELETE FROM api_sidewalkimage")
 			cursor.execute("DELETE FROM api_sidewalk")
+
+class TestCompleteSidewalkSummary(unittest.TestCase):
+	def setUp(self):
+		self.sidewalk1 = Sidewalk.objects.create(address="aaa").__dict__
+		self.instance = SidewalkView()
+	
+	def test_empty_db(self):
+		with connection.cursor() as cursor:
+			cursor.execute("DELETE FROM api_sidewalk")
+		data = self.instance._getAllSidewalksSummary()
+		self.assertEqual(len(data["sidewalks"]), 0)
+	
+	def test_one_sidewalk_one_rating(self):
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk1["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		data = self.instance._getAllSidewalksSummary()
+		self.assertEqual(len(data["sidewalks"]), 1)
+		self.assertEqual(data["sidewalks"][0]["id"], self.sidewalk1["id"])
+		self.assertEqual(data["sidewalks"][0]["accessibility"], 1.0)
+		self.assertEqual(data["sidewalks"][0]["comfort"], 1.5)
+		self.assertEqual(data["sidewalks"][0]["connectivity"], 0.7)
+		self.assertEqual(data["sidewalks"][0]["physicalSafety"], 2.0)
+		self.assertEqual(data["sidewalks"][0]["senseOfSecurity"], 4.5)
+		self.assertEqual(data["sidewalks"][0]["ratings"], 1)
+		self.assertEqual(data["sidewalks"][0]["overallRating"], 1.94)
+		self.assertEqual(data["sidewalks"][0]["comments"], 0)
+		self.assertEqual(data["sidewalks"][0]["images"], 0)
+	
+	def test_one_sidewalk_mult_ratings(self):
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk1["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk1["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=1)
+		data = self.instance._getAllSidewalksSummary()
+		self.assertEqual(len(data["sidewalks"]), 1)
+		self.assertEqual(data["sidewalks"][0]["id"], self.sidewalk1["id"])
+		self.assertEqual(data["sidewalks"][0]["accessibility"], 1.0)
+		self.assertEqual(data["sidewalks"][0]["comfort"], 1.5)
+		self.assertEqual(data["sidewalks"][0]["connectivity"], 0.7)
+		self.assertEqual(data["sidewalks"][0]["physicalSafety"], 2.0)
+		self.assertEqual(data["sidewalks"][0]["senseOfSecurity"], 2.75)
+		self.assertEqual(data["sidewalks"][0]["ratings"], 2)
+		self.assertEqual(data["sidewalks"][0]["overallRating"], 1.59)
+		self.assertEqual(data["sidewalks"][0]["comments"], 0)
+		self.assertEqual(data["sidewalks"][0]["images"], 0)
+	
+	def test_mult_sidewalk_one_rating(self):
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk1["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		s2 = Sidewalk.objects.create(address="aaa").__dict__
+		data = self.instance._getAllSidewalksSummary()
+		self.assertEqual(len(data["sidewalks"]), 2)
+		self.assertEqual(data["sidewalks"][0]["id"], self.sidewalk1["id"])
+		self.assertEqual(data["sidewalks"][0]["accessibility"], 1.0)
+		self.assertEqual(data["sidewalks"][0]["comfort"], 1.5)
+		self.assertEqual(data["sidewalks"][0]["connectivity"], 0.7)
+		self.assertEqual(data["sidewalks"][0]["physicalSafety"], 2.0)
+		self.assertEqual(data["sidewalks"][0]["senseOfSecurity"], 4.5)
+		self.assertEqual(data["sidewalks"][0]["ratings"], 1)
+		self.assertEqual(data["sidewalks"][0]["overallRating"], 1.94)
+		self.assertEqual(data["sidewalks"][0]["comments"], 0)
+		self.assertEqual(data["sidewalks"][0]["images"], 0)
+		
+		self.assertEqual(data["sidewalks"][1]["id"], s2["id"])
+		self.assertEqual(data["sidewalks"][1]["accessibility"], 0)
+		self.assertEqual(data["sidewalks"][1]["comfort"], 0)
+		self.assertEqual(data["sidewalks"][1]["connectivity"], 0)
+		self.assertEqual(data["sidewalks"][1]["physicalSafety"], 0)
+		self.assertEqual(data["sidewalks"][1]["senseOfSecurity"], 0)
+		self.assertEqual(data["sidewalks"][1]["ratings"], 0)
+		self.assertEqual(data["sidewalks"][1]["overallRating"], 0)
+		self.assertEqual(data["sidewalks"][1]["comments"], 0)
+		self.assertEqual(data["sidewalks"][1]["images"], 0)
+	
+	def test_mult_sidewalk_all_values(self):
+		SidewalkRating.objects.create(sidewalk_id=self.sidewalk1["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		s2 = Sidewalk.objects.create(address="aaa").__dict__
+		
+		SidewalkComment.objects.create(sidewalk_id=s2["id"], text="abcdefghij").__dict__
+		SidewalkComment.objects.create(sidewalk_id=s2["id"], text="abcdefghij").__dict__
+		SidewalkComment.objects.create(sidewalk_id=s2["id"], text="abcdefghij").__dict__
+		SidewalkComment.objects.create(sidewalk_id=s2["id"], text="abcdefghij").__dict__
+		SidewalkComment.objects.create(sidewalk_id=self.sidewalk1["id"], text="abcdefghij").__dict__
+		
+		SidewalkImage.objects.create(sidewalk_id=s2["id"], image_url="http://127.0.0.1/somewhere.jpg", is_pending=False).__dict__
+		SidewalkImage.objects.create(sidewalk_id=s2["id"], image_url="http://127.0.0.1/somewhere.jpg").__dict__
+		SidewalkImage.objects.create(sidewalk_id=s2["id"], image_url="http://127.0.0.1/somewhere.jpg", is_pending=False).__dict__
+		
+		SidewalkRating.objects.create(sidewalk_id=s2["id"], accessibility_rating=1.0, 
+			comfort_rating=1.5, connectivity_rating=0.7, physical_safety_rating=2.0, security_rating=4.5)
+		
+		data = self.instance._getAllSidewalksSummary()
+		self.assertEqual(len(data["sidewalks"]), 2)
+		self.assertEqual(data["sidewalks"][0]["id"], self.sidewalk1["id"])
+		self.assertEqual(data["sidewalks"][0]["accessibility"], 1.0)
+		self.assertEqual(data["sidewalks"][0]["comfort"], 1.5)
+		self.assertEqual(data["sidewalks"][0]["connectivity"], 0.7)
+		self.assertEqual(data["sidewalks"][0]["physicalSafety"], 2.0)
+		self.assertEqual(data["sidewalks"][0]["senseOfSecurity"], 4.5)
+		self.assertEqual(data["sidewalks"][0]["ratings"], 1)
+		self.assertEqual(data["sidewalks"][0]["overallRating"], 1.94)
+		self.assertEqual(data["sidewalks"][0]["comments"], 1)
+		self.assertEqual(data["sidewalks"][0]["images"], 0)
+		
+		self.assertEqual(data["sidewalks"][1]["id"], s2["id"])
+		self.assertEqual(data["sidewalks"][1]["accessibility"], 1.0)
+		self.assertEqual(data["sidewalks"][1]["comfort"], 1.5)
+		self.assertEqual(data["sidewalks"][1]["connectivity"], 0.7)
+		self.assertEqual(data["sidewalks"][1]["physicalSafety"], 2.0)
+		self.assertEqual(data["sidewalks"][1]["senseOfSecurity"], 4.5)
+		self.assertEqual(data["sidewalks"][1]["ratings"], 1)
+		self.assertEqual(data["sidewalks"][1]["overallRating"], 1.94)
+		self.assertEqual(data["sidewalks"][1]["comments"], 4)
+		self.assertEqual(data["sidewalks"][1]["images"], 2)
+	
+	def tearDown(self):
+		with connection.cursor() as cursor:
+			cursor.execute("DELETE FROM api_sidewalkcomment")
+			cursor.execute("DELETE FROM api_sidewalkrating")
+			cursor.execute("DELETE FROM api_sidewalkimage")
+			cursor.execute("DELETE FROM api_sidewalk")

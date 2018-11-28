@@ -23,3 +23,4 @@ local_settings.py
 environment/
 django_steps/api/migrations/
 screenshots/
+steps-app/screenshots/
