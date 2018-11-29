@@ -91,38 +91,38 @@ fixture `Tests the sidewalk drawer`
 // 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false);
 // });
 
-// fix the image uplo
-test("attempting to upload a large image to a sidewalk", async (t) => {
-	await t.click(drawer.imagesHeader)
-		.click(drawer.uploadImagesButton)
-		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/largeTestImage.jpg")
-		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
-});
-
-
-// Need to fix
-// test.requestHooks(logger, getSidewalkImagesMock)("viewing images on a sidewalk", async (t) => {
-// 	await t.click(drawer.imagesHeader);
-// 	await SidewalkUtilities.generateDummyImages(t);
-	
-// 	// check to see all rows loaded
-// 	await t.click(drawer.previewImagesButton)
-// 		.wait(6000)
-// 		.expect(imageGallery.getRowCount()).eql(15);
-	
-// 	// check the default selected image
-// 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
-	
-// 	// test selecting a different image
-// 	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
-// 		.wait(3500);
-// 	await t.expect(await imageGallery.getSelectedRowIndex(t))
-// 		.eql(4);
-	
-// 	// close the gallery and make sure the sidewalk drawer returns
-// 	await t.click(imageGallery.closeButton)
-// 		.expect(drawer.imagesHeader.visible).eql(true);
+// // fix the image uplo
+// test("attempting to upload a large image to a sidewalk", async (t) => {
+// 	await t.click(drawer.imagesHeader)
+// 		.click(drawer.uploadImagesButton)
+// 		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/largeTestImage.jpg")
+// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
 // });
+
+
+// // Need to fix
+test.requestHooks(logger, getSidewalkImagesMock)("viewing images on a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader);
+	await SidewalkUtilities.generateDummyImages(t);
+	
+	// check to see all rows loaded
+	await t.click(drawer.previewImagesButton)
+		.wait(6000)
+		.expect(imageGallery.getRowCount()).eql(15);
+	
+	// check the default selected image
+	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
+	
+	// test selecting a different image
+	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
+		.wait(3500);
+	await t.expect(await imageGallery.getSelectedRowIndex(t))
+		.eql(4);
+	
+	// close the gallery and make sure the sidewalk drawer returns
+	await t.click(imageGallery.closeButton)
+		.expect(drawer.imagesHeader.visible).eql(true);
+});
 
 // test.requestHooks(logger)("attempting to delete an image but cancelling", async (t) => {
 //     await t.click(drawer.imagesHeader);
@@ -216,55 +216,55 @@ test("attempting to upload a large image to a sidewalk", async (t) => {
 // 	await t.expect(ratingsModal.cancel.visible).eql(true);
 // });
 
-// test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an hour and fail on the fourth on", async (t) => {
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.expect(ratingsModal.cancel.visible).eql(true)
-// 		.drag(ratingsModal.accessibilitySlider, 100, 0)
-// 		.drag(ratingsModal.connectivitySlider, -100, 0)
-// 		.drag(ratingsModal.physicalSafetySlider, 60, 0)
-// 		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
-// 		.wait(500);
+test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
 	
-// 	await t.click(ratingsModal.confirm);
-// 	await t.click(drawer.submitRatingButton);
-// 	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
-// });
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.submitRatingButton);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
+});
 
-// test.requestHooks(logger)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.wait(500);
+test.requestHooks(logger)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.wait(500);
 	
-// 	await t.click(ratingsModal.confirm);
-// 	await t.click(drawer.drawerCloseButton);
-// 	await t.click(mapPage.map, {offsetX: 410, offsetY: 180})
-// 		.wait(3000);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+	await t.click(mapPage.map, {offsetX: 410, offsetY: 180})
+		.wait(3000);
 	
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.expect(ratingsModal.cancel.visible).eql(true)
-// 		.wait(500);
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.wait(500);
 
 
-// 	await t.click(ratingsModal.confirm);
-// 	await t.click(drawer.drawerCloseButton);
-// 	await t.click(mapPage.map, {offsetX: -95 ,offsetY: 160})
-// 	.wait(3000);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+	await t.click(mapPage.map, {offsetX: -95 ,offsetY: 160})
+	.wait(3000);
 
-// 	await t.click(drawer.ratingsHeader)
-// 	.click(drawer.submitRatingButton)
-// 	.expect(ratingsModal.cancel.visible).eql(true)
-// 	.wait(500);
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.expect(ratingsModal.cancel.visible).eql(true)
+	.wait(500);
 
-// 	await t.click(ratingsModal.confirm);
-// 	await t.click(drawer.drawerCloseButton);
-// 	await t.click(mapPage.map, {offsetX: 110 ,offsetY: 100})
-// 	.wait(3000);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+	await t.click(mapPage.map, {offsetX: 110 ,offsetY: 100})
+	.wait(3000);
 
-// 	await t.click(drawer.ratingsHeader)
-// 	.click(drawer.submitRatingButton)
-// 	.wait(500);
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.wait(500);
 
-// 	await t.expect(notifications.text.textContent).contains("You have rated too many sidewalks within 30 seconds.");
-// });
+	await t.expect(notifications.text.textContent).contains("You have rated too many sidewalks within 30 seconds.");
+});

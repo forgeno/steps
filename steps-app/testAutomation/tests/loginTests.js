@@ -68,4 +68,11 @@ test("that login gets disabled when the user attempts to login incorrectly more 
 	.typeText(loginPage.password, "aVery strong pa$$w0rd")
 	.click(loginPage.submit)
 
+	await t.expect(notifications.text.textContent).contains("You have entered an incorrect username or password.");
+
+	await t.typeText(loginPage.username, "lorem iiii")
+	.typeText(loginPage.password, "aVery strong pa$$w0rd")
+	.click(loginPage.submit)
+
+	await t.expect(notifications.text.textContent).contains("You have tried to log in unsuccessfully too many times. Try again in a minute.");
 });
