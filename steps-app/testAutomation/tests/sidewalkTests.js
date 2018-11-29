@@ -234,6 +234,7 @@ test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an h
 	
 	await t.click(ratingsModal.confirm);
 	await t.click(drawer.submitRatingButton);
+	await t.expect(notifications.text.visible).eql(true);
 	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
 });
 
@@ -270,4 +271,5 @@ test.requestHooks(logger, sidewalkInfoAndRatingMock)("attempt to rate a sidewalk
 	.wait(500);
 
 	await t.expect(notifications.text.visible).eql(true);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
 });
