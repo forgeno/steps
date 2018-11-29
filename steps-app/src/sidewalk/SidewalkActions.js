@@ -20,7 +20,11 @@ const Actions = Reflux.createActions([
 	"rateSuspendThirty",
 	"dismissSuspendSidewalk",
 	"dismissRateSuspendThirty",
-	"downloadSidewalkCSV"
+	"downloadSidewalkCSV",
+	"suspendedSidewalkComment",
+	"dismissSuspendSidewalkComment",
+	"commentSuspendThirty",
+	"dismissCommentSuspendThirty"
 ]);
 
 export default Actions;

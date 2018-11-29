@@ -37,7 +37,10 @@ export default class SidewalkStore extends Reflux.Store {
 			thirtySecondRatingError: false,
 			hasNextCommentsPage: true,
 			sidewalkHasCSVData: false,
+			commentOneSidewalk: false,
+			thirtyCommentSuspend: false,
 			isNextImagePageLoading: false
+
 		};
 	}
 
@@ -143,6 +146,36 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
+	/**
+	 * Handles comment spamming, making sure less than 3 comment being made per sidewalk every 30 seconds
+	 */
+	onSuspendedSidewalkComment() {
+		this.setState({
+			commentOneSidewalk: true
+		});
+	}
+
+	onDismissSuspendSidewalkComment() {
+		this.setState({
+			commentOneSidewalk: false
+		});
+	}
+	
+	/**
+	 * Handles comment spamming, making sure less than 3 comment being made in summary every 30 seconds
+	 */
+	onCommentSuspendThirty() {
+		this.setState({
+			thirtyCommentSuspend: true
+		});
+	}
+
+	onDismissCommentSuspendThirty() {
+		this.setState ({
+			thirtyCommentSuspend: false
+		});
+	}
+
 
 	/**
 	 * Dismisses the message notifying the user that their comment was successfully posted
