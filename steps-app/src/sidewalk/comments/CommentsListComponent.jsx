@@ -9,6 +9,7 @@ import SidewalkActions from "../SidewalkActions";
 import SidewalkCommentComponent from "./SidewalkCommentComponent";
 import CommentDeletionModal from "./CommentDeletionModal";
 import LoaderComponent from "../../misc-components/LoaderComponent";
+import SpamUtil from "../../util/SpamUtil";
 
 import {COMMENTS_PER_PAGE, COMMENT_ERROR_STATE, COMMENT_PROFANITY_MESSAGE, EMPTY_COMMENT_MESSAGE, PHONE_REGEX, SECONDARY_PHONE_REGEX} from "../../constants/CommentConstants";
 
@@ -131,6 +132,32 @@ export default class CommentsListComponent extends Reflux.Component {
 	}
 
 	/**
+	 * Handles comment spamming, make sure no more than 3 comment per 30 second or no more than 3 per sidewalk per day
+	 */
+
+	_handleCheck = () => {
+		if(!SpamUtil.getCookie("commentTimer")) {
+			SpamUtil.deleteLocalStorage("sidewalkCommented");
+		}
+
+		if(!SpamUtil.getCookie("timer"+this.state.currentSidewalk.id)) {
+			SpamUtil.deleteLocalStorage("count"+this.state.currentSidewalk.id);
+		}
+
+		if (SpamUtil.getCookie("timer"+this.state.currentSidewalk.id) == "true" && Number(SpamUtil.getLocalStorage("count"+this.state.currentSidewalk.id)) + 1 > 3) {
+			SidewalkActions.suspendedSidewalkComment();
+
+		}
+		else if (SpamUtil.getCookie("commentTimer") == "true" && Number(SpamUtil.getLocalStorage("sidewalkCommented")) + 1 > 3) {
+			SidewalkActions.commentSuspendThirty();
+		}
+
+		else {
+			this._handleSubmit();
+		}
+	};
+
+	/**
 	 * Handles the user submitting their entered comment text
 	 */
 	_handleSubmit = () => {
@@ -140,12 +167,26 @@ export default class CommentsListComponent extends Reflux.Component {
 			return;
 		}
 		SidewalkActions.uploadComment(this.state.enteredComment);
+
+		SpamUtil.setLocalStorage("sidewalkCommented");
+		SpamUtil.setLocalStorage("count"+this.state.currentSidewalk.id);
+		
+		if(Number(SpamUtil.getLocalStorage("sidewalkCommented"))===1){
+			SpamUtil.setCookie("commentTimer", "true", 0.5, "");
+	
+		}
+
+		if(Number(SpamUtil.getLocalStorage("count"+this.state.currentSidewalk.id))===1){
+			SpamUtil.setCookie("timer"+this.state.currentSidewalk.id, "true", 24*60, "");	
+		}
+
 		this.setState({
 			enteredComment: "",
 			commentValidation: this._validateCommentState("")
 		});
 	}
 	
+
 	_openConfirmationModal = (selectedComment) => {
 		this.setState({
 			modalOpened: true,
@@ -264,7 +305,7 @@ export default class CommentsListComponent extends Reflux.Component {
 							<FormControl.Feedback />
 						</FormGroup>
 				</div>
-				<Button bsStyle="primary" onClick={this._handleSubmit} disabled={this.state.uploadingComment || this.state.commentValidation.state === COMMENT_ERROR_STATE} >
+				<Button bsStyle="primary" onClick={this._handleCheck} disabled={this.state.uploadingComment || this.state.commentValidation.state === COMMENT_ERROR_STATE} >
 					Submit
 				</Button>
 				{

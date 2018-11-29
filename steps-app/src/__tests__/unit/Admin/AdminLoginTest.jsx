@@ -77,8 +77,6 @@ describe("<AdminLoginComponent>", function() {
         const adminLogin = sandbox.stub(AdminActions, "checkCredentials"),
         wrapper = shallow(<AdminLoginComponent/>);
 
-        sandbox.stub(wrapper.instance(), "_displayAttempts");
-
         wrapper.setState({
             enteredName: "hello",
             enteredPassword: "pass"
@@ -90,11 +88,9 @@ describe("<AdminLoginComponent>", function() {
 		expect(adminLogin.calledOnce).to.be.true
     });
 
-    it("Should check if multiple Login attempts is porhibited and appropriate cookie is set", () => {
+    it("Should check if multiple Login attempts is prohibited and appropriate cookie is set", () => {
         const cookie = sandbox.stub(SpamUtil, "setCookie"),
         wrapper = shallow(<AdminLoginComponent/>);
-
-        sandbox.stub(wrapper.instance(), "_displayAttempts");
 
         wrapper.setState({
             enteredName: "hello",

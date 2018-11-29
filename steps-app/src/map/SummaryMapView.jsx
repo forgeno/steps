@@ -1,26 +1,24 @@
 import React from "react";
-import { Component } from 'reflux';
 
 import Actions from "./MapActions";
-import Store from "./MapStore";
-import {Button} from "react-bootstrap";
+import MapFilterModal from "./MapFilterModal.jsx";
 
-export default class SummaryMapView extends Component {
+export default class SummaryMapView extends React.Component {
 
-	constructor() {
-		super();
-		this.store = Store;
+	constructor(props) {
+		super(props);
+		this.state = {};
 	}
 
   	componentDidMount() {
 		Actions.loadMapDetails();
 	}
 	
-	
+	/*Applies filter to map based on what is currently in the filter table.*/
 	handleApplyFilterEvent = () => {
 		Actions.filterMap()
 	}
-
+	/*Pulls strings from each filter selector element and places it into an array for future filter application.*/
 	handleAddFilterEvent = () => {
 		let filterTable = document.getElementById("filterTable");
 		let rateTraitObj = document.getElementById("rateTrait")
@@ -43,7 +41,8 @@ export default class SummaryMapView extends Component {
 		cell2.innerHTML = strEquality;
 		cell3.innerHTML = strTrait;
 	}
-
+	/*Clears all filters currrently implimented onto the map. This includes the array of filter
+	sand resets map view to have no filters*/
 	handleClearFilterEvent = () => {
 		let filterTable = document.getElementById("filterTable");
 		for(let i = (filterTable.rows.length-1); i > 0; i--){
@@ -56,40 +55,11 @@ export default class SummaryMapView extends Component {
 
 	render() {
 		return (
-			<div id = "main">
-				<div id="mapContainer"/>
-				<div id = "FilterGUIWrapper">
-				<div id = "filterGUI">
-					Filters:
-					<br></br>
-					<select id = "rateTrait"></select>
-					<select id = "equalitySelector"></select>
-					<select id = "numberSelector"></select>
-					<Button className="AddFilter" bsStyle="success" bsSize="xs" onClick={this.handleAddFilterEvent}>+</Button>
-					<br></br>	
-					<table class="table table-bordered table-responsive-md table-striped text-center" id="filterTable">
-							<thead>
-								<tr>
-									<th>Trait</th>
-									<th>Equality</th>
-									<th>Rate</th>
-								</tr>
-							</thead>
-						<tbody class="filterTbody">
-							<tr>
-							</tr>
-						</tbody>
-					</table>
-					<Button bsStyle="danger" bsSize="sm" onClick={this.handleClearFilterEvent}>Clear</Button>
-					<Button className="applyButton" bsStyle="primary" bsSize="sm" onClick={this.handleApplyFilterEvent}> Apply Filter </Button>
-					<div id = "filterList"/>
-				</div>
-				</div>
-				
-			
-			<div id="BasemapToggle"/>
+			<div id="main">
+				<div id="mapContainer" />
+				<MapFilterModal />
+				<div id="BasemapToggle" />
 			</div>
-			
 		);
 	}
 }

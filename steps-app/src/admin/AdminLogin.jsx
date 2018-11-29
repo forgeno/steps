@@ -12,6 +12,7 @@ import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 import SpamUtil from "../util/SpamUtil";
 import RestUtil from "../util/RestUtil";
+import {LOCAL_STORAGE_NAME, SUSPENSION_COOKIE, COOKIE_EXPIRE_TIME, MAX_LOGIN_ATTEMPTS} from "../constants/AdminConstants";
 
 /**
  * This component renders the page for admin Login
@@ -23,15 +24,12 @@ export default class AdminLogin extends Component {
         this.store = Store;
 		this.state = {
             enteredName: "",
-			enteredPassword: "",
-			cookieExpireTime: 1,
-			nameOfStorage: 'LoginAttempts',
-			cookieName: 'Suspended'
+			enteredPassword: ""
         };
 	}
 	
 	componentWillUpdate() {
-		if (this.state.isLoggedIn){
+		if (this.state.isLoggedIn) {
 			this.props.history.push('/dashboard');
         }
 	}
@@ -55,17 +53,10 @@ export default class AdminLogin extends Component {
 	}
 
 	_validateCredentials = () => {
-		if(this.state.enteredName.length > 0 && this.state.enteredPassword.length > 0){
-			if(SpamUtil.getCookie(this.state.cookieName)){
-				return false
-			}
-			else{
-				return true
-			}
+		if (this.state.enteredName.length > 0 && this.state.enteredPassword.length > 0) {
+			return !Boolean(SpamUtil.getCookie(SUSPENSION_COOKIE));
 		}
-		else {
-			return false
-		}
+		return false;
     }
 
 	/**
@@ -74,37 +65,18 @@ export default class AdminLogin extends Component {
 	 * If user enters Credentials incorrectly 4 times then they are suspended. Cookie is created during this time.
 	 */
 	_handleSubmit = () => {
-		if(SpamUtil.getCookie(this.state.cookieName)!= true){
-			SpamUtil.setLocalStorage(this.state.nameOfStorage)
-		}
-
-		this._displayAttempts();
-		
-		if(Number(SpamUtil.getLocalStorage(this.state.nameOfStorage)) < 4){
+		const attempts = Number(SpamUtil.getLocalStorage(LOCAL_STORAGE_NAME));
+		if (isNaN(attempts) || attempts < MAX_LOGIN_ATTEMPTS + 1) {
 			AdminActions.checkCredentials(this.state.enteredName, md5(this.state.enteredPassword));
-		}
-		else {
-			SpamUtil.setCookie(this.state.cookieName, "true", this.state.cookieExpireTime, "login");
-			SpamUtil.deleteLocalStorage(this.state.nameOfStorage)
+		} else {
+			SpamUtil.setCookie(SUSPENSION_COOKIE, "true", COOKIE_EXPIRE_TIME, "login");
+			SpamUtil.deleteLocalStorage(LOCAL_STORAGE_NAME)
 		}
 
 		this.setState({
             enteredName: "",
             enteredPassword: ""
 		});
-	}
-
-	/**
-	 * Displaying the number of attempts user has left before being suspended
-	 */
-	_displayAttempts = () => {
-		let AttemptsLeft = 4 - Number(SpamUtil.getLocalStorage(this.state.nameOfStorage));
-		if(AttemptsLeft > 0){
-			document.getElementById("res").innerHTML = "You have " + AttemptsLeft + " Login Attempts."
-		}
-		else {
-			document.getElementById("res").innerHTML = ""
-		}
 	}
 
     /**
@@ -114,8 +86,6 @@ export default class AdminLogin extends Component {
         AdminActions.dismissLoginSuccess();
         AdminActions.dismissLoginError();
 	};
-	  
-
 
     render(){
         return (
@@ -159,9 +129,10 @@ export default class AdminLogin extends Component {
                 <ErrorAlertComponent onClose={this._handleClose}
 								 visible={this.state.failedToLogIn}
 								 message="You have entered an incorrect username or password."/>
-				<ErrorAlertComponent onClose={this._handleClose}
+				<ErrorAlertComponent onClose={() => {}}
 								 visible={SpamUtil.getCookie("Suspended")}
-								 message="You cannot Login for 1 minute."/>
+								 hideClose
+								 message="You have tried to log in unsuccessfully too many times. Try again in a minute."/>
             </div>
 			</div>
         )

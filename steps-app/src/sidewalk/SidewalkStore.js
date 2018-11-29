@@ -2,7 +2,6 @@ import Reflux from "reflux";
 
 import Actions from "./SidewalkActions";
 import RestUtil from "../util/RestUtil";
-import SpamUtil from "../util/SpamUtil";
 
 /**
  * This store keeps track of the state of components that deal with sidewalks
@@ -34,10 +33,14 @@ export default class SidewalkStore extends Reflux.Store {
 			uploadCommentFailed: false,
 			uploadImageSucceeded: false,
 			ratingStatus: true,
-			sameSidewalk: false,
-			thirtySuspend: false,
+			sameSidewalkRatingError: false,
+			thirtySecondRatingError: false,
 			hasNextCommentsPage: true,
-			sidewalkHasCSVData: false
+			sidewalkHasCSVData: false,
+			commentOneSidewalk: false,
+			thirtyCommentSuspend: false,
+			isNextImagePageLoading: false
+
 		};
 	}
 
@@ -93,19 +96,24 @@ export default class SidewalkStore extends Reflux.Store {
 	 * Loads user uploaded images from the database
 	 * @param {number} startIndex - the amount of images to skip before starting to return them
 	 * @param {number} stopIndex - the index of the last item to load
-	 * @param {function} updateStateCallback - a callback function that will be invoked when the images are loaded
 	 */
 	onLoadUploadedImages(startIndex, stopIndex, updateStateCallback) {
+		this.setState({
+			isNextImagePageLoading: true
+		});
 		RestUtil.sendPostRequest(`sidewalk/${this.state.currentSidewalk.id}/image`, {
 			startIndex: startIndex,
 			endIndex: stopIndex
 		}).then((res) => {
 			this.setState({
 				hasNextImagesPage: res.hasMoreImages,
-				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images)
+				loadedUserImages: this.state.loadedUserImages.slice(0).concat(res.images),
+				isNextImagePageLoading: false
 			});
-			return updateStateCallback();
 		}).catch((err) => {
+			this.setState({
+				isNextImagePageLoading: false
+			});
 			console.error(err);
 		});
 	}
@@ -138,6 +146,36 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error(err);
 		});
 	}
+	/**
+	 * Handles comment spamming, making sure less than 3 comment being made per sidewalk every 30 seconds
+	 */
+	onSuspendedSidewalkComment() {
+		this.setState({
+			commentOneSidewalk: true
+		});
+	}
+
+	onDismissSuspendSidewalkComment() {
+		this.setState({
+			commentOneSidewalk: false
+		});
+	}
+	
+	/**
+	 * Handles comment spamming, making sure less than 3 comment being made in summary every 30 seconds
+	 */
+	onCommentSuspendThirty() {
+		this.setState({
+			thirtyCommentSuspend: true
+		});
+	}
+
+	onDismissCommentSuspendThirty() {
+		this.setState ({
+			thirtyCommentSuspend: false
+		});
+	}
+
 
 	/**
 	 * Dismisses the message notifying the user that their comment was successfully posted
@@ -208,25 +246,25 @@ export default class SidewalkStore extends Reflux.Store {
 
 	onSuspendedSidewalk() {
 		this.setState({
-			sameSidewalk: true
+			sameSidewalkRatingError: true
 		});
 	}
 
 	onDismissSuspendSidewalk() {
 		this.setState({
-			sameSidewalk: false
+			sameSidewalkRatingError: false
 		});
 	}
 
 	onRateSuspendThirty() {
 		this.setState({
-			thirtySuspend: true
+			thirtySecondRatingError: true
 		});
 	}
 
 	onDismissRateSuspendThirty() {
 		this.setState ({
-			thirtySuspend: false
+			thirtySecondRatingError: false
 		});
 	}
 
@@ -327,40 +365,27 @@ export default class SidewalkStore extends Reflux.Store {
 	}
 
 	synchronizeSidewalk() {
-		var query = window.featureLayer.createQuery();
-
+		const query = window.featureLayer.createQuery();
 		query.outFields = ["*"];
-		
-		window.featureLayer.queryFeatures(query).then(response  => {
-			if(response.features.length !== 0){
-
+		window.featureLayer.queryFeatures(query).then(response => {
+			if (response.features.length !== 0) {
 				for (const matchingSidewalk of response.features) {
-					
-					if (this.state.currentSidewalk.id == parseInt(matchingSidewalk.attributes.osm_id))
-					{
-						// only update if the values do not match
-						if (Math.round(this.state.currentSidewalk.overallRating) != matchingSidewalk.attributes.AvgOverall) 
-						{
-							let editFeature = matchingSidewalk
-
-							editFeature.attributes.AvgOverall = Math.round(this.state.currentSidewalk.overallRating);
-							editFeature.attributes.AvgAccessibility = this.state.currentSidewalk.accessibility
-							editFeature.attributes.AvgComfort = this.state.currentSidewalk.comfort
-							editFeature.attributes.AvgConnectivity = this.state.currentSidewalk.connectivity
-							editFeature.attributes.AvgSecurity = this.state.currentSidewalk.senseOfSecurity
-							editFeature.attributes.AvgSafety = this.state.currentSidewalk.physicalSafety
+					if (this.state.currentSidewalk.id === parseInt(matchingSidewalk.attributes.osm_id)) {
+						if (Math.round(this.state.currentSidewalk.overallRating) !== matchingSidewalk.attributes.AvgOverall) {
+							matchingSidewalk.attributes.AvgOverall = Math.round(this.state.currentSidewalk.overallRating);
+							matchingSidewalk.attributes.AvgAccessibility = this.state.currentSidewalk.accessibility
+							matchingSidewalk.attributes.AvgComfort = this.state.currentSidewalk.comfort
+							matchingSidewalk.attributes.AvgConnectivity = this.state.currentSidewalk.connectivity
+							matchingSidewalk.attributes.AvgSecurity = this.state.currentSidewalk.senseOfSecurity
+							matchingSidewalk.attributes.AvgSafety = this.state.currentSidewalk.physicalSafety
 							
-							//Working code
-							let edits = {
-								updateFeatures: [editFeature]
+							const edits = {
+								updateFeatures: [matchingSidewalk]
 							};
-
 							window.featureLayer.applyEdits(edits)
 						}
-						
 					}
 				}
-			
 			}
 		}).catch((err) => {
 			console.error("Failed query part", err);
@@ -372,13 +397,9 @@ export default class SidewalkStore extends Reflux.Store {
 			const singleSidewalkData = [];
 			singleSidewalkData.push(['SidewalkId', 'AccessibilityRating', 'Comfort', 'Connectivity', 'SenseOfSecurity', 'PhysicalSafety', 'OverallRating', 'TotalRatings', 'TotalComments', 'TotalImages']);
 			allSidewalkObjects.sidewalks.forEach((sidewalk) => {
-				if (sidewalk.id == sidewalkId) 
-				{
-					console.log("im in HERE", sidewalk.id, sidewalk.ratings);
-					let data = [sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images];
-					singleSidewalkData.push(data);
+				if (sidewalk.id === sidewalkId) {
+					singleSidewalkData.push([sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images]);
 				}
-				
 			});
 			this.setState({
 				sidewalkCSVInfo: allSidewalkObjects,

@@ -10,9 +10,7 @@ export default class ErrorAlertComponent extends React.Component {
 
 	render() {
 		return (
-			<BaseAlertComponent onClose={this.props.onClose}
-								visible={this.props.visible}
-								message={this.props.message}
+			<BaseAlertComponent {...this.props}
 								alertContentClassName="errorAlert"
 								icon={<ErrorIcon className="alertIcon" />}
 			/>

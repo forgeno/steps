@@ -1,5 +1,6 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import url('https://fonts.googleapis.com/css?family=Proza+Libre');
+@import "node_modules/react-image-gallery/styles/scss/image-gallery.scss";
 
 @import "Variables.scss";
 @import "Images.scss";
@@ -25,7 +26,7 @@ body {
 }
 
 
-.row {
+.rowImgSelector {
 	display: flex;
     justify-content: space-between;
 	width: 75%;
@@ -123,4 +124,12 @@ div.noOutlineDiv:focus {
 
 .selectText {
 	color: $primary;
+}
+
+.floatRight {
+	float: right;
+}
+
+.closeButtonNormal:hover {
+	color: red;
 }

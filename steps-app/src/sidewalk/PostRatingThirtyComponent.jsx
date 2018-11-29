@@ -6,7 +6,7 @@ import Actions from "./SidewalkActions";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 
 /**
- * This component renders the error message that is displayed when a rating post attempt fails
+ * This component renders the error message that is displayed when the user posts too many ratings within 30 seconds
  */
 export default class PostRatingThirtyComponent extends Reflux.Component {
 
@@ -25,8 +25,8 @@ export default class PostRatingThirtyComponent extends Reflux.Component {
 	render() {
 		return (
 			<ErrorAlertComponent onClose={this._handleClose}
-								 visible={this.state.thirtySuspend}
-								 message="Too many Sidewalks rated within 30 seconds."
+								 visible={this.state.thirtySecondRatingError}
+								 message="You have rated too many sidewalks within 30 seconds."
 			/>
 		);
 	}

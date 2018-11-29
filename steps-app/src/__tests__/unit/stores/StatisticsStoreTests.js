@@ -14,9 +14,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 	});
 	
 	it("Tests onLoadSummaryStatistics sorting contributions with same month, different years", () => {
-		sandbox.stub(RestUtil, "sendGetRequest").returns({
+		sandbox.stub(Promise, "all").returns({
 			then: (callback) => {
-				callback({
+				callback([{
 					contributionsByMonth: [{
 						monthYear: "5/2009",
 						contributions: 255
@@ -27,7 +27,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 						monthYear: "5/2011",
 						contributions: 250
 					}]
-				});
+				}, {
+					sidewalks: []
+				}]);
 				return {
 					catch: () => {}
 				}
@@ -47,9 +49,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 	});
 	
 	it("Tests onLoadSummaryStatistics sorting contributions with different months, same years", () => {
-		sandbox.stub(RestUtil, "sendGetRequest").returns({
+		sandbox.stub(Promise, "all").returns({
 			then: (callback) => {
-				callback({
+				callback([{
 					contributionsByMonth: [{
 						monthYear: "4/2012",
 						contributions: 2555
@@ -60,7 +62,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 						monthYear: "3/2012",
 						contributions: 250
 					}]
-				});
+				}, {
+					sidewalks: []
+				}]);
 				return {
 					catch: () => {}
 				}
@@ -80,9 +84,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 	});
 	
 	it("Tests onLoadSummaryStatistics sorting contributions with different months, different years", () => {
-		sandbox.stub(RestUtil, "sendGetRequest").returns({
+		sandbox.stub(Promise, "all").returns({
 			then: (callback) => {
-				callback({
+				callback([{
 					contributionsByMonth: [{
 						monthYear: "4/2012",
 						contributions: 2555
@@ -96,7 +100,9 @@ describe("Tests the SummaryStatisticsStore", function() {
 						monthYear: "12/2008",
 						contributions: 1500
 					}]
-				});
+				}, {
+					sidewalks: []
+				}]);
 				return {
 					catch: () => {}
 				}

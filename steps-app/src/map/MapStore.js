@@ -1,7 +1,7 @@
 import Reflux from "reflux";
 import esriLoader from "esri-loader";
 import Actions from "./MapActions";
-import {esriURL, layerURL, downtownLongitude, downtownLatitude} from "../constants/ArcGISConstants";
+import {esriURL, layerURL, downtownLongitude, downtownLatitude, sidewalkColorMapRenderer} from "../constants/ArcGISConstants";
 import RestUtil from "../util/RestUtil";
 
 export default class MapStore extends Reflux.Store {
@@ -13,7 +13,7 @@ export default class MapStore extends Reflux.Store {
 			sidewalkSelected: false,
 			longitude: downtownLongitude,
 			latitude: downtownLatitude,
-			listFilter: [],
+			mapFilters: [],
 			searchVisible: false
 			
 		};
@@ -30,8 +30,6 @@ export default class MapStore extends Reflux.Store {
 	 * @param {number} latitude - the latitude of the sidewalk's center position
 	 * @param {number} longitude - the longitude of the sidewalk's center position
 	 */
-
-	
 	viewSidewalkDetails(sidewalk, latitude, longitude) {
 		if (!this.state.view) {
 			console.error("The view was not loaded");
@@ -71,7 +69,6 @@ export default class MapStore extends Reflux.Store {
 	/**
 	 * Calls esriLoader which helps the react-app to communicate with the ArcGIS API for javascript
 	 */
-	
     onLoadMapDetails() {
 		esriLoader.loadModules(['esri/Map', 'esri/views/MapView','esri/widgets/Search', "esri/widgets/BasemapToggle"], esriURL).then((data) => {
 			const Map = data[0],
@@ -103,97 +100,21 @@ export default class MapStore extends Reflux.Store {
 			});
 
 			view.ui.add(search, "top-right");
-			
 			this.setState({
 				map,
 				view,
 				search
-			 });
+			});
 
-			 
-
-			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/PopupTemplate", "esri/geometry/Circle", "esri/Graphic","esri/core/watchUtils","esri/renderers/UniqueValueRenderer","esri/symbols/SimpleFillSymbol","esri/symbols/SimpleLineSymbol","esri/layers/support/MapImage", "esri/widgets/Legend", "esri/widgets/Expand"], esriURL);
+			return esriLoader.loadModules(["esri/layers/FeatureLayer", "esri/geometry/Circle", "esri/widgets/Legend", "esri/widgets/Expand"], esriURL);
 		}).then((data) => {
 			
 			const FeatureLayer = data[0],
-				PopupTemplate = data[1],
-				Circle = data[2],
-				Legend = data[9],
-				Expand = data[10],
+				Circle = data[1],
+				Legend = data[2],
+				Expand = data[3],
 				view = this.state.view;	
 			
-			var Rating = 4;
-
-			const sidewalkColorMapRenderer = {
-				type: "unique-value",  // autocasts as new UniqueValueRenderer()
-				field: "AvgOverall",
-				defaultSymbol: { type: "simple-fill" },  // autocasts as new SimpleFillSymbol()
-				uniqueValueInfos: [
-				
-				// this is to cover rounding issues
-				{
-					value: 5,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: "#00A300",
-						style: "solid"
-					}
-				}, {
-					value: 4,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: "#00A392",
-						style: "solid"
-					}
-				}, {
-					value: 3,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: "#FF7A00",
-						style: "solid"
-					}
-				}, {
-					value: 2,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: '#f9a602',
-						style: "solid"
-					}
-				}, {
-					value: 1,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: "#FF0000",
-						style: "solid"
-					}
-				}, {
-					value: 0,
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						width: 4,
-						color: "#D2D3D1",
-						style: "solid"
-					}
-				}, {
-					value: "",
-					symbol: {
-						type: "simple-line",  // autocasts as new SimpleLineSymbol()
-						color: "#D2D3D1",
-						width: 4,
-						style: "solid"
-					}
-				  }],
-				  highlightOptions: {
-					color: [255, 241, 58],
-					fillOpacity: 0.4
-				  }
-			  };
-
 			const featureLayer = new FeatureLayer({
 				url: layerURL,
 				renderer: sidewalkColorMapRenderer,
@@ -219,7 +140,7 @@ export default class MapStore extends Reflux.Store {
 				  }]
 				});
 				
-				//mobile
+				/*Functionality to create legend object */
 				const expandLegend = new Expand({
 					view: view,
 					content: new Legend({
@@ -231,12 +152,9 @@ export default class MapStore extends Reflux.Store {
 					})
 				});
 
-				// Load
-				const isResponsiveSize = view.widthBreakpoint === "xsmall";
-				updateView(isResponsiveSize);
-
+				updateView(view.widthBreakpoint === "xsmall");
+				
 				// Breakpoints
-
 				view.watch("widthBreakpoint", function(breakpoint) {
 					switch (breakpoint) {
 					  case "xsmall":
@@ -259,54 +177,23 @@ export default class MapStore extends Reflux.Store {
 				  }
 
 				  function setLegendMobile(isMobile) {
-					let toAdd = isMobile ? expandLegend : legend;
-					let toRemove = isMobile ? legend : expandLegend;
+					const toAdd = isMobile ? expandLegend : legend;
+					const toRemove = isMobile ? legend : expandLegend;
 			
 					view.ui.remove(toRemove);
 					view.ui.add(toAdd, "bottom-left");
-					view.ui.add("filterGUI", "bottom-left")
+					view.ui.add("filterGUIMinimized", "bottom-left");
+					view.ui.add("filterGUI", "bottom-left");
 				  }
 			});
 
-			function queryAllSidewalks() {
-				let sidewalkQuery = featureLayer.createQuery();
-				return featureLayer.queryFeatures(sidewalkQuery).then(function(response) {
-					let returnSidewalks = response.features;
-					return returnSidewalks
-				});
-				
-			}
-			queryAllSidewalks();
-			// radius to search in
 			const pxRadius = 5;
 			this.state.map.add(featureLayer);
-		
 
-			//Start of FilterMap code
-			
-			function addSelectText (stringList, selectObj){
-				stringList.forEach(function(element) {
-					let option = document.createElement("option");
-					option.text = element
-					selectObj.add(option);
-				});
-			}
-			
-			let rateTraitObj = document.getElementById("rateTrait")
-			let equalitySelectorObj = document.getElementById("equalitySelector");
-			let numberSelectorObj = document.getElementById("numberSelector");
-			let rateTraitString = ["AvgOverall", "AvgSecurity","AvgAccessibility","AvgConnectivity","AvgComfort","AvgSafety"]
-			let equalityString = ["<",">","=","<=",">="]
-			let ratingString = ["5","4","3","2","1"]
-
-			addSelectText(rateTraitString, rateTraitObj)
-			addSelectText(equalityString, equalitySelectorObj)
-			addSelectText(ratingString, numberSelectorObj)
 			this.state.view.on("click", (event) => {
 				let sidewalkGPSAdress = '';
-				let pxToMeters = view.extent.width / view.width;
+				const pxToMeters = view.extent.width / view.width;
 
-				// this may be removed later 
 				featureLayer.popupEnabled = false;
 				view.popup.dockEnabled = true;
 				view.popup.visible = false;
@@ -318,85 +205,91 @@ export default class MapStore extends Reflux.Store {
 					content: "Average Rating: {AvgOverall}"
 				}  
 						
-				let c = new Circle({
+				const c = new Circle({
 					center: event.mapPoint,
 					radius: pxRadius * pxToMeters // meters by default
 				});
 
+				/*Reverse geocoding search to convert GPS points to address name*/
 				this.state.search.clear();
 				if (this.state.search.activeSource) {
-					var geocoder = this.state.search.activeSource.locator; // World geocode service
-					geocoder.locationToAddress(event.mapPoint)
-					  .then(function(response) { // Show the address found
-
+					this.state.search.activeSource.locator.locationToAddress(event.mapPoint).then((response) => {
 						sidewalkGPSAdress = response.address.split(',')[0];
-					  }, function(err) { // Show no address found
+					  }, (err) => {
 						console.error("Error reverse GPS to address")
 					  });
 					}
-
-				let q = featureLayer.createQuery();
+				/*Creates a query that querys for sidewalks with a certain distance of the mouse click*/
+				const q = featureLayer.createQuery();
 				q.geometry = c;
 				
 				featureLayer.queryFeatures(q).then((results) => {
-					if(results.features.length !== 0){
-
-						let resultingFeatures = results.features;
-						let sidewalkID = parseInt(resultingFeatures[0].attributes.osm_id)
+					if (results.features.length !== 0){
+						const sidewalkID = parseInt(results.features[0].attributes.osm_id)
 						const sidewalk = this.state.sidewalks.find((s) => s.id === sidewalkID);
 						sidewalk.address = sidewalkGPSAdress;
-						//console.log(sidewalk.address)
-						let ratingValue = parseInt(resultingFeatures[0].attributes.avgOverall)
-						
 						
 						if (!sidewalk) {
 							console.error("No sidewalk with a matching ID was found");
 							return;
 						}
-						
-						//Add graphic to the map graphics layer.
-
 						this.viewSidewalkDetails(sidewalk, event.mapPoint.latitude, event.mapPoint.longitude);
 					}
 				});
 			});
 		});
 	}
-
-	onPushArray(strTrait, strEquality, strNumberSelect) {
-		const tempListFilter = this.state.listFilter;
-		tempListFilter.push(String(strTrait)+" "+String(strEquality)+" "+String(strNumberSelect));
+	/**Adds selected filter options into an array newMapFilters 
+	* @param {String} strTrait - Trait selected to filter such as accessability for comfort
+	* @param {String} strEquality - Equality selected such as <, >, <=, =, >=
+	* @param {String} strNumberSelect - Selects the number the trait must be to filter
+	* @param {Object} dbTrait - used for deleting a single filter and not all
+	*/
+	onAddFilter(strTrait, strEquality, strNumberSelect, dbTrait) {
+		const newMapFilters = this.state.mapFilters;
+		newMapFilters.push({
+			trait: strTrait,
+			operator: strEquality,
+			value: strNumberSelect,
+			dbTrait: dbTrait
+		});
 
 		this.setState({
-			listFilter: tempListFilter
-		})
-	}
-
-	onClearFilters(){
-		this.state.featureLayer.definitionExpression = ''
-		this.setState({
-			listFilter: []
-		})
-	}
-
-	onFilterMap(){
-		esriLoader.loadModules(["esri/tasks/support/Query"], esriURL).then((data) => {
-			let returnSidewalks = null
-			let sidewalkSQLString = ''
-			let i=0
-			let numberOfFilters = this.state.listFilter.length;
-			for(i; i < numberOfFilters; i++){
-				if(sidewalkSQLString == ''){
-					sidewalkSQLString = this.state.listFilter[i];
-				}else{
-					sidewalkSQLString = sidewalkSQLString+" and "+this.state.listFilter[i];
-				}
-				
-			}
-			this.state.featureLayer.definitionExpression = sidewalkSQLString
+			mapFilters: newMapFilters
 		});
 	}
+
+	/**
+	 * 
+	 * @param {int} index - Removes a single filter given the number
+	 */
+	onRemoveFilter(index) {
+		const newMapFilters = this.state.mapFilters;
+		newMapFilters.splice(index, 1);
+		this.setState({
+			mapFilters: newMapFilters
+		});
+		this.onFilterMap();
+	}
 	
+	/**
+	 * clears all filters currently applied to map
+	 */
+	onClearFilters(){
+		this.state.featureLayer.definitionExpression = "";
+		this.setState({
+			mapFilters: []
+		});
+	}
+
+	/**
+	 * Applies filter to map converting the array of strings into an SQL query
+	 */
+	onFilterMap() {
+		this.state.featureLayer.definitionExpression = this.state.mapFilters.map((filter) => {
+			return `${filter.dbTrait} ${filter.operator} ${filter.value}`;
+		}).join(" and ");
+	}
 	
 	/**
 	 * Updates the ratings for the currently selected sidewalk
@@ -442,6 +335,3 @@ export default class MapStore extends Reflux.Store {
 		});
 	}
 }
-
-
-

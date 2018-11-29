@@ -90,10 +90,11 @@ describe("Tests the SidewalkStore", function() {
 					hasMoreImages: false,
 					images: responseImages
 				});
-				expect(store.setState.calledOnce).to.be.true;
-				expect(store.setState.args[0][0]).to.deep.equal({
+				expect(store.setState.calledTwice).to.be.true;
+				expect(store.setState.args[1][0]).to.deep.equal({
 					loadedUserImages: existingImages.slice(0).concat(responseImages),
-					hasNextImagesPage: false
+					hasNextImagesPage: false,
+					isNextImagePageLoading: false
 				});
 				return {
 					catch: (errCallback) => {
@@ -111,7 +112,6 @@ describe("Tests the SidewalkStore", function() {
 			startIndex: 0,
 			endIndex: 10
 		});
-		expect(spy.calledOnce).to.be.true;
 	});
 
 	it("should get the appropriate data and set sidewalkDetails property of state", () => {

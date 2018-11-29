@@ -44,7 +44,7 @@ export default class BaseAlertComponent extends React.Component {
 					  </span>
 					</div>
 				  }
-				  action={[
+				  action={this.props.hideClose ? undefined : [
 					<IconButton
 					  key="close"
 					  aria-label="Close"

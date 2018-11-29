@@ -1,6 +1,5 @@
-
 /**
- * Provides utility function for setting up Spam details
+ * Provides functions for preventing user spam of certain functionalities of the application
  */
 export default class SpamUtil {
 
@@ -48,7 +47,7 @@ export default class SpamUtil {
 	 * Creates a cookie with an expiry time given in minutes
 	 * @param {String} cname name of the cookie
 	 * @param {String} cvalue value of the cookie
-	 * @param {Integer} minute how long will the cookie last
+	 * @param {Number} minute how long will the cookie last
 	 * @param {String} pathValue what path the cookie is set on
 	 */
 	static setCookie(cname, cvalue, minute, pathValue) {
@@ -79,14 +78,13 @@ export default class SpamUtil {
 	 */
 	static getCookie(cname){
 		let name = cname + "=";
-		let decodedCookie = decodeURIComponent(document.cookie);
-		let ca = decodedCookie.split(';');
-		for(let i = 0; i <ca.length; i++) {
+		const ca = decodeURIComponent(document.cookie).split(';');
+		for (let i = 0; i < ca.length; ++i) {
 			let c = ca[i];
-			while (c.charAt(0) == ' ') {
+			while (c.charAt(0) === ' ') {
 				c = c.substring(1);
 			}
-			if (c.indexOf(name) == 0) {
+			if (c.indexOf(name) === 0) {
 				return c.substring(name.length, c.length);
 			}
 		}

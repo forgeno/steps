@@ -21,7 +21,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		expect(wrapper.find("InfiniteImageGallery").prop("visible")).to.be.false;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.false;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	
@@ -35,7 +35,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		wrapper.setState({
 			modalOpened: true
 		});
-		expect(wrapper.find("InfiniteImageGallery").prop("visible")).to.be.true;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.true;
 	});
 	
@@ -46,7 +46,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		expect(wrapper.find("InfiniteImageGallery").prop("visible")).to.be.true;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	
@@ -90,20 +90,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		expect(SidewalkActions.removeLoadedImage.calledOnce).to.be.true;
 	});
 	
-	it("Tests that _renderDeleteButton doesn't render something if the image is not selected", () => {
-		const wrapper = shallow(<SidewalkUploadedImagesGallery visible={true} />);
-		wrapper.instance().stores[0].setState({
-			currentSidewalk: {
-			},
-			loadeduserImages: []
-		});
-		wrapper.instance().stores[1].setState({
-			isLoggedIn: true
-		});
-		expect(wrapper.instance()._renderDeleteButton(false, {})).to.be.null;
-	});
-	
-	it("Tests that _renderDeleteButton only renders something if the user is logged in as an administrator", () => {
+	it("Tests that _renderDeleteButton doesn't render something if the user is not logged in as an administrator", () => {
 		const wrapper = shallow(<SidewalkUploadedImagesGallery visible={true} />);
 		wrapper.instance().stores[0].setState({
 			currentSidewalk: {
@@ -116,7 +103,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		expect(wrapper.instance()._renderDeleteButton(true, {})).to.be.null;
 	});
 	
-	it("Tests that _renderDeleteButton renders a button if the user is logged in and the image is selected", () => {
+	it("Tests that _renderDeleteButton renders a button if the user is logged in", () => {
 		const wrapper = shallow(<SidewalkUploadedImagesGallery visible={true} />);
 		sandbox.spy(wrapper.instance(), "_onDeleteImageClicked");
 		wrapper.instance().stores[0].setState({

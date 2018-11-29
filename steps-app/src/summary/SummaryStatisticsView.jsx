@@ -13,6 +13,10 @@ import Store from "./SummaryStatisticsStore";
 import Actions from "./SummaryStatisticsActions";
 import DateUtilities from "../util/DateUtilities";
 import LoaderComponent from "../misc-components/LoaderComponent";
+import AdminStore from "../admin/AdminStore";
+
+import {CSVLink} from 'react-csv';
+import { Button } from "react-bootstrap"
 
 /**
  * Renders summary statistics across all sidewalks
@@ -21,7 +25,7 @@ export default class SummaryStatisticsView extends Reflux.Component {
 
 	constructor() {
 		super();
-		this.store = Store;
+		this.stores = [Store, AdminStore];
 		this.state = {
 			selectedTab: 0
 		};
@@ -122,6 +126,11 @@ export default class SummaryStatisticsView extends Reflux.Component {
 	render() {
 		return (
 			<div data-summary-stats className="statsPanel">
+				{this.state.hasCSVData && this.state.isLoggedIn && <CSVLink data={this.state.csvFormatted}>
+					<Button bsStyle = "primary" className = "csvButton">
+						Export CSV
+					</Button>
+				</CSVLink>}
 				{this.renderSelectedTab()}
 			</div>
 		)

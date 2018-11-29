@@ -4,11 +4,12 @@ const Actions = Reflux.createActions([
 	"loadAllSidewalks",
 	"loadMapDetails",
 	"setDrawerOpened",
-	"pushArray",
+	"addFilter",
 	"clearFilters",
 	"filterMap",
 	"updateSidewalkRatings",
-	"selectSidewalk"
+	"selectSidewalk",
+	"removeFilter"
 ]);
 
 export default Actions;

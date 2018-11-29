@@ -77,7 +77,7 @@ class SidewalkRatingsModal extends Component {
 	 */
 	_handleSubmitRating = () => {
 		SpamUtil.setLocalStorage("NumberSidewalk");
-		if(Number(SpamUtil.getLocalStorage("NumberSidewalk"))===1){
+		if (Number(SpamUtil.getLocalStorage("NumberSidewalk")) === 1){
 			SpamUtil.setCookie("timer", "true", 0.5, "");
 		}
 		SpamUtil.setCookie(this.state.currentSidewalk.id, "true", 60, "");
@@ -116,7 +116,7 @@ class SidewalkRatingsModal extends Component {
 		return (
 			<div>
 				<OverlayTrigger placement="top" overlay={tooltip}>
-					<h5 className="clickableItem ratingsHeader">
+					<h5 className="ratingsHeader">
 						{name}
 					</h5>
 				</OverlayTrigger>

@@ -1,0 +1,4 @@
+export const LOCAL_STORAGE_NAME = "LoginAttempts",
+	SUSPENSION_COOKIE = "Suspended",
+	COOKIE_EXPIRE_TIME = 1,
+	MAX_LOGIN_ATTEMPTS = 3;

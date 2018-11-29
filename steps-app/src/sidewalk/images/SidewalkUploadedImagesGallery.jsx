@@ -2,12 +2,13 @@ import React from "react";
 import Reflux from "reflux";
 
 import CloseIcon from "@material-ui/icons/Close";
+import Avatar from '@material-ui/core/Avatar';
 
-import InfiniteImageGallery from "../../images/InfiniteImageGallery";
 import SidewalkStore from "../SidewalkStore";
 import SidewalkActions from "../SidewalkActions";
 import AdminStore from "../../admin/AdminStore";
 import ImageDeletionModal from "./ImageDeletionModal";
+import InfiniteImageGalleryCarousel from "../../images/InfiniteImageGalleryCarousel.jsx";
 
 /**
  * This component handles the view where the user can see all of the images posted to a sidewalk
@@ -18,28 +19,24 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 		super(props);
 		this.stores = [SidewalkStore, AdminStore];
 		this.state = {
-			isNextPageLoading: false,
 			modalOpened: false
 		};
 		this.galleryRef = React.createRef();
 	}
 
+	componentDidUpdate(prevProps) {
+		if (!prevProps.visible && this.props.visible) {
+			this._loadMoreImages(0, 10);
+		}
+	}
+	
 	/**
 	 * Loads more images to display
 	 * @param {number} startIndex - the starting index of new items to load
 	 * @param {number} stopIndex - the ending index of new items to load
 	 */
 	_loadMoreImages = (startIndex, stopIndex) => {
-		this.setState({
-			isNextPageLoading: true
-		});
-		SidewalkActions.loadUploadedImages(startIndex, stopIndex, () => {
-			setTimeout(() => {
-				this.setState({
-					isNextPageLoading: false
-				});
-			}, 50);
-		});
+		SidewalkActions.loadUploadedImages(startIndex, stopIndex);
 	};
 	
 	/**
@@ -73,30 +70,33 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 	
 	/**
 	 * Renders the button allowing the user to delete the currently selected image
-	 * @param {boolean} selected - whether the image to render the button over is selected or not
-	 * @param {Object} image - details about the image object
 	 * @return - null if the image is not selected, or the close button if the image is selected
 	 */
-	_renderDeleteButton = (selected, image) => {
-		if (!selected || !this.state.isLoggedIn) {
+	_renderDeleteButton = () => {
+		if (!this.state.isLoggedIn) {
 			return null;
 		}
 		
-		return <CloseIcon className="closeButton" onClick={() => {this._onDeleteImageClicked(image)}} />
+		return (
+			<Avatar className="imageDeleteAvatar" onClick={() => {this._onDeleteImageClicked(this.state.loadedUserImages[this.galleryRef.current.getCurrentIndex()])}}>
+				<CloseIcon />
+			</Avatar>
+		);
 	};
 	
 	render() {
 		if (!this.state.currentSidewalk) {
 			return null;
 		}
+		
 		return (
 			<div>
-				<InfiniteImageGallery
+				<InfiniteImageGalleryCarousel
 					loadedImages={this.state.loadedUserImages}
 					hasNextPage={this.state.hasNextImagesPage}
 					loadMoreData={this._loadMoreImages}
 					visible={this.props.visible}
-					isNextPageLoading={this.state.isNextPageLoading}
+					isNextPageLoading={this.state.isNextImagePageLoading}
 					onClose={this.props.onClose}
 					renderAboveImage={this._renderDeleteButton}
 					ref={this.galleryRef}

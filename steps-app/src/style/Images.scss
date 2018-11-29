@@ -160,3 +160,22 @@ input[type="file"].uploadImageInput {
 		display: None
 	}
 }
+
+.imageCarouselControls {
+	z-index: 1;
+	position: absolute;
+	display: flex;
+	color: white;
+}
+
+.imageDeleteAvatar {
+	background-color: $errorColour !important;
+	cursor: pointer;
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.imageApproveAvatar {
+	@extend .imageDeleteAvatar;
+	background-color: $successColour !important;
+}
