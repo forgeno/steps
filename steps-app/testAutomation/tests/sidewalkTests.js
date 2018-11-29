@@ -31,6 +31,15 @@ const logger = RequestLogger({
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
 const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
+const sidewalkInfoAndRatingMock = RequestMock()
+									.onRequestTo(/sidewalk\/\/2\//)
+									.respond()
+									.onRequestTo(/sidewalk\/2\/rate\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828369\/rate\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828397\/rate\//)
+									.respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -98,26 +107,26 @@ test("attempting to upload a large image to a sidewalk", async (t) => {
 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
 });
 
-test("viewing images on a sidewalk", async (t) => {
+test.requestHooks(logger)("viewing images on a sidewalk", async (t) => {
 	await t.click(drawer.imagesHeader);
 	await SidewalkUtilities.generateDummyImages(t);
 	
 	// check to see all rows loaded
 	await t.click(drawer.previewImagesButton)
 		.wait(6000)
-		.expect(imageGallery.getRowCount()).eql(15);
+		.expect(imageGallery.getRowCount()).eql(10);
 	
 	// check the default selected image
 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
 	// test selecting a different image
-	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
-		.wait(3500);
+	await t.click(imageGallery.rows.nth(4))
+			.wait(3500);
 	await t.expect(await imageGallery.getSelectedRowIndex(t))
 		.eql(4);
 	
 	// close the gallery and make sure the sidewalk drawer returns
-	await t.click(imageGallery.closeButton)
+	await t.pressKey("esc")
 		.expect(drawer.imagesHeader.visible).eql(true);
 });
 
@@ -211,4 +220,56 @@ test.requestHooks(logger, submitRatingMock)("attempting to submit a rating but f
 			)
 		).ok();
 	await t.expect(ratingsModal.cancel.visible).eql(true);
+});
+
+test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.submitRatingButton);
+	await t.expect(notifications.text.visible).eql(true);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
+});
+
+test.requestHooks(logger, sidewalkInfoAndRatingMock)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton)
+	.wait(3000);
+	
+	await mapPage.loadSidewalkMock(t);
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.wait(500);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+
+
+	await mapPage.loadSidewalkMock2(t);
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.expect(ratingsModal.cancel.visible).eql(true)
+	.wait(500);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+
+
+	await mapPage.loadDefaultSidewalk(t)
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.wait(500);
+
+	await t.expect(notifications.text.visible).eql(true);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
 });

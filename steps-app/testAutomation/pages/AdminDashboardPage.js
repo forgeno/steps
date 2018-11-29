@@ -4,14 +4,12 @@ export default class AdminDashboardPage {
 	
     constructor() {
     this.page = Selector("div");
-    this.previewContainer = Selector(".adminPreviewContainer");
-    this.itemActive = Selector(".active");
-    this.leftCarouselArrow = Selector(".left");
-    this.rightCarouselArrow = Selector(".right");
-    this.leftCarouselArrowDisabled = Selector(".disableLeftCarouselArrow");
-    this.rightCarouselArrowDisabled = Selector(".disableRightCarouselArrow");
-    this.previewRightArrow = Selector(".arrowRight");
-    this.previewLeftArrow = Selector(".arrowLeft");
-    this.rejectButton = Selector(".adminReject");
+    this.rejectButton = Selector(".imageDeleteAvatar");
+    this.acceptButton = Selector(".imageApproveAvatar");
+    this.csvButton = Selector(".csvButton");
+    this.recordedResponse = Selector(".successAlert")
+    this.failedResponse = Selector(".errorAlert")
+    this.carousel = Selector(".image-gallery");
+    this.carouselImage = Selector("aria-label");
     }
 }
