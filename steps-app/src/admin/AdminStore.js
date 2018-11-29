@@ -107,6 +107,10 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Logs the admin out and sets the state to false
+	 */
+
 	onLogoutAdmin(){
 		this.setState({
 			isLoggedIn: false
@@ -223,6 +227,12 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Fetches images for admins to approve and reject. Load on demand for performance purposes
+	 * @param {Number} startIndex the start index to get the indices from pending images
+	 * @param {Number} endIndex  the end index to grab the index of the last image to render
+	 */
+
 	onGetUnapprovedImages(startIndex, endIndex) {
 		this.setState({
 			isNextPageLoading: true
@@ -247,21 +257,17 @@ export default class AdminStore extends Reflux.Store {
 		})
 	}
 	
+	// Dismisses the approval notification
 	onDismissImageApprovalNotification() {
 		this.setState({
 			successfullyRespondedToImage: false,
 		});
 	}
 	
+	// Dismisses the image rejected notification 
 	onDismissImageRejectionNotification() {
 		this.setState({
 			failedToRespondToImage: false,
-		});
-	}
-
-	onAdminImageClicked(imageIndex) {
-		this.setState({
-			currentImageIndex: imageIndex
 		});
 	}
 

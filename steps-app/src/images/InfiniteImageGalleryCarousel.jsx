@@ -88,7 +88,6 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 			)
 		}
 		
-		const {classes} = this.props;
 		return (
 			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
 				<Drawer open={this.props.visible}

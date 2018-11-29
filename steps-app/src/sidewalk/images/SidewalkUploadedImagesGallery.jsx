@@ -91,7 +91,6 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 			);
 		}
 		
-		const {classes} = this.props;
 		return (
 			<Grid container justify="space-between" spacing={24} direction="row" style={{
 					flexGrow: 1,

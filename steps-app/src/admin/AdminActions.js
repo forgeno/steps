@@ -14,8 +14,7 @@ const Actions = Reflux.createActions([
 	"getUnapprovedImages",
 	"handlePendingImages",
 	"dismissImageApprovalNotification",
-	"dismissImageRejectionNotification",
-	"adminImageClicked"
+	"dismissImageRejectionNotification"
 ]);
 
 export default Actions;
