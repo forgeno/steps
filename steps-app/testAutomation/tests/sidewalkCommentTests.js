@@ -111,12 +111,10 @@ test("posting a comment on a sidewalk that contains personal information", async
 });
 
 test.requestHooks(logger)("attempting to post a comment on a sidewalk with weird ASCII characters", async (t) => {
-	const weirdText = `▀▄▒▒▒▒▒▒▒▒▒▒▒░▒░▒░▒▄▒▒▒▒▌
-              ▀▄▒▒▒▒▒▒▒▒▒▒▄▄▄▀▒▒▒▒▄▀
+	const weirdText = `▀▀▄▒▒▒▒▒▒▒▒▒▒▄▄▄▀▒▒▒▒▄▀
                 ▀▄▄▄▄▄▄▀▀▀▒▒▒▒▒▄▄▀
                    ▒▒▒▒▒▒▒▒▒▒▀▀`;
     await t.click(drawer.commentsHeader)
-		.expect(drawer.submitComment.hasAttribute("disabled")).eql(true)
 		.typeText(drawer.commentInput, weirdText)
 		.click(drawer.submitComment)
 		.expect(drawer.getCommentWithText(weirdText).exists).eql(false);

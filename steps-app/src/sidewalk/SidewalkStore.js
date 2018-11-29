@@ -147,7 +147,7 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 	/**
-	 * Handles comment spamming, making sure less than 3 comment being made per sidewalk every 30 seconds
+	 * Displays the message notifying users they can't post more than 3 comments for one sidewalk in a day
 	 */
 	onSuspendedSidewalkComment() {
 		this.setState({
@@ -155,6 +155,9 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Dismisses the message notifying users they can't post more than 3 comments for one sidewalk in a day
+	 */
 	onDismissSuspendSidewalkComment() {
 		this.setState({
 			commentOneSidewalk: false
@@ -162,7 +165,7 @@ export default class SidewalkStore extends Reflux.Store {
 	}
 	
 	/**
-	 * Handles comment spamming, making sure less than 3 comment being made in summary every 30 seconds
+	 * Displays the message notifying users they can't post more than 3 comments across all sidewalks within 30 seconds
 	 */
 	onCommentSuspendThirty() {
 		this.setState({
@@ -170,12 +173,14 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Hides the message notifying users they can't post more than 3 comments across all sidewalks within 30 seconds
+	 */
 	onDismissCommentSuspendThirty() {
 		this.setState ({
 			thirtyCommentSuspend: false
 		});
 	}
-
 
 	/**
 	 * Dismisses the message notifying the user that their comment was successfully posted

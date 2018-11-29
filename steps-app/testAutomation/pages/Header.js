@@ -9,8 +9,8 @@ export default class Header {
 		this.statsButton = this.buttons.withText("STATISTICS");
     }
 	
-	getLoginButton() {
-		return this.buttons.withText("LOGIN");
+	getLogoutButton() {
+		return this.buttons.withText("Logout");
 	}
 	
 	getAdminButton() {

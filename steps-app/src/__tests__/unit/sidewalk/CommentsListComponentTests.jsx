@@ -57,6 +57,10 @@ describe("<CommentsListComponent />", function() {
 
 		wrapper.setState({
 			enteredComment: "test string",
+			currentSidewalk: {
+				id: 1,
+				comments: []
+			}
 		});
 
 		wrapper.instance()._handleSubmit();
@@ -67,7 +71,7 @@ describe("<CommentsListComponent />", function() {
 		const wrapper = shallow(<CommentsListComponent/>);
 		wrapper.setState({
 			currentSidewalk: {
-				id: "2",
+				id: 2,
 				comments: []
 			}
 		});
@@ -79,7 +83,7 @@ describe("<CommentsListComponent />", function() {
 		const wrapper = shallow(<CommentsListComponent/>);
 		wrapper.setState({
 			currentSidewalk: {
-				id: "2",
+				id: 2,
 				comments: []
 			}
 		});

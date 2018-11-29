@@ -34,12 +34,6 @@ test("that the admin page does not show up when the user is not logged in", asyn
 	}
 });
 
-test("going to the login page", async (t) => {
-	await t.click(header.getLoginButton())
-		.expect(BrowserUtilities.getURL()).eql(`${config.baseUrl}/login`)
-		.expect(loginPage.title.visible).eql(true);
-});
-
 test("going to the admin panel", async (t) => {
 	await AdminUtilities.silentLogin(t);
 	await t.click(header.getAdminButton())
@@ -47,9 +41,7 @@ test("going to the admin panel", async (t) => {
 		.expect(adminPage.page.visible).eql(true);
 });
 
-test("that the login page does not show up when the user is logged in", async (t) => {
+test("that the logout button shows up when the user is logged in", async (t) => {
 	await AdminUtilities.silentLogin(t);
-	if (await header.getLoginButton().exists) {
-		throw new Error("The login button should not exist");
-	}
+	await t.expect(header.getLogoutButton().exists);
 });

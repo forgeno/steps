@@ -30,7 +30,7 @@ export default class AdminDrawerImageGallery extends Reflux.Component {
 
 		return (
 			<div>
-				{!showAdminImages && <h3> There are no images to approve or reject.</h3>}
+				{!showAdminImages && <h3 className="adminPanelEmptyText"> There are no images to approve or reject.</h3>}
 				<PendingImagesGallery />
 			</div>
 
