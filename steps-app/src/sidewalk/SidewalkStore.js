@@ -53,7 +53,6 @@ export default class SidewalkStore extends Reflux.Store {
 		RestUtil.sendGetRequest(`sidewalk/${sidewalk.id}`).then((data) => {
 			const newSidewalk = Object.assign({}, sidewalk, data),
 				hasNextCommentsPage = newSidewalk.comments.length === 25;
-			console.log(sidewalk, data," save me");
 			this.setState({
 				currentSidewalk: newSidewalk,
 				hasNextImagesPage: newSidewalk.lastImage,
