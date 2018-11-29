@@ -74,16 +74,32 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 	 */
 	_renderDeleteButton = () => {
 		if (!this.state.isLoggedIn) {
-			return null;
-		}
+			return (
+				<div className="buttonPanel">
+				<CloseIcon className="userCloseButton" data-toggle="tooltip" data-placement="bottom" title="Close gallery" onClick={this.props.onClose}/>
+				</div>
+			)
+		};
 		
 		return (
-			<Avatar className="imageDeleteAvatar" onClick={() => {this._onDeleteImageClicked(this.state.loadedUserImages[this.galleryRef.current.getCurrentIndex()])}}>
-				<CloseIcon />
-			</Avatar>
+			<div className="buttonPanel">
+				<CloseIcon className="userCloseButton" data-toggle="tooltip" data-placement="bottom" title="Close gallery" onClick={this.props.onClose}/>
+				<Avatar className="imageDeleteAvatar" onClick={() => {this._onDeleteImageClicked(this.state.loadedUserImages[this.galleryRef.current.getCurrentIndex()])}}>
+				<CloseIcon/>
+				</Avatar>
+			
+			</div>
 		);
 	};
 	
+	_renderUserControls = () => {
+		return(
+		<div>
+			<CloseIcon className="userCloseButton" onClick={this.props.onClose}/>
+		</div>
+		);
+	};
+
 	render() {
 		if (!this.state.currentSidewalk) {
 			return null;
@@ -98,6 +114,7 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 					visible={this.props.visible}
 					isNextPageLoading={this.state.isNextImagePageLoading}
 					onClose={this.props.onClose}
+					renderUserCustomControls = {this.renderUserControls}
 					renderAboveImage={this._renderDeleteButton}
 					ref={this.galleryRef}
 				/>
