@@ -25,8 +25,10 @@ export default class PendingImagesGallery extends Reflux.Component {
 		this.galleryRef = React.createRef();
 	}
 
-	componentDidMount(prevProps) {
-		this._loadMoreImages(0, 10);
+	componentDidMount() {
+		if (this.state.pendingImages.length === 0) {
+			this._loadMoreImages(0, 10);
+		}
 	}
 	
 	/**
@@ -43,7 +45,12 @@ export default class PendingImagesGallery extends Reflux.Component {
 	 * @param {Object} image - the image to approve
 	 */
     _onAcceptImage = (image) => {
-		AdminActions.handlePendingImages(true, image.id, image.sidewalk.id);
+		if (this.state.respondingToImage) {
+			return;
+		}
+		AdminActions.handlePendingImages(true, image.id, image.sidewalk.id, (index) => {
+			this.galleryRef.current._onImageClicked(index - 1);
+		});
     }
 
 	/**
@@ -51,7 +58,12 @@ export default class PendingImagesGallery extends Reflux.Component {
 	 * @param {Object} image - the image to reject
 	 */
     _onRejectImage = (image) => {
-		AdminActions.handlePendingImages(false, image.id, image.sidewalk.id);
+		if (this.state.respondingToImage) {
+			return;
+		}
+		AdminActions.handlePendingImages(false, image.id, image.sidewalk.id, (index) => {
+			this.galleryRef.current._onImageClicked(index - 1);
+		});
     }
 
 	/**

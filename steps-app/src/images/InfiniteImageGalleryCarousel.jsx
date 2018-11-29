@@ -2,13 +2,20 @@ import React from "react";
 
 import Drawer from "@material-ui/core/Drawer";
 import ImageGallery from 'react-image-gallery';
+import { withStyles } from '@material-ui/core/styles';
 
 const PAGE_SIZE = 10;
+
+const styles = theme => ({
+  drawer: {
+    height: "100vh"
+  }
+});
 
 /**
  * Renders an infinite amount of images
  */
-export default class InfiniteImageGalleryCarousel extends React.Component {
+class InfiniteImageGalleryCarousel extends React.Component {
 	
 	constructor(props) {
 		super(props);
@@ -25,6 +32,10 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 		if (this.props.hasNextPage && !this.props.isNextPageLoading && (this.props.loadedImages.length - newIndex) < 4) {
 			this.props.loadMoreData(this.props.loadedImages.length, this.props.loadedImages.length + PAGE_SIZE);
 		}
+	};
+	
+	_onImageClicked = (index) => {
+		this.galleryRef.current.slideToIndex(index);
 	};
 	
 	/**
@@ -56,7 +67,8 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 			return {
 				original: item.url,
 				thumbnail: item.url,
-				sizes: "800px"
+				sizes: "800px",
+				originalClass: "img-responsive"
 			};
 		});
 		return (
@@ -67,6 +79,8 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 						ref={this.galleryRef}
 						renderCustomControls={this._renderCustomControls}
 						onSlide={this._onSelectionChanged}
+						thumbnailPosition="top"
+						showFullscreenButton={false}
 		  />
 		);
 	}
@@ -80,6 +94,7 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 			)
 		}
 		
+		const {classes} = this.props;
 		return (
 			<div className="noOutlineDiv" tabIndex={0} onKeyDown={this._handleKeyDown}>
 				<Drawer open={this.props.visible}
@@ -89,11 +104,15 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 					SlideProps={{
 						unmountOnExit: true
 					}}
+					classes={{
+						paper: classes.drawer,
+					}}
 					>
 					{this.renderCarousel()}
 				</Drawer>
 			</div>
 		);
 	}
-	
 }
+
+export default withStyles(styles)(InfiniteImageGalleryCarousel);

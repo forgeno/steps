@@ -25,8 +25,8 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 	}
 
 	componentDidUpdate(prevProps) {
-		if (!prevProps.visible && this.props.visible) {
-			this._loadMoreImages(0, 10);
+		if (!prevProps.visible && this.props.visible && this.state.loadedUserImages.length < 2 && this.state.hasNextImagesPage) {
+			this._loadMoreImages(this.state.loadedUserImages.length, 10);
 		}
 	}
 	

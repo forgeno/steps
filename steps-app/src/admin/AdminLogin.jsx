@@ -94,32 +94,29 @@ export default class AdminLogin extends Component {
 				<Card>
 					<CardContent>
 						<h3 className="adminTitleLogin">Admin Login</h3>
-						<div id = "res"></div>
-						<form>
-							<FormGroup 
-								controlId="username" 
-								bsSize="small">
-								<ControlLabel>Username</ControlLabel>
-								<FormControl 
-									autoFocus type="username" 
-									value={this.state.enteredName}
-									onChange={this._handleUserChange}
-									placeholder="Username"/>
-							</FormGroup>
-							
-							<FormGroup 
-								controlId="password" 
-								bsSize="small">
-								<ControlLabel>Password</ControlLabel>
-								<FormControl 
-									value={this.state.enteredPassword} 
-									onChange={this._handlePassChange}
-									type="password"
-									placeholder="Password"/>
-							</FormGroup> 
-							
-							<Button bsStyle="primary" type="submit" onClick = {this._handleSubmit} disabled={!this._validateCredentials()}>Login</Button>
-						</form>
+						<FormGroup 
+							controlId="username" 
+							bsSize="small">
+							<ControlLabel>Username</ControlLabel>
+							<FormControl 
+								autoFocus type="username" 
+								value={this.state.enteredName}
+								onChange={this._handleUserChange}
+								placeholder="Username"/>
+						</FormGroup>
+						
+						<FormGroup 
+							controlId="password" 
+							bsSize="small">
+							<ControlLabel>Password</ControlLabel>
+							<FormControl 
+								value={this.state.enteredPassword} 
+								onChange={this._handlePassChange}
+								type="password"
+								placeholder="Password"/>
+						</FormGroup> 
+						
+						<Button bsStyle="primary" type="submit" onClick = {this._handleSubmit} disabled={!this._validateCredentials()}>Login</Button>
 					</CardContent>
 				</Card>
                 

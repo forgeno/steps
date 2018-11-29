@@ -51,7 +51,10 @@ class NavbarComponent extends Reflux.Component {
 		this.store = AdminStore;
 	}
 
-	_changeLogIn = () => {
+	/**
+	 * Handles the user logging out of the application
+	 */
+	_logout = () => {
 		AdminActions.logoutAdmin();
 		SpamUtil.deleteCookie("User");
 		SpamUtil.deleteLocalStorage("LoginAttempts");
@@ -67,13 +70,10 @@ class NavbarComponent extends Reflux.Component {
 						<Link to="/about/"><Button color="inherit" className={classes.button}>  About </Button></Link>
 						<Link to="/statistics/"><Button color="inherit" className={classes.button}> <Link to="/statistics/"/> Statistics </Button></Link>
 						{
-							!this.state.isLoggedIn && <Link to="/login"><Button color="inherit" className={classes.button}> Login </Button> </Link>
-						}
-						{
 							this.state.isLoggedIn && <Link to="/dashboard"><Button color="inherit" className={classes.button}>  Dashboard</Button></Link>
 						}
 						{
-							this.state.isLoggedIn && <Button color="inherit" onClick={this._changeLogIn} className={classes.button}>Logout</Button>
+							this.state.isLoggedIn && <Button color="inherit" onClick={this._logout} className={classes.button}>Logout</Button>
 						}
 					</Toolbar>
 				</AppBar>

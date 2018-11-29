@@ -136,23 +136,19 @@ export default class CommentsListComponent extends Reflux.Component {
 	 */
 
 	_handleCheck = () => {
-		if(!SpamUtil.getCookie("commentTimer")) {
+		if (!SpamUtil.getCookie("commentTimer")) {
 			SpamUtil.deleteLocalStorage("sidewalkCommented");
 		}
 
-		if(!SpamUtil.getCookie("timer"+this.state.currentSidewalk.id)) {
+		if (!SpamUtil.getCookie("timer" + this.state.currentSidewalk.id)) {
 			SpamUtil.deleteLocalStorage("count"+this.state.currentSidewalk.id);
 		}
 
-		if (SpamUtil.getCookie("timer"+this.state.currentSidewalk.id) == "true" && Number(SpamUtil.getLocalStorage("count"+this.state.currentSidewalk.id)) + 1 > 3) {
+		if (SpamUtil.getCookie("timer" + this.state.currentSidewalk.id) === "true" && Number(SpamUtil.getLocalStorage("count"+this.state.currentSidewalk.id)) + 1 > 3) {
 			SidewalkActions.suspendedSidewalkComment();
-
-		}
-		else if (SpamUtil.getCookie("commentTimer") == "true" && Number(SpamUtil.getLocalStorage("sidewalkCommented")) + 1 > 3) {
+		} else if (SpamUtil.getCookie("commentTimer") === "true" && Number(SpamUtil.getLocalStorage("sidewalkCommented")) + 1 > 3) {
 			SidewalkActions.commentSuspendThirty();
-		}
-
-		else {
+		} else {
 			this._handleSubmit();
 		}
 	};

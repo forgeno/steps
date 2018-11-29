@@ -21,7 +21,8 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.false;
+		console.error(wrapper.debug());
+		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.false;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	
@@ -35,7 +36,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		wrapper.setState({
 			modalOpened: true
 		});
-		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
+		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.true;
 	});
 	
@@ -46,7 +47,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
+		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	

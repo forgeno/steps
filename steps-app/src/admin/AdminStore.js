@@ -183,7 +183,14 @@ export default class AdminStore extends Reflux.Store {
 		});
 	}
 	
-	onHandlePendingImages(accepted, imageId, sidewalkId) {
+	/**
+	 * Approve or reject the specified image
+	 * @param {boolean} accepted - whether the image is approved or not
+	 * @param {Number} imageId - the id of the image to approve
+	 * @param {Number} sidewalkId - the id of the sidewalk the image was posted to
+	 * @param {function} onLastImageDeleted - a callback function that will be called if the image is the last loaded one
+	 */
+	onHandlePendingImages(accepted, imageId, sidewalkId, onLastImageDeleted) {
 		this.setState({
 			respondingToImage: true,
 			successfullyRespondedToImage: false,
@@ -195,12 +202,18 @@ export default class AdminStore extends Reflux.Store {
 			accepted: accepted,
 			imageId: imageId
 		}).then((result) => {
-			const newImages = this.state.pendingImages.filter((image) => image.id !== imageId);
+			const index = this.state.pendingImages.findIndex((img) => img.id === imageId);
+			const newImages = this.state.pendingImages.slice();
+			newImages.splice(index, 1);
 			this.setState({
 				respondingToImage: false,
 				successfullyRespondedToImage: true,
 				pendingImages: newImages
 			});
+			
+			if (index === newImages.length && index > 0) {
+				return onLastImageDeleted(index);
+			}
 		}).catch((error) => {
 			this.setState({
 				respondingToImage: false,
@@ -213,7 +226,7 @@ export default class AdminStore extends Reflux.Store {
 	onGetUnapprovedImages(startIndex, endIndex) {
 		this.setState({
 			isNextPageLoading: true
-		})
+		});
 		RestUtil.sendPostRequest(`sidewalk/unapprovedImages`, { 
 			username: this.state.username,
 			password: this.state.password,
