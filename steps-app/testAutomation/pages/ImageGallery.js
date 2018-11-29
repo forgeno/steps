@@ -6,12 +6,10 @@ import { Selector } from 'testcafe';
 export default class ImageGallery {
 	
     constructor() {
-		// this.rows = Selector(".infiniteImageListRow");
 		this.rows = Selector(".image-gallery-thumbnail")
 		this.selectedImage = Selector(".selectedImageWrapper");
-		this.closeButton = Selector(".closeButton");
+		this.closeButton = Selector(".imageDeleteAvatar");
 		this.imageDeleteButton = Selector(".imageDeleteAvatar");
-		this.activeImage = Selector(".image-gallery-thumbnail active");
     }
 	
 	/**
@@ -29,9 +27,9 @@ export default class ImageGallery {
 	 */
 	async getSelectedRowIndex(t) {
 		return await t.eval(() => {
-			const allImages = Array.prototype.slice.apply(document.querySelectorAll(".infiniteImageListRow")),
-				selected = document.querySelector(".infiniteImageRowSelected");
-			return allImages.indexOf(selected.parentElement);
+			const allImages = Array.prototype.slice.apply(document.querySelectorAll(".image-gallery-thumbnail")),
+				selected = document.querySelector(".image-gallery-thumbnail.active");
+			return allImages.indexOf(selected);
 		});
 	}
 }
