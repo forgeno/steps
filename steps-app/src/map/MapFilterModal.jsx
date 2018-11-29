@@ -34,15 +34,15 @@ export default class MapFilterModal extends Component {
 			isExpanded: false
 		};
 	}
-
+	/*Calls addFilter in map MapStore */
 	handleAddFilterEvent = () => {
 		Actions.addFilter(this.state.selectedTrait, this.state.selectedOperator, this.state.selectedValue, TRAIT_MAP[this.state.selectedTrait]);
 	}
-
+	/*Calls handleClearFilterEvent in map MapStore */
 	handleClearFilterEvent = () => {
 		Actions.clearFilters();
 	}
-
+	
 	_handleTraitChange = (e) => {
 		this.setState({
 			selectedTrait: e.target.value
@@ -117,7 +117,7 @@ export default class MapFilterModal extends Component {
 	_getMinimizedModalStyle = () => {
 		return !this.state.isExpanded ? undefined : {opacity: 0};
 	};
-	
+	/*Adds filter to table to display currently selected filters */
 	renderSelect(name, values, selected, onChange) {
 		return (
 			<div className="filterSelectGroup">
@@ -133,6 +133,7 @@ export default class MapFilterModal extends Component {
 		);
 	}
 	
+	/*Displays model overtop of map*/
 	renderModalContent() {
 		if (this.state.isExpanded) {
 			return (
