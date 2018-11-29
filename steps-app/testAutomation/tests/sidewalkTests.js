@@ -34,6 +34,8 @@ const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
 const sidewalkInfoAndRatingMock = RequestMock()
 									.onRequestTo(/sidewalk\/\/2\//)
 									.respond()
+									.onRequestTo(/sidewalk\/2\/rate\//)
+									.respond()
 									.onRequestTo(/sidewalk\/560828369\/rate\//)
 									.respond()
 									.onRequestTo(/sidewalk\/560828397\/rate\//)
