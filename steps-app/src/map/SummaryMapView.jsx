@@ -16,6 +16,7 @@ export default class SummaryMapView extends Component {
 		Actions.loadMapDetails();
 	}
 	
+	
 	handleApplyFilterEvent = () => {
 		Actions.filterMap()
 	}
