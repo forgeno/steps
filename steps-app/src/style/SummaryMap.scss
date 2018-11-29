@@ -45,6 +45,7 @@
 
 .table{
 	vertical-align: middle;
+	margin-left: 3%;
 }
 
 .esri-legend.esri-widget{
@@ -95,4 +96,10 @@ tr {
 
 .closeFilters:hover {
 	color: red;
+
+}
+.closeFilters{
+	position: absolute;
+	right: 4%;
+	padding-left: 10px;
 }

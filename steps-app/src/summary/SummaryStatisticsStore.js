@@ -46,9 +46,8 @@ export default class SummaryStatisticsStore extends Reflux.Store {
 					const data = [sidewalk.id, sidewalk.accessibility, sidewalk.comfort, sidewalk.connectivity, sidewalk.senseOfSecurity, sidewalk.physicalSafety, sidewalk.overallRating, sidewalk.ratings, sidewalk.comments, sidewalk.images];
 					allSidewalkArray.push(data);
 				});
-				res.sidewalkCSVInfo = allSidewalkObjects;
+				res.sidewalkSummary = allSidewalkObjects;
 				res.csvFormatted = allSidewalkArray;
-				res.hasCSVData = true;
 				this.setState(res);
 			}).catch((err) => {
 				this.setState({

@@ -33,7 +33,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests/mapTests.js -S -s screenshots"
+    "auto": "./node_modules/.bin/testcafe chrome ./testAutomation/tests/summaryTests.js -S -s screenshots"
   },
   "eslintConfig": {
     "extends": "react-app"
