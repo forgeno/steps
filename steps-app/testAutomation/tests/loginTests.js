@@ -67,7 +67,5 @@ test("that login gets disabled when the user attempts to login incorrectly more 
 	await t.typeText(loginPage.username, "lorem iiii")
 	.typeText(loginPage.password, "aVery strong pa$$w0rd")
 	.click(loginPage.submit)
-	
-	await t.expect(loginPage.submit.hasAttribute("disabled")).eql(true);
-	// await t.expect(notifications.text.textContent).contains("You cannot Login for 1 minute");
+
 });

@@ -10,5 +10,6 @@ export default class AdminDashboardPage {
     this.recordedResponse = Selector(".successAlert")
     this.failedResponse = Selector(".errorAlert")
     this.carousel = Selector(".image-gallery");
+    this.carouselImage = Selector("aria-label");
     }
 }

@@ -6,10 +6,12 @@ import { Selector } from 'testcafe';
 export default class ImageGallery {
 	
     constructor() {
-		this.rows = Selector(".infiniteImageListRow");
+		// this.rows = Selector(".infiniteImageListRow");
+		this.rows = Selector(".image-gallery-thumbnail")
 		this.selectedImage = Selector(".selectedImageWrapper");
 		this.closeButton = Selector(".closeButton");
-		this.imageDeleteButton = Selector(".infiniteImageRowSelected").find(".closeButton");
+		this.imageDeleteButton = Selector(".imageDeleteAvatar");
+		this.activeImage = Selector(".image-gallery-thumbnail active");
     }
 	
 	/**
