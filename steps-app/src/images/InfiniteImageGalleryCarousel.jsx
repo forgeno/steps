@@ -2,20 +2,13 @@ import React from "react";
 
 import Drawer from "@material-ui/core/Drawer";
 import ImageGallery from 'react-image-gallery';
-import { withStyles } from '@material-ui/core/styles';
 
 const PAGE_SIZE = 10;
-
-const styles = theme => ({
-  drawer: {
-    height: "100vh"
-  }
-});
 
 /**
  * Renders an infinite amount of images
  */
-class InfiniteImageGalleryCarousel extends React.Component {
+export default class InfiniteImageGalleryCarousel extends React.Component {
 	
 	constructor(props) {
 		super(props);
@@ -106,7 +99,7 @@ class InfiniteImageGalleryCarousel extends React.Component {
 						unmountOnExit: true
 					}}
 					classes={{
-						paper: classes.drawer,
+						paper: "fullscreenDrawer",
 					}}
 					>
 					{this.renderCarousel()}
@@ -115,5 +108,3 @@ class InfiniteImageGalleryCarousel extends React.Component {
 		);
 	}
 }
-
-export default withStyles(styles)(InfiniteImageGalleryCarousel);

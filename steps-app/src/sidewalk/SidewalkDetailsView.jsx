@@ -61,13 +61,16 @@ class SidewalkDetailsView extends Component {
 		
 	}
 
+	/**
+	 * Makes the call to prepare and download the clicked sidewalk's CSV data
+	 */
 	getCSVData = () => {
 		SidewalkActions.downloadSidewalkCSV(this.state.currentSidewalk.id);
 		
 	}
 
 	/**
-	 * handles closing of the drawer
+	 * Handles closing of the drawer
 	 */
 	_handleClose = () => {
 		this.props.onClose();

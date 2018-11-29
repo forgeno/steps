@@ -121,7 +121,7 @@ export default class MapFilterModal extends Component {
 	renderSelect(name, values, selected, onChange) {
 		return (
 			<div className="filterSelectGroup">
-				<FormGroup controlId="formControlsSelect">
+				<FormGroup controlId={`select${name}`}>
 				  <ControlLabel>{name}</ControlLabel>
 				  <FormControl componentClass="select" placeholder="select" onChange={onChange}>
 					{

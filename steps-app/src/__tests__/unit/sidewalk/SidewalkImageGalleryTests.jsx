@@ -21,8 +21,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		console.error(wrapper.debug());
-		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.false;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.false;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	
@@ -36,7 +35,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		wrapper.setState({
 			modalOpened: true
 		});
-		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.true;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.true;
 	});
 	
@@ -47,7 +46,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 			},
 			loadeduserImages: []
 		});
-		expect(wrapper.find("WithStyles(InfiniteImageGalleryCarousel)").prop("visible")).to.be.true;
+		expect(wrapper.find("InfiniteImageGalleryCarousel").prop("visible")).to.be.true;
 		expect(wrapper.find("ImageDeletionModal").prop("visible")).to.be.false;
 	});
 	
@@ -91,7 +90,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		expect(SidewalkActions.removeLoadedImage.calledOnce).to.be.true;
 	});
 	
-	it("Tests that _renderDeleteButton doesn't render something if the user is not logged in as an administrator", () => {
+	it("Tests that _renderDeleteButton doesn't render a DeleteIcon if the user is not logged in as an administrator", () => {
 		const wrapper = shallow(<SidewalkUploadedImagesGallery visible={true} />);
 		wrapper.instance().stores[0].setState({
 			currentSidewalk: {
@@ -101,10 +100,10 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		wrapper.instance().stores[1].setState({
 			isLoggedIn: false
 		});
-		expect(wrapper.instance()._renderDeleteButton(true, {})).to.be.null;
+		expect(shallow(wrapper.instance()._renderDeleteButton(true, {})).debug().includes("DeleteIcon")).to.be.equal(false);
 	});
 	
-	it("Tests that _renderDeleteButton renders a button if the user is logged in", () => {
+	it("Tests that _renderDeleteButton renders a DeleteIcon if the user is logged in", () => {
 		const wrapper = shallow(<SidewalkUploadedImagesGallery visible={true} />);
 		sandbox.spy(wrapper.instance(), "_onDeleteImageClicked");
 		wrapper.instance().stores[0].setState({
@@ -115,8 +114,7 @@ describe("<SidewalkUploadedImagesGallery />", function() {
 		wrapper.instance().stores[1].setState({
 			isLoggedIn: true
 		});
-		
-		expect(wrapper.instance()._renderDeleteButton(true, {})).to.not.be.null;
+		expect(shallow(wrapper.instance()._renderDeleteButton(true, {})).debug().includes("DeleteIcon")).to.be.equal(true);
 	});
 	
 	afterEach(() => {

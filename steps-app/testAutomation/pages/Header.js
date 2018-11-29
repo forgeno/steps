@@ -10,7 +10,7 @@ export default class Header {
     }
 	
 	getLogoutButton() {
-		return this.buttons.withText("Logout");
+		return Selector("button span").withText("LOGOUT");
 	}
 	
 	getAdminButton() {

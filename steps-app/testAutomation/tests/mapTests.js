@@ -21,44 +21,62 @@ fixture `Tests the map dashboard page`
 		await mapPage.waitForLoad(t);
 	});
 
-// Tests
-
-
-
-test("Interacting with filterUI", async (t) => {
-	const clearButton = Selector('button').withText('Clear')
-	const applyFilter = Selector('button').withText('Apply Filter')
-	const filterTable = Selector("#filterTable")
-	const addFilter = Selector(".AddFilter")
-
-	let filterTableRowNum = filterTable.find("tr")
-	let oldRows = await filterTableRowNum.count
+test("interacting with the filter modal", async (t) => {
+	// verify the filter modal shows up only if the button is pressed
+	await t.expect(mapPage.filterModal.getAttribute("style")).eql("opacity: 0;")
+		.expect(mapPage.expandFilterButton.visible).eql(true, {timeout: 30000})
+		.click(mapPage.expandFilterButton)
+		.expect(mapPage.filterModal.visible).eql(true)
+		.expect(mapPage.expandFilterButton.parent().getAttribute("style")).eql("opacity: 0;");
+		
+	// test closing filters
+	await t.click(mapPage.closeFilters)
+		.expect(mapPage.filterModal.getAttribute("style")).eql("opacity: 0;")
+		.expect(mapPage.expandFilterButton.visible).eql(true, {timeout: 30000});
 	
-	await t.click(addFilter)
-
-	let newrowNum = await filterTableRowNum.count
-	await t.expect((oldRows+1)).eql(newrowNum,"Filter is not being added correctly")
-	await t.click(applyFilter)
-
-	await t.click(Selector('#rateTrait'))
-	await t.click(Selector('option').withText('AvgSecurity'))
-	await t.click(Selector('#equalitySelector'))
-	await t.click(Selector('option').withText('>'))
-	await t.click(Selector('#numberSelector'))
-	await t.click(Selector('option').withText('1'))
-	await t.click(addFilter)
-	newrowNum = await filterTableRowNum.count
-	await t.expect((oldRows+2)).eql(newrowNum,"Filter is not being added correctly")
-	await t.click(applyFilter)
-	await t.click(clearButton)
-	newrowNum = await filterTableRowNum.count
-	await t.expect((newrowNum)).eql(1,"Filter is not being cleared correctly")
+	// test the apply filter button enabled status
+	await t.click(mapPage.expandFilterButton)
+		.expect(mapPage.applyFiltersButton.hasAttribute("disabled")).eql(true)
+		.click(mapPage.addFilterButton)
+		.expect(mapPage.applyFiltersButton.hasAttribute("disabled")).eql(false);
+	
+	// test the default filter
+	await t.expect(mapPage.tableCell.nth(0).textContent).eql("Overall")
+		.expect(mapPage.tableCell.nth(1).textContent).eql(">")
+		.expect(mapPage.tableCell.nth(2).textContent).eql("1");
+	
+	// test deleting a filter
+	await t.click(mapPage.deleteFilterButton)
+		.expect(mapPage.tableCell.exists).eql(false);
+	
+	// test selecting a filter and adding it
+	await t.click(mapPage.traitSelect)
+		.click(mapPage.accessibilityTraitOption)
+		.click(mapPage.addFilterButton)
+		.expect(mapPage.tableCell.nth(0).textContent).eql("Accessibility")
+		.expect(mapPage.tableCell.nth(1).textContent).eql(">")
+		.expect(mapPage.tableCell.nth(2).textContent).eql("1")
+		.click(mapPage.applyFiltersButton)
+		.wait(2000);
+	
+	const expr = await t.eval(() => {
+		return DEV_MAP_STORE.state.featureLayer.definitionExpression;
+	});
+	await t.expect(expr).eql("AvgAccessibility > 1");
+	
+	// test clearing filters
+	await t.click(mapPage.clearFiltersButton)
+		.expect(mapPage.tableCell.exists).eql(false);
+	
+	const expr2 = await t.eval(() => {
+		return DEV_MAP_STORE.state.featureLayer.definitionExpression;
+	});
+	await t.expect(expr2).eql("");
 });
 
 test("opening the drawer when clicking on a sidewalk", async (t) => {
 	await mapPage.loadDefaultSidewalk(t);
-    await t.expect(drawer.drawer.visible).eql(true, {timeout: 30000})
-		.expect(drawer.addressName.textContent).eql("test2");
+    await t.expect(drawer.drawer.visible).eql(true, {timeout: 30000});
 });
 
 test("not opening the drawer when a non-sidewalk point is clicked", async (t) => {
@@ -96,4 +114,3 @@ test("dragging the map", async (t) => {
 	const rightCenter = await mapPage.getMapCenter();
 	await t.expect(rightCenter.x).gt(leftCenter.x);
 });
-
