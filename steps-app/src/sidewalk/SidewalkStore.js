@@ -369,6 +369,9 @@ export default class SidewalkStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Synchronizes the sidewalk's various rating values between ArcGIS and Django
+	 */
 	synchronizeSidewalk() {
 		const query = window.featureLayer.createQuery();
 		query.outFields = ["*"];
@@ -396,7 +399,11 @@ export default class SidewalkStore extends Reflux.Store {
 			console.error("Failed query part", err);
 		});
 	}
-		
+	
+	/**
+	 * Performs the GET request to the API which returns the individual sidewalk data which will be exported to CSV
+	 * @param {number} sidewalkId - the id of the sidewalk to download CSV data for
+	 */
 	onDownloadSidewalkCSV(sidewalkId) {
 		RestUtil.sendGetRequest(`sidewalk/completeSummary`).then((allSidewalkObjects) => {
 			const singleSidewalkData = [];

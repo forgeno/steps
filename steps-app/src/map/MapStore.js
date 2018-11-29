@@ -187,14 +187,6 @@ export default class MapStore extends Reflux.Store {
 				  }
 			});
 
-			/*function queryAllSidewalks() {
-				return featureLayer.queryFeatures(featureLayer.createQuery()).then(function(response) {
-					return response.features
-				});
-			}
-			
-			// TODO: what does this do
-			queryAllSidewalks();*/
 			// radius to search in
 			const pxRadius = 5;
 			this.state.map.add(featureLayer);
