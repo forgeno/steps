@@ -107,14 +107,7 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 			</Grid>
 		);
 	};
-	
-	_renderUserControls = () => {
-		return(
-		<div>
-			<CloseIcon className="userCloseButton" onClick={this.props.onClose}/>
-		</div>
-		);
-	};
+
 
 	render() {
 		if (!this.state.currentSidewalk) {
@@ -130,7 +123,6 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 					visible={this.props.visible}
 					isNextPageLoading={this.state.isNextImagePageLoading}
 					onClose={this.props.onClose}
-					renderUserCustomControls = {this.renderUserControls}
 					renderAboveImage={this._renderDeleteButton}
 					ref={this.galleryRef}
 				/>
