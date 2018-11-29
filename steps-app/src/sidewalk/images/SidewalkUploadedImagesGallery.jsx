@@ -107,7 +107,8 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 			</Grid>
 		);
 	};
-	
+
+
 	render() {
 		if (!this.state.currentSidewalk) {
 			return null;

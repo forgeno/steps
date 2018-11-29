@@ -140,7 +140,7 @@ export default class MapStore extends Reflux.Store {
 				  }]
 				});
 				
-				//mobile
+				/*Functionality to create legend object */
 				const expandLegend = new Expand({
 					view: view,
 					content: new Legend({
@@ -187,7 +187,6 @@ export default class MapStore extends Reflux.Store {
 				  }
 			});
 
-			// radius to search in
 			const pxRadius = 5;
 			this.state.map.add(featureLayer);
 
@@ -211,6 +210,7 @@ export default class MapStore extends Reflux.Store {
 					radius: pxRadius * pxToMeters // meters by default
 				});
 
+				/*Reverse geocoding search to convert GPS points to address name*/
 				this.state.search.clear();
 				if (this.state.search.activeSource) {
 					this.state.search.activeSource.locator.locationToAddress(event.mapPoint).then((response) => {
@@ -219,7 +219,7 @@ export default class MapStore extends Reflux.Store {
 						console.error("Error reverse GPS to address")
 					  });
 					}
-
+				/*Creates a query that querys for sidewalks with a certain distance of the mouse click*/
 				const q = featureLayer.createQuery();
 				q.geometry = c;
 				
@@ -239,7 +239,12 @@ export default class MapStore extends Reflux.Store {
 			});
 		});
 	}
-
+	/**Adds selected filter options into an array newMapFilters 
+	* @param {String} strTrait - Trait selected to filter such as accessability for comfort
+	* @param {String} strEquality - Equality selected such as <, >, <=, =, >=
+	* @param {String} strNumberSelect - Selects the number the trait must be to filter
+	* @param {Object} dbTrait - used for deleting a single filter and not all
+	*/
 	onAddFilter(strTrait, strEquality, strNumberSelect, dbTrait) {
 		const newMapFilters = this.state.mapFilters;
 		newMapFilters.push({
@@ -254,6 +259,10 @@ export default class MapStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * 
+	 * @param {int} index - Removes a single filter given the number
+	 */
 	onRemoveFilter(index) {
 		const newMapFilters = this.state.mapFilters;
 		newMapFilters.splice(index, 1);
@@ -263,6 +272,9 @@ export default class MapStore extends Reflux.Store {
 		this.onFilterMap();
 	}
 	
+	/**
+	 * clears all filters currently applied to map
+	 */
 	onClearFilters(){
 		this.state.featureLayer.definitionExpression = "";
 		this.setState({
@@ -270,6 +282,9 @@ export default class MapStore extends Reflux.Store {
 		});
 	}
 
+	/**
+	 * Applies filter to map converting the array of strings into an SQL query
+	 */
 	onFilterMap() {
 		this.state.featureLayer.definitionExpression = this.state.mapFilters.map((filter) => {
 			return `${filter.dbTrait} ${filter.operator} ${filter.value}`;

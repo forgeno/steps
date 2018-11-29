@@ -54,6 +54,7 @@ export default class InfiniteImageGalleryCarousel extends React.Component {
 			</div>
 		);
 	};
+
 	
 	renderCarousel() {
 		const images = this.props.loadedImages.filter((item) => item).map((item) => {
