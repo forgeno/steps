@@ -1,4 +1,4 @@
-import { RequestLogger, RequestMock, Selector } from 'testcafe';
+import { RequestLogger, RequestMock } from 'testcafe';
 
 import config from "../config";
 import MapPage from "../pages/MapPage";
@@ -31,6 +31,15 @@ const logger = RequestLogger({
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
 const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
+const sidewalkInfoAndRatingMock = RequestMock()
+									.onRequestTo(/sidewalk\/\/2\//)
+									.respond()
+									.onRequestTo(/sidewalk\/2\/rate\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828369\/rate\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828397\/rate\//)
+									.respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -41,214 +50,226 @@ fixture `Tests the sidewalk drawer`
 		await t.expect(drawer.drawer.visible).eql(true);
 	});
 
-// test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
-// 	const selectFile = async () => {
-// 		await t.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImage.png");
-// 	};
+test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
+	const selectFile = async () => {
+		await t.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImage.png");
+	};
 	
-// 	// verify the modal is visible and confirm can not be clicked
-// 	await t.click(drawer.imagesHeader)
-// 		.click(drawer.uploadImagesButton)
-// 		.expect(imageUploadModal.modal.visible).eql(true)
-// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
+	// verify the modal is visible and confirm can not be clicked
+	await t.click(drawer.imagesHeader)
+		.click(drawer.uploadImagesButton)
+		.expect(imageUploadModal.modal.visible).eql(true)
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
 		
-// 	await selectFile();
+	await selectFile();
 	
-// 	// cancel the upload and make sure no request was sent
-// 	await t.click(imageUploadModal.cancel)
-// 		.expect(logger.contains(record => record.request.url.includes("/image/create/"))).notOk()
-// 		.expect(imageUploadModal.modal.exists).eql(false);
+	// cancel the upload and make sure no request was sent
+	await t.click(imageUploadModal.cancel)
+		.expect(logger.contains(record => record.request.url.includes("/image/create/"))).notOk()
+		.expect(imageUploadModal.modal.exists).eql(false);
 	
-// 	// confirm upload but the upload fails
-// 	await t.click(drawer.uploadImagesButton);
-// 	await selectFile();
-// 	await t.eval(() => {
-// 		DEV_SIDEWALK_STORE.setState({
-// 			uploadingSidewalkImage: false,
-// 			uploadedImageError: true
-// 		});
-// 	});
-// 	await t.expect(notifications.text.visible).eql(true)
-// 		.expect(notifications.text.textContent).contains("error")
-// 		.expect(imageUploadModal.modal.visible).eql(true);
+	// confirm upload but the upload fails
+	await t.click(drawer.uploadImagesButton);
+	await selectFile();
+	await t.eval(() => {
+		DEV_SIDEWALK_STORE.setState({
+			uploadingSidewalkImage: false,
+			uploadedImageError: true
+		});
+	});
+	await t.expect(notifications.text.visible).eql(true)
+		.expect(notifications.text.textContent).contains("error")
+		.expect(imageUploadModal.modal.visible).eql(true);
 	
-// 	// confirm upload and verify success
-// 	await t.click(imageUploadModal.confirm)
-// 		.expect(logger.contains(record => record.request.url.includes("/image/create/") && record.response.statusCode === 200)).ok({timeout: 10000})
-// 		.expect(notifications.text.visible).eql(true)
-// 		.expect(notifications.text.textContent).contains("uploaded")
-// 		.expect(imageUploadModal.modal.exists).eql(false);
-// });
+	// confirm upload and verify success
+	await t.click(imageUploadModal.confirm)
+		.expect(logger.contains(record => record.request.url.includes("/image/create/") && record.response.statusCode === 200)).ok({timeout: 10000})
+		.expect(notifications.text.visible).eql(true)
+		.expect(notifications.text.textContent).contains("uploaded")
+		.expect(imageUploadModal.modal.exists).eql(false);
+});
 
-// test("processing a .gif/.jpg/.bmp being attempted to upload to a sidewalk", async (t) => {
-// 	await t.click(drawer.imagesHeader)
-// 		.click(drawer.uploadImagesButton)
-// 		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageB.bmp")
-// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
-// 		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageG.gif")
-// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
-// 		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageJ.jpg")
-// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false);
-// });
+test("processing a .gif/.jpg/.bmp being attempted to upload to a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader)
+		.click(drawer.uploadImagesButton)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageB.bmp")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageG.gif")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImageJ.jpg")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false);
+});
 
-// test("attempting to upload a large image to a sidewalk", async (t) => {
-// 	await t.click(drawer.imagesHeader)
-// 		.click(drawer.uploadImagesButton)
-// 		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/largeTestImage.jpg")
-// 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
-// });
+test("attempting to upload a large image to a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader)
+		.click(drawer.uploadImagesButton)
+		.setFilesToUpload(imageUploadModal.selectImageInput, "../data/largeTestImage.jpg")
+		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(true);
+});
 
-// test("viewing images on a sidewalk", async (t) => {
-// 	await t.click(drawer.imagesHeader);
-// 	await SidewalkUtilities.generateDummyImages(t);
+test.requestHooks(logger)("viewing images on a sidewalk", async (t) => {
+	await t.click(drawer.imagesHeader);
+	await SidewalkUtilities.generateDummyImages(t);
 	
-// 	// check to see all rows loaded
-// 	await t.click(drawer.previewImagesButton)
-// 		.wait(6000)
-// 		.expect(imageGallery.getRowCount()).eql(15);
+	// check to see all rows loaded
+	await t.click(drawer.previewImagesButton)
+		.wait(6000)
+		.expect(imageGallery.getRowCount()).eql(10);
 	
-// 	// check the default selected image
-// 	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
+	// check the default selected image
+	await t.expect(await imageGallery.getSelectedRowIndex(t)).eql(0);
 	
-// 	// test selecting a different image
-// 	await t.click(imageGallery.rows.nth(4).find(".clickableItem"))
-// 		.wait(3500);
-// 	await t.expect(await imageGallery.getSelectedRowIndex(t))
-// 		.eql(4);
+	// test selecting a different image
+	await t.click(imageGallery.rows.nth(4))
+			.wait(3500);
+	await t.expect(await imageGallery.getSelectedRowIndex(t))
+		.eql(4);
 	
-// 	// close the gallery and make sure the sidewalk drawer returns
-// 	await t.click(imageGallery.closeButton)
-// 		.expect(drawer.imagesHeader.visible).eql(true);
-// });
+	// close the gallery and make sure the sidewalk drawer returns
+	await t.pressKey("esc")
+		.expect(drawer.imagesHeader.visible).eql(true);
+});
 
-// test.requestHooks(logger)("attempting to delete an image but cancelling", async (t) => {
-//     await t.click(drawer.imagesHeader);
-// 	await SidewalkUtilities.generateDummyImages(t);
-// 	await t.click(drawer.previewImagesButton);
+test.requestHooks(logger)("attempting to delete an image but cancelling", async (t) => {
+    await t.click(drawer.imagesHeader);
+	await SidewalkUtilities.generateDummyImages(t);
+	await t.click(drawer.previewImagesButton);
 	
-// 	await t.click(imageGallery.imageDeleteButton)
-// 		.click(baseModal.cancel)
-// 		.expect(baseModal.cancel.exists).eql(false)
-// 		.wait(1000);
+	await t.click(imageGallery.imageDeleteButton)
+		.click(baseModal.cancel)
+		.expect(baseModal.cancel.exists).eql(false)
+		.wait(1000);
 	
-// 	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/"))).notOk();
-// });
-
-// test.requestHooks(logger, mock)("deleting an image on a sidewalk", async (t) => {
-// 	await t.click(drawer.imagesHeader);
-// 	await SidewalkUtilities.generateDummyImages(t);
-// 	await t.click(drawer.previewImagesButton);
-	
-// 	const loadedImages = await SidewalkUtilities.getLoadedImagesCount(t);
-// 	await t.click(imageGallery.imageDeleteButton)
-// 		.click(baseModal.confirm);
-	
-// 	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/") && record.response.statusCode === 200)).ok()
-// 		.expect(baseModal.cancel.exists).eql(false);
-	
-// 	await t.expect(await SidewalkUtilities.getLoadedImagesCount(t)).eql(loadedImages - 1);
-// });
-
+	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/"))).notOk();
+});
 
 test.requestHooks(logger, mock)("deleting an image on a sidewalk", async (t) => {
-	await t.debug()
 	await t.click(drawer.imagesHeader);
 	await SidewalkUtilities.generateDummyImages(t);
 	await t.click(drawer.previewImagesButton);
-	let loadedImagesNum = await SidewalkUtilities.getLoadedImagesCount(t);
-	let currentImageIndex = 0;
-	let imagesTillEnd = 0;
-	let imgSelector = Selector(".image-gallery-thumbnail")
-	let i = 0, oldIndex = null
-	while (i != oldIndex){
-		await t.wait(1000)
-		try{
-			for(; i <= loadedImagesNum; i++){
-				imgSelector.nth(i)
-			}
-		}
-		catch(err){
-			await t.click(imgSelector.nth(i-1))
-			oldIndex = i-1
-			await t.wait(500)
-			loadedImagesNum = await SidewalkUtilities.getLoadedImagesCount(t);
-		}
-		console.log(i, oldIndex)
-	}
-	//await t.click(imgSelector.nth(2))
-	// while(currentImageIndex != loadedImagesNum){
-	// 	imagesTillEnd = loadedImagesNum - currentImageIndex
-	// 	currentImageIndex += imagesTillEnd;
-	// 	//currentImageIndex = 
-	// 	try{
-	// 		imgSelector.nth(currentImageIndex)
-	// 	}
-	// 	await t.click(imgSelector.nth(currentImageIndex))
-	// 	loadedImagesNum = await SidewalkUtilities.getLoadedImagesCount(t)-1;
-	// 	console.log(currentImageIndex, loadedImagesNum);
-	// 	await t.wait(10000)
-	//}
+	
+	const loadedImages = await SidewalkUtilities.getLoadedImagesCount(t);
+	await t.click(imageGallery.imageDeleteButton)
+		.click(baseModal.confirm);
+	
+	await t.expect(logger.contains(record => record.request.url.includes("/image/delete/") && record.response.statusCode === 200)).ok()
+		.expect(baseModal.cancel.exists).eql(false);
+	
+	await t.expect(await SidewalkUtilities.getLoadedImagesCount(t)).eql(loadedImages - 1);
 });
-// test("to make sure image view components do not exist if a sidewalk has no images", async (t) => {
-	
-// 	await SidewalkUtilities.forceNoImages(t);
-// 	await t.expect(drawer.lastUploadedImage.exists).eql(false)
-// 		.click(drawer.imagesHeader)
-// 		.expect(drawer.previewImagesButton.exists).eql(false)
-// });
 
-// test.requestHooks(logger)("starting to submit a rating but cancelling", async (t) => {
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.expect(ratingsModal.cancel.visible).eql(true)
-// 		.click(ratingsModal.cancel)
-// 		.expect(ratingsModal.cancel.exists).eql(false);
-// 	// make sure no request was made to rate the sidewalk
-// 	await t.expect(logger.contains(record => record.request.url.includes("/rate/"))).notOk();
-// });
+test("to make sure image view components do not exist if a sidewalk has no images", async (t) => {
+	
+	await SidewalkUtilities.forceNoImages(t);
+	await t.expect(drawer.lastUploadedImage.exists).eql(false)
+		.click(drawer.imagesHeader)
+		.expect(drawer.previewImagesButton.exists).eql(false)
+});
 
-// test.requestHooks(logger)("submitting a rating to the sidewalk", async (t) => {
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.expect(ratingsModal.cancel.visible).eql(true)
-// 		.drag(ratingsModal.accessibilitySlider, 100, 0)
-// 		.drag(ratingsModal.connectivitySlider, -100, 0)
-// 		.drag(ratingsModal.physicalSafetySlider, 60, 0)
-// 		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
-// 		.wait(500);
-	
-// 	await t.expect(ratingsModal.accessibilityText.textContent).eql(getRatingDescription(5))
-// 		.expect(ratingsModal.connectivityText.textContent).eql(getRatingDescription(1))
-// 		.expect(ratingsModal.comfortText.textContent).eql(getRatingDescription(3))
-// 		.expect(ratingsModal.physicalSafetyText.textContent).eql(getRatingDescription(4))
-// 		.expect(ratingsModal.senseOfSecurityText.textContent).eql(getRatingDescription(2));
-	
-// 	await t.click(ratingsModal.confirm)
-// 		.expect(logger.contains(
-// 			record => (
-// 				record.request.url.includes("/rate/") &&
-// 				record.response.statusCode === 200)
-// 			)
-// 		).ok()
-// 		.expect(logger.contains(record => record.request.url.includes("/ratings/") && record.response.statusCode === 200)).ok();
-// });
+test.requestHooks(logger)("starting to submit a rating but cancelling", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.click(ratingsModal.cancel)
+		.expect(ratingsModal.cancel.exists).eql(false);
+	// make sure no request was made to rate the sidewalk
+	await t.expect(logger.contains(record => record.request.url.includes("/rate/"))).notOk();
+});
 
-// test.requestHooks(logger, submitRatingMock)("attempting to submit a rating but failing", async (t) => {
-// 	await t.click(drawer.ratingsHeader)
-// 		.click(drawer.submitRatingButton)
-// 		.expect(ratingsModal.cancel.visible).eql(true)
-// 		.drag(ratingsModal.accessibilitySlider, 100, 0)
-// 		.drag(ratingsModal.connectivitySlider, -100, 0)
-// 		.drag(ratingsModal.physicalSafetySlider, 60, 0)
-// 		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
-// 		.wait(500);
+test.requestHooks(logger)("submitting a rating to the sidewalk", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
 	
-// 	await t.click(ratingsModal.confirm)
-// 		.expect(logger.contains(
-// 			record => (
-// 				record.request.url.includes("/rate/") &&
-// 				record.response.statusCode === 500)
-// 			)
-// 		).ok();
-// 	await t.expect(ratingsModal.cancel.visible).eql(true);
-// });
+	await t.expect(ratingsModal.accessibilityText.textContent).eql(getRatingDescription(5))
+		.expect(ratingsModal.connectivityText.textContent).eql(getRatingDescription(1))
+		.expect(ratingsModal.comfortText.textContent).eql(getRatingDescription(3))
+		.expect(ratingsModal.physicalSafetyText.textContent).eql(getRatingDescription(4))
+		.expect(ratingsModal.senseOfSecurityText.textContent).eql(getRatingDescription(2));
+	
+	await t.click(ratingsModal.confirm)
+		.expect(logger.contains(
+			record => (
+				record.request.url.includes("/rate/") &&
+				record.response.statusCode === 200)
+			)
+		).ok()
+		.expect(logger.contains(record => record.request.url.includes("/ratings/") && record.response.statusCode === 200)).ok();
+});
+
+test.requestHooks(logger, submitRatingMock)("attempting to submit a rating but failing", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm)
+		.expect(logger.contains(
+			record => (
+				record.request.url.includes("/rate/") &&
+				record.response.statusCode === 500)
+			)
+		).ok();
+	await t.expect(ratingsModal.cancel.visible).eql(true);
+});
+
+test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.drag(ratingsModal.accessibilitySlider, 100, 0)
+		.drag(ratingsModal.connectivitySlider, -100, 0)
+		.drag(ratingsModal.physicalSafetySlider, 60, 0)
+		.drag(ratingsModal.senseOfSecuritySlider, -60, 0)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.submitRatingButton);
+	await t.expect(notifications.text.visible).eql(true);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
+});
+
+test.requestHooks(logger, sidewalkInfoAndRatingMock)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.wait(500);
+	
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton)
+	.wait(3000);
+	
+	await mapPage.loadSidewalkMock(t);
+	await t.click(drawer.ratingsHeader)
+		.click(drawer.submitRatingButton)
+		.expect(ratingsModal.cancel.visible).eql(true)
+		.wait(500);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+
+
+	await mapPage.loadSidewalkMock2(t);
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.expect(ratingsModal.cancel.visible).eql(true)
+	.wait(500);
+	await t.click(ratingsModal.confirm);
+	await t.click(drawer.drawerCloseButton);
+
+
+	await mapPage.loadDefaultSidewalk(t)
+	await t.click(drawer.ratingsHeader)
+	.click(drawer.submitRatingButton)
+	.wait(500);
+
+	await t.expect(notifications.text.visible).eql(true);
+	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
+});

@@ -68,4 +68,34 @@ export default class MapPage {
 			DEV_MAP_STORE.setState({sidewalkSelected: true})
 		});
 	}
+
+	async loadSidewalkMock(t) {
+		await t.eval(() => {
+			DEV_SIDEWALK_STORE.onLoadSidewalkDetails({
+				id: 560828369,
+				overallRating: 5,
+				accessibility: 3,
+				comfort: 2,
+				connectivity: 4,
+				physicalSafety: 3,
+				senseOfSecurity: 5
+			});
+			DEV_MAP_STORE.setState({sidewalkSelected: true})
+		});
+	}
+
+		async loadSidewalkMock2(t) {
+			await t.eval(() => {
+				DEV_SIDEWALK_STORE.onLoadSidewalkDetails({
+					id: 560828397,
+					overallRating: 5,
+					accessibility: 3,
+					comfort: 2,
+					connectivity: 4,
+					physicalSafety: 3,
+					senseOfSecurity: 5
+				});
+				DEV_MAP_STORE.setState({sidewalkSelected: true})
+			});
+		}
 }

@@ -5,6 +5,7 @@ import SidewalkDrawer from "../pages/SidewalkDrawer";
 import AdminUtilities from "../util/AdminUtilities";
 import BaseModal from "../pages/BaseModal";
 import MapPage from "../pages/MapPage";
+import Notifications from "../pages/Notifications";
 
 // constants
 const COMMENT_TEXT = `Automation test comment ${new Date().toISOString()}`;
@@ -13,6 +14,7 @@ const COMMENT_TEXT = `Automation test comment ${new Date().toISOString()}`;
 const mapPage = new MapPage();
 const drawer = new SidewalkDrawer();
 const baseModal = new BaseModal();
+const notifications = new Notifications();
 
 // variables
 const logger = RequestLogger({
@@ -21,6 +23,16 @@ const logger = RequestLogger({
 	logRequestBody: true,
 	stringifyRequestBody: true
 });
+
+const sidewalkInfoAndCommentMock = RequestMock()
+	.onRequestTo(/sidewalk\/\/2\//)
+	.respond()
+	.onRequestTo(/sidewalk\/2\/comment\/create\//)
+	.respond()
+	.onRequestTo(/sidewalk\/560828369\/comment\/create\//)
+	.respond()
+	.onRequestTo(/sidewalk\/560828397\/comment\/create\//)
+	.respond();
 
 fixture `Tests the sidewalk comments functionality`
     .page `${config.baseUrl}`
@@ -170,4 +182,50 @@ test("viewing comments uploaded to a sidewalk when there are lots of comments", 
 		.expect(drawer.nextIcon.visible).eql(true)
 		.expect(drawer.getCommentWithText("0").visible).eql(true)
 		.expect(drawer.getCommentWithText("25").exists).eql(false);
+});
+
+test.requestHooks(logger, sidewalkInfoAndCommentMock)("attempting to post a comment 3 times to the same sidewalk but fails on the 4th attempt", async (t) => {
+    await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+
+	await t.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+
+	await t.typeText(drawer.commentInput, "automation comment")
+	.click(drawer.submitComment);
+
+	await t.typeText(drawer.commentInput, "automation comment")
+	.click(drawer.submitComment);
+
+	await t.expect(notifications.text.textContent).contains("You can't comment on the same sidewalk more than 3 times a day.");
+});
+
+test.requestHooks(logger, sidewalkInfoAndCommentMock)("attempting to post a comment to 4 different sidewalks and failing on the 4th", async (t) => {
+    await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+	await t.click(drawer.drawerCloseButton)
+		.wait(3000);
+	
+	await mapPage.loadSidewalkMock2(t);
+	await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+	await t.click(drawer.drawerCloseButton)
+		.wait(3000);
+	
+	await mapPage.loadSidewalkMock(t)
+	await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+	await t.click(drawer.drawerCloseButton)
+		.wait(3000);
+
+	await mapPage.loadDefaultSidewalk(t);
+	await t.click(drawer.commentsHeader)
+		.typeText(drawer.commentInput, "automation comment")
+		.click(drawer.submitComment);
+
+	await t.expect(notifications.text.textContent).contains("You can comment at most 3 times in 30 seconds.");
 });
