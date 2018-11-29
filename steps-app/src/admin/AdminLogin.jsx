@@ -11,7 +11,6 @@ import Store from "./AdminStore";
 import SuccessAlertComponent from "../misc-components/SuccessAlertComponent";
 import ErrorAlertComponent from "../misc-components/ErrorAlertComponent";
 import SpamUtil from "../util/SpamUtil";
-import RestUtil from "../util/RestUtil";
 import {LOCAL_STORAGE_NAME, SUSPENSION_COOKIE, COOKIE_EXPIRE_TIME, MAX_LOGIN_ATTEMPTS} from "../constants/AdminConstants";
 
 /**

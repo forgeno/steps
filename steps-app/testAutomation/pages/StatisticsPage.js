@@ -10,5 +10,15 @@ export default class StatisticsPage {
 		this.commentsCard = this.contributionCards.nth(1);
 		this.imagesCard = this.contributionCards.nth(2);
 		this.totalContributionsCard = this.contributionCards.nth(3);
+		
+		this.sidewalkSummary = Selector(".sidewalkDetails");
+		this.sidewalkTab = Selector("span").withText("SIDEWALK DETAILS");
+		this.contributionsTab = Selector("span").withText("OVERALL CONTRIBUTIONS");
+		
+		this.accessibilityCell = Selector("table > tbody > tr:nth-child(1) > td").nth(4).find("div");
+		this.textRatingButton = Selector("input[name='text-description']");
+		this.numericRatingButton = Selector("input[name='numeric-description']");
+		
+		this.exportCSVButton = Selector(".csvButton");
     }
 }
