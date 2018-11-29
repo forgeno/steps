@@ -43,5 +43,5 @@ test("going to the admin panel", async (t) => {
 
 test("that the logout button shows up when the user is logged in", async (t) => {
 	await AdminUtilities.silentLogin(t);
-	await t.expect(header.getLogoutButton().exists);
+	await t.expect(header.getLogoutButton().visible).eql(true);
 });

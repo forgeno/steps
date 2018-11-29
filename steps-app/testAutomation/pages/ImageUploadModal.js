@@ -9,7 +9,7 @@ export default class ImageUploadModal extends BaseModal {
 	
     constructor() {
 		super();
-		this.selectImageButton = Selector(".row > .btn");
+		this.selectImageButton = Selector(".rowImgSelector > .btn");
 		this.selectImageInput = this.selectImageButton.find("input");
     }
 	

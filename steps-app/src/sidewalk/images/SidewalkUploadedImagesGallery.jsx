@@ -2,7 +2,10 @@ import React from "react";
 import Reflux from "reflux";
 
 import CloseIcon from "@material-ui/icons/Close";
+import DeleteIcon from "@material-ui/icons/Delete";
 import Avatar from '@material-ui/core/Avatar';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import SidewalkStore from "../SidewalkStore";
 import SidewalkActions from "../SidewalkActions";
@@ -73,14 +76,36 @@ export default class SidewalkUploadedImagesGallery extends Reflux.Component {
 	 * @return - null if the image is not selected, or the close button if the image is selected
 	 */
 	_renderDeleteButton = () => {
+		let deleteIcon;
 		if (!this.state.isLoggedIn) {
-			return null;
+			deleteIcon = null;
+		} else {
+			deleteIcon = (
+				<Grid item>
+					<Tooltip title="Delete this image">
+						<Avatar className="imageDeleteAvatar" onClick={() => {this._onDeleteImageClicked(this.state.loadedUserImages[this.galleryRef.current.getCurrentIndex()])}}>
+							<DeleteIcon />
+						</Avatar>
+					</Tooltip>
+				</Grid>
+			);
 		}
 		
+		const {classes} = this.props;
 		return (
-			<Avatar className="imageDeleteAvatar" onClick={() => {this._onDeleteImageClicked(this.state.loadedUserImages[this.galleryRef.current.getCurrentIndex()])}}>
-				<CloseIcon />
-			</Avatar>
+			<Grid container justify="space-between" spacing={24} direction="row" style={{
+					flexGrow: 1,
+					position: "fixed"
+				  }}>
+				{deleteIcon}
+				<Grid item>
+					<Tooltip title="Exit the carousel">
+						<Avatar className="imageDeleteAvatar" onClick={this.props.onClose} >
+							<CloseIcon />
+						</Avatar>
+					</Tooltip>
+				</Grid>
+			</Grid>
 		);
 	};
 	
