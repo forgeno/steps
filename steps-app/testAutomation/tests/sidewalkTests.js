@@ -31,7 +31,13 @@ const logger = RequestLogger({
 
 const mock = RequestMock().onRequestTo(/image\/delete\//).respond();
 const submitRatingMock = RequestMock().onRequestTo(/\/rate\//).respond({}, 500);
-// const sidewalkInfoMock = RequestMock().onRequestTo(/\/2\//
+const sidewalkInfoAndRatingMock = RequestMock()
+									.onRequestTo(/sidewalk\/\/2\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828369\/rate\//)
+									.respond()
+									.onRequestTo(/sidewalk\/560828397\/rate\//)
+									.respond();
 
 fixture `Tests the sidewalk drawer`
     .page `${config.baseUrl}`
@@ -92,7 +98,6 @@ test("processing a .gif/.jpg/.bmp being attempted to upload to a sidewalk", asyn
 		.expect(imageUploadModal.confirm.hasAttribute("disabled")).eql(false);
 });
 
-// fix the image uplo
 test("attempting to upload a large image to a sidewalk", async (t) => {
 	await t.click(drawer.imagesHeader)
 		.click(drawer.uploadImagesButton)
@@ -230,40 +235,37 @@ test.requestHooks(logger)("attempt to rate the same sidewalk 2 times within an h
 	await t.expect(notifications.text.textContent).contains("You can only rate the same sidewalk once per hour.");
 });
 
-test.requestHooks(logger)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
+test.requestHooks(logger, sidewalkInfoAndRatingMock)("attempt to rate a sidewalk 3 times within an hour and fail on the fourth on", async (t) => {
 	await t.click(drawer.ratingsHeader)
 		.click(drawer.submitRatingButton)
 		.wait(500);
 	
 	await t.click(ratingsModal.confirm);
-	await t.click(drawer.drawerCloseButton);
-	await t.click(mapPage.map, {offsetX: 410, offsetY: 180})
-		.wait(3000);
+	await t.click(drawer.drawerCloseButton)
+	.wait(3000);
 	
+	await mapPage.loadSidewalkMock(t);
 	await t.click(drawer.ratingsHeader)
 		.click(drawer.submitRatingButton)
 		.expect(ratingsModal.cancel.visible).eql(true)
 		.wait(500);
-
-
 	await t.click(ratingsModal.confirm);
 	await t.click(drawer.drawerCloseButton);
-	await t.click(mapPage.map, {offsetX: -95 ,offsetY: 160})
-	.wait(3000);
 
+
+	await mapPage.loadSidewalkMock2(t);
 	await t.click(drawer.ratingsHeader)
 	.click(drawer.submitRatingButton)
 	.expect(ratingsModal.cancel.visible).eql(true)
 	.wait(500);
-
 	await t.click(ratingsModal.confirm);
 	await t.click(drawer.drawerCloseButton);
-	await t.click(mapPage.map, {offsetX: 110 ,offsetY: 100})
-	.wait(3000);
 
+
+	await mapPage.loadDefaultSidewalk(t)
 	await t.click(drawer.ratingsHeader)
 	.click(drawer.submitRatingButton)
 	.wait(500);
 
-	await t.expect(notifications.text.textContent).contains("You have rated too many sidewalks within 30 seconds.");
+	await t.expect(notifications.text.visible).eql(true);
 });
