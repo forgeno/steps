@@ -76,21 +76,3 @@ input[type="file"].uploadImageInput {
 	display: flex;
 	margin: auto;
 }
-.imageCarouselControls{
-	width: 100%;
-}
-.buttonPanel{
-	width: 100%;
-}
-.userCloseButton:hover{
-	position: absolute;
-	top: 30%;
-	right: 2%;
-	opacity: 0.8;
-}
-.userCloseButton{
-	position: absolute;
-	top: 30%;
-	right: 2%;
-	opacity: 1;
-}
