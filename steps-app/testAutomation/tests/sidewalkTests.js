@@ -55,6 +55,7 @@ test.requestHooks(logger)("uploading an image to a sidewalk", async (t) => {
 		await t.setFilesToUpload(imageUploadModal.selectImageInput, "../data/smallTestImage.png");
 	};
 	
+	
 	// verify the modal is visible and confirm can not be clicked
 	await t.click(drawer.imagesHeader)
 		.click(drawer.uploadImagesButton)
